@@ -1,5 +1,7 @@
 /*
+!Makefile
 !.gitignore
+!*.tcl
 !*.xise
 !*.jed
 !*.svf
