@@ -1,0 +1,74 @@
+Name     GAL1 ;
+PartNo    ;
+Date     2/23/2021 ;
+Revision 01 ;
+Designer lb3361 ;
+Company   ;
+Assembly  ;
+Location  ;
+Device   g22v10 ;
+
+/* *************** INPUT PINS *********************/
+PIN 1   =  CTRLCLK;
+PIN 2   =  GTG1;  /* OR(A[11..14])   */
+PIN 3   =  GTG0;  /* OR(A[0..4])     */
+PIN 4   =  !WE;
+PIN 5   =  A9;
+PIN 6   =  A8;
+PIN 7   =  !OE;
+PIN 8   =  A10;
+PIN 9   =  A5;
+PIN 10  =  A6;
+PIN 11  =  A7;
+PIN 13  =  A14;    /* not used */
+PIN 19  =  A15;
+
+/* *************** OUTPUT PINS *********************/
+PIN 14  =  A16R;
+PIN 15  =  A15R;
+PIN 16  =  !WERAM;
+PIN 17  =  !OERAM;
+PIN 18  =  !OEPORT;
+PIN 20  =  !ZPBANK;
+PIN 21  =  B1;
+PIN 22  =  B0;
+PIN 23  =  CTRLCLKOUT;
+
+
+
+/* *********** CTRL REG CLOCK ******************/
+
+CTRLCLKOUT = OE & WE;   /* External loop to CTRLCLK */
+
+
+/* *************** CTRL BITS *********************/
+
+ZPBANK.D = !A5;
+ZPBANK.AR = 'b'0 ;
+ZPBANK.SP = 'b'0 ;
+
+B0.D = A6;
+B0.AR = 'b'0 ;
+B0.SP = 'b'0 ;
+
+B1.D = A7;
+B1.AR = 'b'0 ;
+B1.SP = 'b'0 ;
+
+/* *************** ADDR DECODE *********************/
+
+A6TO0 = GTG0 # A5 # A6;
+A14TO8 = A8 # A9 # A10 # GTG1;
+PORTS = !A15 & !A14TO8 & !A6TO0;  /* 0x00 and 0x80 */
+
+OEPORT = OE & !WE & PORTS;
+OERAM = OE & !WE & !PORTS;
+WERAM = WE & !OE;
+
+/* ZPBANK=0: [8000-ffff]
+   ZPBANK=1: [8000-ffff]+[0080-00ff]-[8080-80ff] */
+
+BANKENABLE = A15 $ (ZPBANK & !A14TO8 & A7);
+A15R = BANKENABLE & B0;
+A16R = BANKENABLE & B1;
+
