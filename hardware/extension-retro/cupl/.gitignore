@@ -1,4 +1,5 @@
 *.pdf
 *.abs
 *.sim
-
+*.lst
+*.doc

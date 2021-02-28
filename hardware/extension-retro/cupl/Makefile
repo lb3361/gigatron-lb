@@ -1,5 +1,5 @@
 
-all: GAL1.jed GAL2.jed
+all: GAL1.jed GAL2.jed broom
 
 GAL1.jed: GAL1.pld
 
