@@ -1,8 +1,6 @@
 module gigaexp(
     input A15,
-	 input A12A13A14,
-	 input A10,
-	 input A8A9A11,
+    input A14TO8,
     input [7:0] A,
     inout [7:0] BUS,
     input nOE,
@@ -13,8 +11,9 @@ module gigaexp(
     output A16R,
     output MOSI,
     output SCK,
+    output SCK0,
     output nSS0,
-	 output nSS1,
+    output nSS1,
     input MISO0,
     input MISO1,
     inout SDA,
@@ -24,14 +23,15 @@ module gigaexp(
 
 wire oe = !nOE;
 wire we = !nWE;
-
+     
 reg dat, clk, spol, sclk;
 reg ss0, ss1, ssi2c;
 reg b0, b1, zpbank;
 
 assign nSS0 = !ss0;
 assign nSS1 = !ss1;
-assign SCK =  (ss0 | ss1) ? clk : spol;
+assign SCK =  clk;
+assign SCK0 = (ss0 & clk);   
 assign MOSI = (ss0 | ss1) ? dat : 1'b1;
 assign SDA = (ssi2c && !dat) ? 1'b0 : 1'bZ;
 assign SCL = (ssi2c && !clk) ? 1'b0 : 1'bZ;
@@ -40,11 +40,11 @@ assign SCL = (ssi2c && !clk) ? 1'b0 : 1'bZ;
 
 /* The format of the ctrl instruction is as follows
     CTRL yyyyyyyy,dddddddd
- 			|        |||||| +-- SCLK      : Clock output.
+ 	 |        |||||| +-- SCLK      : Clock output.
          |        ||||++---- /SS1 /SS0 : Port enable: SPI when one is zero, I2C when both are zero.
-			|        |||+------ /CPOL     : Clock polarity.
-			|        ||+------- /ZPBANK   : Enable zero-page banking when zero.
-			|        ++-------- B1 B0     : Active memory bank.
+         |        |||+------ /CPOL     : Clock polarity.
+         |        ||+------- /ZPBANK   : Enable zero-page banking when zero.
+         |        ++-------- B1 B0     : Active memory bank.
          `------------------ DAT       : SPI/I2C data output.
 			
 	Notes:
@@ -72,33 +72,34 @@ initial
 always @(posedge(we))
  begin
    if (oe)
-	    begin
-		  dat <= A15;
-		  b1 <= A[7];
-		  b0 <= A[6];
-		  zpbank <= !A[5];
-		  spol <= !A[4];
-		  ss1 <= !A[3] && A[2];
-		  ss0 <= !A[2] && A[3];
-		  sclk <= A[0];
-		  /* derived */
-		  ssi2c <= !A[3] && !A[2];
-		  clk <= A[0] ^ !A[4];
-	   end
+        begin
+          dat <= A15;
+          b1 <= A[7];
+          b0 <= A[6];
+          zpbank <= !A[5];
+          spol <= !A[4];
+          ss1 <= !A[3] && A[2];
+          ss0 <= !A[2] && A[3];
+          sclk <= A[0];
+          /* derived */
+          ssi2c <= !A[3] && !A[2];
+          clk <= A[0] ^ !A[4];
+       end
  end
+
 
 /* Port control */
 
 /* Port addresses are 0x00 and 0x80 only.
    When sclk==0, reading these addresses always show 0x00 and 0x01.
-	When sclk==1, some bits might read differently
+    When sclk==1, some bits might read differently
      -- If SPI0 is active, bit 2 shows MISO0.
-	  -- If SPI1 is active, bit 3 shows MISO1.
-	  -- If I2C is active, bit 1 shows SDA and bit 7 shows SCL.
-	  -- Also, if I2C is active, bit 6 is set when a transaction is ongoing.
-	  -- Also, if I2C is active, but 5 is set when we own the bus.  */
+      -- If SPI1 is active, bit 3 shows MISO1.
+      -- If I2C is active, bit 1 shows SDA and bit 7 shows SCL.
+      -- Also, if I2C is active, bit 6 is set when a transaction is ongoing.
+      -- Also, if I2C is active, but 5 is set when we own the bus.  */
 
-wire isport = ({A15, A12A13A14, A10, A8A9A11, A[6:0]} == 13'b0000_0000000); /* 0x0000 and 0x0080 */
+wire isport = !A15 && !A14TO8 && A[6:0]==7'b0;
 wire oeport = oe & !we & isport;
 wire i2ctrans;
 wire i2cmine;
@@ -122,7 +123,7 @@ assign nWERAM = !weram;
 
 /* Ram banking */
 
-wire bankenable = A15 ^ ( zpbank && ({A12A13A14, A10, A8A9A11, A[7]} == 4'b0001) );
+wire bankenable = A15 ^ ( zpbank && !A14TO8 && A[7] );
 assign A15R = bankenable && b0;
 assign A16R = bankenable && b1; 
 
@@ -135,22 +136,22 @@ assign i2cmine = i2ctrans && i2c_mine;
 always @(posedge SDA)
   begin
     if (SCL) /* STOP */
-	   i2c_r2 <= i2c_r1;            /* make i2ctrans zero */
+       i2c_r2 <= i2c_r1;            /* make i2ctrans zero */
   end
 
 always @(negedge SDA)
   begin
     if (SCL) /* START */
-	   begin      
-		  i2c_r1 <= !i2c_r2;         /* make i2ctrans one */
-		  if (ssi2c && !dat)         /* we did it! */
-		    i2c_mine <= 1;
-		end
-	 else     /* ZERO */
-	   begin    
-		  if (! (ssi2c && !dat))     /* we didn't do it! */
+       begin      
+          i2c_r1 <= !i2c_r2;         /* make i2ctrans one */
+          if (ssi2c && !dat)         /* we did it! */
+            i2c_mine <= 1;
+        end
+     else     /* ZERO */
+       begin    
+          if (! (ssi2c && !dat))     /* we didn't do it! */
           i2c_mine <= 0;        
-		end
+        end
   end
 
 
