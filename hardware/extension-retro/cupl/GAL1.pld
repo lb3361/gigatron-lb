@@ -10,7 +10,7 @@ Device   g22v10 ;
 
 /* *************** INPUT PINS *********************/
 PIN 1   =  CTRLCLK;
-PIN 2   =  GTG1;  /* OR(A[11..14])   */
+PIN 2   =  GTG1;  /* OR(A[11..13or14])   */
 PIN 3   =  GTG0;  /* OR(A[0..4])     */
 PIN 4   =  !WE;
 PIN 5   =  A9;
@@ -20,7 +20,7 @@ PIN 8   =  A10;
 PIN 9   =  A5;
 PIN 10  =  A6;
 PIN 11  =  A7;
-PIN 13  =  A14;    /* not used */
+PIN 13  =  A14;
 PIN 19  =  A15;
 
 /* *************** OUTPUT PINS *********************/
@@ -58,7 +58,7 @@ B1.SP = 'b'0 ;
 /* *************** ADDR DECODE *********************/
 
 A6TO0 = GTG0 # A5 # A6;
-A14TO8 = A8 # A9 # A10 # GTG1;
+A14TO8 = A8 # A9 # A10 # A14 # GTG1;
 PORTS = !A15 & !A14TO8 & !A6TO0;  /* 0x00 and 0x80 */
 
 OEPORT = OE & !WE & PORTS;
