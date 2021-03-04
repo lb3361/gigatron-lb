@@ -31,7 +31,7 @@ PIN 18  =  !SS1;
 PIN 19  =  GTG0;
 PIN 20  =  GTG1;
 PIN 21  =  MOSI;
-PIN 22  =  SPICLK;
+PIN 22  =  SCK;
 PIN 23  =  SCLK;
 
 
@@ -55,9 +55,9 @@ SS1.D = !A3;
 SS1.AR = 'b'0 ;
 SS1.SP = 'b'0 ;
 
-SPICLK.D = A0 $ !A4;
-SPICLK.AR = 'b'0 ;
-SPICLK.SP = 'b'0 ;
+SCK.D = A0 $ !A4;
+SCK.AR = 'b'0 ;
+SCK.SP = 'b'0 ;
 
 MOSI.D = A15;
 MOSI.AR = 'b'0;
