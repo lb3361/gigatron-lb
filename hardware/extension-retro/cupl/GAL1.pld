@@ -10,8 +10,8 @@ Device   g22v10 ;
 
 /* *************** INPUT PINS *********************/
 PIN 1   =  CTRLCLK;
-PIN 2   =  GTG1;  /* OR(A[11..13or14])   */
-PIN 3   =  GTG0;  /* OR(A[0..4])     */
+PIN 2   =  GTG1;  /* OR(A[11..13])         */
+PIN 3   =  GTG0;  /* OR(A[0..4],!SCLK)     */
 PIN 4   =  !WE;
 PIN 5   =  A9;
 PIN 6   =  A8;
@@ -38,9 +38,9 @@ PIN 23  =  CTRLCLKOUT;
 
 /* *********** CTRL REG CLOCK ******************/
 
-/* CTRLCLKOUT = OE & WE;   /* External loop to CTRLCLK */
+CTRLCLKOUT = OE & WE;   /* External loop to CTRLCLK */
 
-CTRLCLKOUT = !OE # !WE;    /* Marcel's way */
+/* CTRLCLKOUT = !OE # !WE;    /* Marcel's way */
 
 /* *************** CTRL BITS *********************/
 
@@ -58,9 +58,9 @@ B1.SP = 'b'0 ;
 
 /* *************** ADDR DECODE *********************/
 
-A6TO0 = GTG0 # A5 # A6;
+A7TO0 = GTG0 # A5 # A6 # A7;
 A14TO8 = A8 # A9 # A10 # A14 # GTG1;
-PORTS = !A15 & !A14TO8 & !A6TO0;  /* 0x00 and 0x80 */
+PORTS = !A15 & !A14TO8 & !A7TO0; /* Address 0x0000 only when SCLK==1 */ 
 
 OEPORT = OE & !WE & PORTS;
 OERAM = OE & !WE & !PORTS;
