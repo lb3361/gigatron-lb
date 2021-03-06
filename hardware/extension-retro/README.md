@@ -48,7 +48,7 @@ Booting from the SD requires the DevRom because of a one byte error in ROMv5a. N
 
 ## 3 - Programming with the expansion board
 
-Following Marcel's design, this board adds a new native instruction `ctrl` to the Gigatron that smartly repurposes a nonsensical opcode that tries to simultaneously read and write the RAM. This instruction is supported by the assembler and can be found in a couple places in the ROM. Its arguments are similar to the arguments of a store instruction, but without the brackets as the address bus will be used to carry information. 
+Following Marcel's design, this board adds a new native instruction `ctrl` to the Gigatron that smartly repurposes a nonsensical opcode that tries to simultaneously read and write the RAM. This instruction is supported by the assembler and can be found in a couple places in the ROM. Its arguments are similar to the arguments of a store instruction, but without the brackets as the address bus will be used to carry the instruction argument instead of a memory address. 
 
 Here how the ROMv5a initializes Marcel's extension board:
 ```
@@ -65,12 +65,18 @@ ctrl(0b01111100)                # Disable SPI slaves, enable RAM, bank 1
 #      `--------- B1
 # bit15 --------- MOSI = 0
 ```
+This board only provides two SPI channels and repurposes the bits `/SS2` and `/SS3` to implement new functionalities.
+The bit `/SS2` becomes `/CPOL` to implement more SPI modes.
+The bit `/SS3` becomes `/ZPBANK` to offer memory banking in the upper half of page zero.
+
 Note that only native code can use the `ctrl` instruction.
 However VCPU programs can make use of two SYS extensions 
 that can easily be found in the ROM listing.
 
 * `SYS_ExpanderControl_v4_40` to use `ctrl` with the contents of `vAC`.
 * `SYS_SpiExchangeBytes_v4_134` to send/receive bytes on a SPI channel.
+
+
 
 ### 3.1 - Memory banking
 
