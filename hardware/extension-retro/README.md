@@ -93,11 +93,13 @@ In Marcel's design, SPI transactions are performed by first selecting a slave by
 
 My board differs from this design in three ways.
 
-* There only two SPI channels and their MISO lines have a pull up resistor. 
-* To read the MISO lines, one has to set `SCLK` and read address zero. If the SPI0 channel is selected, its MISO line appears on bit 2. If the SPI1 channel is selected, its MISO lines appears on bit 3. All other bits are zero meaning that Marcel's code works unmodified despite the presence of pull up resistors. Meanwhile, reading from any nonzero address shows what is in memory regardless of `SCLK`. This means that we can still do useful things when `SCLK` is set.
+* There are only two SPI channels and their MISO lines have a pull up. 
+* To read the MISO lines, one has to set `SCLK` and read address zero. If the SPI0 channel is selected, its MISO line appears on bit 2. If the SPI1 channel is selected, its MISO lines appears on bit 3. All other bits are zero meaning that Marcel's code works unmodified despite the presence of a pull up. Meanwhile, reading from any nonzero address shows what is in memory regardless of `SCLK`. This means that we can still do useful things when `SCLK` is set.
 * Finally the clock signal sent to the device is not `SCLK` but `SCK` which is a XOR of `SCLK` and `CPOL`. Since `/CPOL` is set by default, exchanging bytes with `SYS_SpiExchangeBytes_v4_134` implements [SPI mode 0 (CPHA=0,CPOL=0)](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface#Mode_numbers). Clearing `/CPOL` inverts the clock signal and therefore implementing SPI mode 2 (CPHA=0,CPOL=0). Modes 1 and 3 are subtly different and require a slightly different SYS function. This new function should toggle `/CPOL` before transfering each byte, then continue as the current function. However, after exchanging the last bit of the byte, the function should not clear `SCLK`, but simultaneously clear `SCLK` and toggle `/CPOL` to restore the original control word. This is easy to achieve because we can read the CtrlBits variable at address 01f8 despite `SCLK` being set.
 That all for today.
 
 ## 4 - Final
 
 I almost forgot the little LED that flashes when the SD card is active.
+
+
