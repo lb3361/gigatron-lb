@@ -38,8 +38,9 @@ PIN 23  =  CTRLCLKOUT;
 
 /* *********** CTRL REG CLOCK ******************/
 
-CTRLCLKOUT = OE & WE;   /* External loop to CTRLCLK */
+/* CTRLCLKOUT = OE & WE;   /* External loop to CTRLCLK */
 
+CTRLCLKOUT = !OE # !WE;    /* Marcel's way */
 
 /* *************** CTRL BITS *********************/
 

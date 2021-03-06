@@ -61,7 +61,7 @@ SCK.SP = 'b'0 ;
 
 MOSI.D = A15;
 MOSI.AR = 'b'0;
-MOSI.SP = 'b'0;
+MOSI.SP = 'b'0;
 
 /* *************** PORT BITS *********************/
 
