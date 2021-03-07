@@ -48,7 +48,7 @@ assign SCL = (ssi2c && !clk) ? 1'b0 : 1'bZ;
          `------------------ DAT       : SPI/I2C data output.
 			
 	Notes:
-	- Port inputs can be read in 0x00/0x80 when SCLK=1.
+	- Port inputs can be read in 0x00 when SCLK=1.
 	- Actual clock is SCLK^CPOL. Toggling either SCLK or /CPOL toggles the clock.
 	- There are two memory regions. The low region always shows bank 0. The high
 	  region shows the bank specified by B1 and B0. When /ZPBANK==1, the low region
@@ -99,7 +99,7 @@ always @(posedge(we))
       -- Also, if I2C is active, bit 6 is set when a transaction is ongoing.
       -- Also, if I2C is active, but 5 is set when we own the bus.  */
 
-wire isport = !A15 && !A14TO8 && A[6:0]==7'b0;
+wire isport = !A15 && !A14TO8 && A[7:0]==8'b0 && sclk;
 wire oeport = oe & !we & isport;
 wire i2ctrans;
 wire i2cmine;
