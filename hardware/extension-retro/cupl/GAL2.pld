@@ -1,18 +1,22 @@
 Name     GAL2 ;
 PartNo    ;
 Date     2/23/2021 ;
-Revision 01 ;
+Revision 02 (v6b) ;
 Designer lb3361 ;
 Company   ;
 Assembly  ;
 Location  ;
 Device   g22v10 ;
 
-/* *************** INPUT PINS *********************/
+/* ********************************************** */
+/*        THIS FILE IS FOR PCB V6B ONLY
+/* ********************************************** */
+
+/* *************** INPUT PINS ******************* */
 PIN 1   =  CTRLCLK;
-PIN 2   =  A11;
-PIN 3   =  A13;
-PIN 4   =  A14;
+PIN 2   =  MISO1;
+PIN 3   =  A11;
+PIN 4   =  A13;
 PIN 5   =  A12;
 PIN 6   =  A4;
 PIN 7   =  A3;
@@ -21,9 +25,9 @@ PIN 9   =  A1;
 PIN 10  =  A0;
 PIN 11  =  A15;
 PIN 13  =  MISO0;
-PIN 14  =  MISO1;
 
-/* *************** OUTPUT PINS *********************/
+/* *************** OUTPUT PINS ******************* */
+PIN 14  =  SCK0;
 PIN 15  =  PORT3;
 PIN 16  =  PORT2;
 PIN 17  =  !SS0;
@@ -36,12 +40,12 @@ PIN 23  =  SCLK;
 
 
 
-/* *************** DECODE FOR GAL1 *********************/
+/* *************** DECODE FOR GAL1 *************** */
 
 GTG0 = A0 # A1 # A2 # A3 # A4 # !SCLK;
-GTG1 = A11 # A12 # A13 # A14; 
+GTG1 = A11 # A12 # A13; 
 
-/* *************** CTRL BITS *********************/
+/* *************** CTRL BITS ********************* */
 
 SCLK.D = A0;
 SCLK.AR = 'b'0 ;
@@ -59,11 +63,13 @@ SCK.D = A0 $ !A4;
 SCK.AR = 'b'0 ;
 SCK.SP = 'b'0 ;
 
+SCK0 = SCK & SS0; /* no clock to spi0/sd when not selected */
+
 MOSI.D = A15;
 MOSI.AR = 'b'0;
 MOSI.SP = 'b'0;
 
-/* *************** PORT BITS *********************/
+/* *************** PORT BITS ******************** */
 
 PORT2 = MISO0 & SS0 & SCLK;
 PORT3 = MISO1 & SS1 & SCLK;
