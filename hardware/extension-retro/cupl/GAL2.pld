@@ -8,15 +8,21 @@ Assembly  ;
 Location  ;
 Device   g22v10 ;
 
-/* ********************************************** */
-/*        THIS FILE IS FOR PCB V6B ONLY
-/* ********************************************** */
+/* ***************  VERSION ********************* */
+
+/* $DEFINE V6 1  /* For PCB V6 only  */
+
+$DEFINE V6B 1    /* For PCB V6b only */
+
+
 
 /* *************** INPUT PINS ******************* */
 PIN 1   =  CTRLCLK;
+$IFDEF V6B
 PIN 2   =  MISO1;
 PIN 3   =  A11;
 PIN 4   =  A13;
+$ENDIF
 PIN 5   =  A12;
 PIN 6   =  A4;
 PIN 7   =  A3;
@@ -26,8 +32,17 @@ PIN 10  =  A0;
 PIN 11  =  A15;
 PIN 13  =  MISO0;
 
+$IFDEF V6
+PIN 2   =  A11;
+PIN 3   =  A13;
+PIN 4   =  A14;
+PIN 14   =  MISO1;
+$ENDIF
+
 /* *************** OUTPUT PINS ******************* */
+$IFDEF V6B
 PIN 14  =  SCK0;
+$ENDIF
 PIN 15  =  PORT3;
 PIN 16  =  PORT2;
 PIN 17  =  !SS0;
@@ -63,7 +78,9 @@ SCK.D = A0 $ !A4;
 SCK.AR = 'b'0 ;
 SCK.SP = 'b'0 ;
 
+$IFDEF V6B
 SCK0 = SCK & SS0; /* no clock to spi0/sd when not selected */
+$ENDIF
 
 MOSI.D = A15;
 MOSI.AR = 'b'0;
