@@ -22,7 +22,7 @@ The list of components can be found in file `BOM.csv`. The trickiest part is to 
 
 ### 1.3 - Programming the GALs
 
-The ATF22V10C GALs are supported by the same cheap XGecu TL866IIplus I use to program the Gigatron ROM. The files `cupl/GAL1.pld` and `cupl/GAL2.pld` describe the logic equations. You do not need to compile them with Atmel's finicky [WinCUPL](https://www.microchip.com/en-us/products/fpgas-and-plds/spld-cplds/pld-design-resources) program because the repository contains the two output files `cupl/GAL1.jed` and `cups/GAL2.jed` that must be programmed into the GALs. This can be done using XGecu's Windows software or using [minipro](https://gitlab.com/DavidGriffith/minipro) on Linux:
+The ATF22V10C GALs are supported by the same cheap [XGecu TL866IIplus](https://www.amazon.com/s?k=tl866ii+plus+programmer) programmer I use to program the Gigatron ROM. Note that you need the new version TL866II+. The old TL866 cannot program those chips. The files `cupl/GAL1.pld` and `cupl/GAL2.pld` describe the logic equations. You do not need to compile them with Atmel's finicky [WinCUPL](https://www.microchip.com/en-us/products/fpgas-and-plds/spld-cplds/pld-design-resources) program because the repository contains the two output files `cupl/GAL1.jed` and `cups/GAL2.jed` that must be programmed into the GALs. This can be done using XGecu's Windows software or using [minipro](https://gitlab.com/DavidGriffith/minipro) on Linux:
 ```
     $ minipro -p atf22v10c -w GAL1.jed  ### for the first GAL (the south one)
     $ minipro -p atf22v10c -w GAL2.jed  ### for the second GAL (the north one)
