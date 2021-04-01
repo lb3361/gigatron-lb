@@ -53,8 +53,8 @@ assign SCL = (ssi2c && !clk) ? 1'b0 : 1'bZ;
 	- There are two memory regions. The low region always shows bank 0. The high
 	  region shows the bank specified by B1 and B0. When /ZPBANK==1, the low region
 	  is 0x0000-0x7fff and the high region is 0x8000-0xffff. When /ZPBANK==0, the
-     high region also contains the zero page range 0x0080-0x00ff but no longer
-	  contaisn the range 0x8080-0x80ff.
+          high region also contains the zero page range 0x0080-0x00ff but no longer
+	  contains the range 0x8080-0x80ff.
 	- SPI0 is selected when /SSO[1:0]==0b10.
 	- SPI1 is selected when /SSO[1:0]==0b01.
 	- I2C is selected when /SSO[1:0]==0b00.
@@ -90,10 +90,8 @@ always @(posedge(we))
 
 /* Port control */
 
-/* Port addresses are 0x00 and 0x80 only.
-   When sclk==0, reading these addresses always show 0x00 and 0x01.
-    When sclk==1, some bits might read differently
-     -- If SPI0 is active, bit 2 shows MISO0.
+/* Reading 0x0000 when sclk gets the port data 
+      -- If SPI0 is active, bit 2 shows MISO0.
       -- If SPI1 is active, bit 3 shows MISO1.
       -- If I2C is active, bit 1 shows SDA and bit 7 shows SCL.
       -- Also, if I2C is active, bit 6 is set when a transaction is ongoing.
@@ -153,7 +151,5 @@ always @(negedge SDA)
           i2c_mine <= 0;        
         end
   end
-
-
 
 endmodule
