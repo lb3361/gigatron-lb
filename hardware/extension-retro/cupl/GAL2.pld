@@ -79,7 +79,7 @@ SCK.AR = 'b'0 ;
 SCK.SP = 'b'0 ;
 
 $IFDEF V6B
-SCK0 = SCK & SS0; /* no clock to spi0/sd when not selected */
+SCK0 = SCK;
 $ENDIF
 
 MOSI.D = A15;
