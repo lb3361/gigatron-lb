@@ -79,7 +79,20 @@ SCK.AR = 'b'0 ;
 SCK.SP = 'b'0 ;
 
 $IFDEF V6B
-SCK0 = SCK;
+
+/* Problem: suppose SPI0 contains a SD card that has not yet been
+turned to SPI mode. When the Gigatron speaks to SPI1, the card sees
+data on its CLK and DI lines and might do things. The first idea for
+the v6b board was to gate the clock when SSO is not asserted (SCK0 =
+SCK & SS0). Alas this can be a problem because the canonical
+initialization procedure recommends to clock a card more than 70 times
+before asserting SS0 for the first time. So instead we turn gate the
+clock when SS1 is asserted: if we talk to the device on SPI1, then
+SPI0 does not get a clock signal and a SD card sitting there in SD
+mode does not get to do things... */
+
+SCK0 = SCK & !SS1;
+
 $ENDIF
 
 MOSI.D = A15;
