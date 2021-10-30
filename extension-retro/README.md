@@ -45,6 +45,8 @@ The 128K RAM extension should be detected by the Gigatron ROMv4, ROMV5a, and Dev
 
 Booting from the SD requires the DevRom because of a one byte error in ROMv5a. Note that this is a very experimental code. It only works with a FAT32 formatted SDCard and only boots the program named `SYSTEM.GT1` found in the first partition. I was able to boot short program such as Blinky or Hello World by renaming them `SYSTEM.GT1`. Something seems broken for longer programs.
 
+Update: The DevRom now contains an updated CardBoot program (https://github.com/lb3361/gigatron-os/tree/master/cardboot) that can boot a convenient SDCard browser (https://github.com/lb3361/gigatron-os/tree/master/cardboot).  In short, a SDCard connected to the SPI ports is not only usable but also useful.
+
 ## 3 - Programming with the expansion board
 
 Like Marcel's board, this board adds a new native instruction `ctrl` to the Gigatron that smartly repurposes nonsensical opcodes that try to simultaneously read and write the RAM. This instruction is supported by the assembler and can be found in a couple places in the ROM. Its arguments are similar to the arguments of a store instruction, but without the brackets as the address bus is used to carry the argument instead of a memory address. 
