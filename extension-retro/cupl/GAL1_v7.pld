@@ -1,0 +1,94 @@
+Name     GAL1_v7;
+PartNo   ;
+Date     11/01/2021;
+Revision 01;
+Designer lb3361;
+Company  ;
+Assembly ;
+Location ;
+Device   g22v10;
+
+/****************************************************************
+                               ______________
+                              |     GAL1     |
+                  CTRLCLK x---|1           24|---x Vcc
+                PORTADDRI x---|2           23|---x CTRLCLKOUT
+                      !WE x---|3           22|---x DEVCLKOUT
+                      !OE x---|4           21|---x !SS1
+                          x---|5           20|---x SCK1
+                          x---|6           19|---x !SS0
+                       A0 x---|7           18|---x SCK0
+                       A1 x---|8           17|---x !OERAM
+                       A2 x---|9           16|---x !WERAM
+                       A3 x---|10          15|---x !OEPORT
+                       A4 x---|11          14|---x SCLK
+                      GND x---|12          13|---x A15
+                              |______________|
+
+*****************************************************************/
+
+
+/* INPUT PINS */
+
+PIN 1   =  CTRLCLK;
+PIN 2   =  PORTADDRI;
+PIN 3   =  !WE;
+PIN 4   =  !OE;
+/* PIN 5 */
+/* PIN 6 */
+PIN 7   =  A0;
+PIN 8   =  A1;
+PIN 9   =  A2;
+PIN 10  =  A3;
+PIN 11  =  A4;
+PIN 13  =  A15;
+
+
+/* OUTPUT PINS */
+
+PIN 14  =  SCLK;
+PIN 15  =  !OEPORT;
+PIN 16  =  !WERAM;
+PIN 17  =  !OERAM;
+PIN 18  =  SCK0;
+PIN 20  =  !SS0;
+PIN 21  =  SCK1;
+PIN 22  =  !SS1;
+PIN 23  =  CTRLCLKOUT;
+
+
+/* CLOCKS */
+
+SPECIALCODE = !A3 & !A2;
+CTRLCLKOUT = OE & WE & !SPECIALCODE;
+DEVCLKOUT = OE & WE & SPECIALCODE;
+
+/* SPI STATE */
+
+SCLK.D = A0;
+SCLK.AR = 'b'0;
+SCLK.SP = 'b'0;
+
+SS0.D = !A2;
+SS0.AR = 'b'0;
+SS0.SP = 'b'0;
+
+SCK0.D = (A0 & !A3) $ !A4;
+SCK0.AR = 'b'0;
+SCK0.SP = 'b'0;
+
+SS1.D = !A3;
+SS1.AR = 'b'0;
+SS1.SP = 'b'0;
+
+SCK1.D = (A0 & !A2) $ !A4;
+SCK1.AR = 'b'0;
+SCK1.SP = 'b'0;
+
+/* RAM AND PORT CONTROL */
+
+PORTSEL = PORTADDRI & !A4 & !A3 & !A2 & !A1 & !A0 & SCLK;     /* 0x00 and 0x80 */
+OEPORT = OE & PORTSEL; /* Both 0x00 and 0x80. Use A7 to disambiguate if needed */
+OERAM = OE & !PORTSEL;
+WERAM = WE & !OE;
+

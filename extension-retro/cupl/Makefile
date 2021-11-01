@@ -1,9 +1,9 @@
 
-all: GAL1.jed GAL2.jed broom
+all: GAL1_v7.jed GAL2_v7.jed broom
 
-GAL1.jed: GAL1.pld
+GAL1_v7.jed: GAL1_v7.pld
 
-GAL2.jed: GAL2.pld
+GAL2_v7.jed: GAL2_v7.pld
 
 %.jed: %.pld
 	@echo "WinCUPL is not scriptable."
