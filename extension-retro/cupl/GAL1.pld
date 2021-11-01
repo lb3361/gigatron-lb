@@ -62,8 +62,8 @@ A7TO0 = GTG0 # A5 # A6 # A7;
 A14TO8 = A8 # A9 # A10 # A14 # GTG1;
 PORTS = !A15 & !A14TO8 & !A7TO0; /* Address 0x0000 only when SCLK==1 */ 
 
-OEPORT = OE & !WE & PORTS;
-OERAM = OE & !WE & !PORTS;
+OEPORT = OE & PORTS;
+OERAM = OE & !PORTS;
 WERAM = WE & !OE;
 
 /* ZPBANK=0: [8000-ffff]

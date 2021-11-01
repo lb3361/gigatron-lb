@@ -1,7 +1,7 @@
 
 CUPL(WM)        5.0a  Serial# 60008009
 Device          g22v10  Library DLIB-h-40-1
-Created         Fri Mar 05 21:38:57 2021
+Created         Mon Nov 01 15:41:38 2021
 Name            GAL2 
 Partno          
 Revision        01 
@@ -63,4 +63,4 @@ Location
 *L05792 00000000000000001010101111000011
 *L05824 11010000000000000000000000000000
 *C91D1
-*BD63
+*BD77
