@@ -74,7 +74,7 @@ SS0.D = !A2;
 SS0.AR = 'b'0;
 SS0.SP = 'b'0;
 
-SCK0.D = (A0 & !A3) $ !A4;
+SCK0.D = (A0 & A3) $ !A4;
 SCK0.AR = 'b'0;
 SCK0.SP = 'b'0;
 
@@ -82,14 +82,14 @@ SS1.D = !A3;
 SS1.AR = 'b'0;
 SS1.SP = 'b'0;
 
-SCK1.D = (A0 & !A2) $ !A4;
+SCK1.D = (A0 & A2) $ !A4;
 SCK1.AR = 'b'0;
 SCK1.SP = 'b'0;
 
 /* RAM AND PORT CONTROL */
 
-PORTSEL = PORTADDRI & !A4 & !A3 & !A2 & !A1 & !A0 & SCLK;     /* 0x00 and 0x80 */
-OEPORT = OE & PORTSEL; /* Both 0x00 and 0x80. Use A7 to disambiguate if needed */
+PORTSEL = PORTADDRI & !A4 & !A3 & !A2 & !A1 & !A0 & SCLK;
+OEPORT = OE & PORTSEL;
 OERAM = OE & !PORTSEL;
 WERAM = WE & !OE;
 
