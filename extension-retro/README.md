@@ -9,6 +9,9 @@ This version of the Gigatron RAM & IO expansion implements the CTRL extension se
 
 ![PCB image](images/Render.jpg)
 
+![PCB traces](images/PCB2layers.png)
+
+
 # Gigatron RAM and IO expansion (v6)
 
 
