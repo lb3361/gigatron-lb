@@ -1,12 +1,12 @@
 ID,Name,Designator,Footprint,Quantity,Description
 1,100nF,"C1,C2,C3",CAP-TH_L7.5-W2.5-P5.08-D1.0,3,Capacitor ceramic 100nF.  Pitch 5.08
-2,1N4007,"D1,D2",DO-41,3,"Generic diode, DO-41 package"
-3,HDR-TH-6P-P2.54-H-F,"H1,H2",HDR-TH-6P-P2.54-H-F,1,Pin header 1x6 female horizontal 
+2,1N4007,"D1,D2",DO-41,2,"Generic diode, DO-41 package"
+3,HDR-TH-6P-P2.54-H-F,"H1,H2",HDR-TH-6P-P2.54-H-F,2,Pin header 1x6 female horizontal 
 4,HDR-TH-13P-P2.54-V-F,H3,HDR-TH-13P-P2.54-V-F,1,Pin header 1x13 female vertical
 4,HDR-TH-7P-P2.54-V-F,H4,HDR-TH-7P-P2.54-V-F,1,Pin header 1x7 female vertical
 5,PINHD-1X1,JP3,1X01,1,Pin header 1x1 male horizontal
 6,PINHD-1X14,"JP2,JP4",1X14-CB,2,"Pin header 1x14 male, suitable to insert into memory socket on motherboard (thin pins)"
-7,3.3k,"R1,R2",R_AXIAL-0.4,1,Resistor 0.4mm 3.3kOhms
+7,3.3k,"R1,R2",R_AXIAL-0.4,2,Resistor 0.4mm 3.3kOhms
 8,4.7k,R3,R_AXIAL-0.4,1,Resistor 0.4mm 4.7kOhms
 9,SRAM 628128,U1,DIP-32_L40.9-W17.8-P2.54-LS17.8-BL,1,"SRAM 128Kx8 with 62128 pinouts, e.g. AS6C1008, 55ns or better"
 10,GAL1,U2,DIP24,1,Microchip ATF22V10C-10PU
