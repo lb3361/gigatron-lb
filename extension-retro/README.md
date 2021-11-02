@@ -1,7 +1,11 @@
 
 
 
-UPDATE THIS TEST FOR V7
+# Gigatron RAM and IO expansion (v7)
+
+UPDATE THIS README FILE FOR V7
+
+This version of the Gigatron RAM & IO expansion implements the CTRL extension semantics. It has two SPI headers suitable for two SD cards and two additional headers that could be used to add features using the special CTRL codes. The 13 pins header exposes A8-A15, one clock signal, and two address decode signals. This is good enough for creating 8 or 16 general purposes I/O with one or two 74HCT377. The second one provides two general purpose inputs (bits 4 and 5 of the 74hct244) and signals to add more SPI devices to the bus. 
 
 ![PCB image](images/Render.jpg)
 
