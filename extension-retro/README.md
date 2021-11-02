@@ -1,4 +1,8 @@
 
+
+
+UPDATE THIS TEST FOR V7
+
 ![PCB image](images/Render.jpg)
 
 # Gigatron RAM and IO expansion (v6)

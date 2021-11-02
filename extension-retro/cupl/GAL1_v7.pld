@@ -10,18 +10,18 @@ Device   g22v10;
 
 /****************************************************************
                                ______________
-                              |     GAL1     |
+                              |   GAL1_v7    |
                   CTRLCLK x---|1           24|---x Vcc
                 PORTADDRI x---|2           23|---x CTRLCLKOUT
-                      !WE x---|3           22|---x DEVCLKOUT
-                      !OE x---|4           21|---x !SS1
-                          x---|5           20|---x SCK1
-                          x---|6           19|---x !SS0
-                       A0 x---|7           18|---x SCK0
-                       A1 x---|8           17|---x !OERAM
-                       A2 x---|9           16|---x !WERAM
-                       A3 x---|10          15|---x !OEPORT
-                       A4 x---|11          14|---x SCLK
+                          x---|3           22|---x SCK1
+                          x---|4           21|---x !SS1
+                       A4 x---|5           20|---x SCK0
+                       A3 x---|6           19|---x
+                       A2 x---|7           18|---x !SS0
+                       A1 x---|8           17|---x !WERAM
+                       A0 x---|9           16|---x !OERAM
+                      !OE x---|10          15|---x !OEPORT
+                      !WE x---|11          14|---x SCLK
                       GND x---|12          13|---x A15
                               |______________|
 
@@ -32,15 +32,15 @@ Device   g22v10;
 
 PIN 1   =  CTRLCLK;
 PIN 2   =  PORTADDRI;
-PIN 3   =  !WE;
-PIN 4   =  !OE;
-/* PIN 5 */
-/* PIN 6 */
-PIN 7   =  A0;
+/* PIN 3 */
+/* PIN 4 */
+PIN 5   =  A4;
+PIN 6   =  A3;
+PIN 7   =  A2;
 PIN 8   =  A1;
-PIN 9   =  A2;
-PIN 10  =  A3;
-PIN 11  =  A4;
+PIN 9   =  A0;
+PIN 10  =  !OE;
+PIN 11  =  !WE;
 PIN 13  =  A15;
 
 
@@ -48,12 +48,12 @@ PIN 13  =  A15;
 
 PIN 14  =  SCLK;
 PIN 15  =  !OEPORT;
-PIN 16  =  !WERAM;
-PIN 17  =  !OERAM;
-PIN 18  =  SCK0;
-PIN 20  =  !SS0;
-PIN 21  =  SCK1;
-PIN 22  =  !SS1;
+PIN 16  =  !OERAM;
+PIN 17  =  !WERAM;
+PIN 18  =  !SS0;
+PIN 20  =  SCK0;
+PIN 21  =  !SS1;
+PIN 22  =  SCK1;
 PIN 23  =  CTRLCLKOUT;
 
 

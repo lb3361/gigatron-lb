@@ -11,19 +11,20 @@ Device   g22v10;
 /****************************************************************
 
 This is the address decoding GAL
+
                                ______________
-                              |     GAL2     |
+                              |   GAL2_v7    |
                   CTRLCLK x---|1           24|---x Vcc
-                      A14 x---|2           23|---x PORTADDRI
-                      A13 x---|3           22|---x B0
-                      A12 x---|4           21|---x B1
-                      A11 x---|5           20|---x A15RAM
-                      A10 x---|6           19|---x A16RAM
-                       A9 x---|7           18|---x !ZPBANK
-                       A8 x---|8           17|---x !DEVADDR2
-                       A7 x---|9           16|---x !DEVADDR1
-                       A6 x---|10          15|---x !DEVADDR0
-                       A5 x---|11          14|---x A4
+                       A5 x---|2           23|---x !PORTADDRI
+                       A6 x---|3           22|---x MOSI
+                       A7 x---|4           21|---x B0
+                      A13 x---|5           20|---x B1
+                       A9 x---|6           19|---x A16RAM
+                       A8 x---|7           18|---x A15RAM
+                      A11 x---|8           17|---x !ZPBANK
+                      A10 x---|9           16|---x !DEVADDR1
+                      A12 x---|10          15|---x !DEVADDR0
+                      A14 x---|11          14|---x A4
                       GND x---|12          13|---x A15
                               |______________|
 
@@ -33,16 +34,16 @@ This is the address decoding GAL
 /* INPUT PINS */
 
 PIN 1   =  CTRLCLK;
-PIN 2   =  A14;
-PIN 3   =  A13;
-PIN 4   =  A12;
-PIN 5   =  A11;
-PIN 6   =  A10;
-PIN 7   =  A9;
-PIN 8   =  A8;
-PIN 9   =  A7;
-PIN 10  =  A6;
-PIN 11  =  A5;
+PIN 2   =  A5;
+PIN 3   =  A6;
+PIN 4   =  A7;
+PIN 5   =  A13;
+PIN 6   =  A9;
+PIN 7   =  A8;
+PIN 8   =  A11;
+PIN 9   =  A10;
+PIN 10  =  A12;
+PIN 11  =  A14;
 PIN 13  =  A15;
 PIN 14  =  A4;
 
@@ -50,12 +51,12 @@ PIN 14  =  A4;
 
 PIN 15  =  !DEVADDR0;
 PIN 16 =   !DEVADDR1;
-PIN 17 =   !DEVADDR2;
-PIN 18  =  !ZPBANK;
+PIN 17 =   !ZPBANK;
+PIN 18  =  A15RAM;
 PIN 19  =  A16RAM;
-PIN 20  =  A15RAM;
-PIN 21  =  B1;
-PIN 22  =  B0;
+PIN 20  =  B1;
+PIN 21  =  B0;
+PIN 22  =  MOSI;
 PIN 23  =  !PORTADDRI; /* incomplete decoding */
 
 /* BANKING STATE */
@@ -72,6 +73,12 @@ B1.D = A7;
 B1.AR = 'b'0;
 B1.SP = 'b'0;
 
+/* MOSI */
+
+MOSI.D = A15;
+MOSI.AR = 'b'0;
+MOSI.SP = 'b'0;
+
 /* BANKING EQUATIONS
    Map the following address range to bank B0/B1
     ZPBANK=0: [8000-ffff]
@@ -86,6 +93,5 @@ A16RAM = BANKENABLE & B1;
 
 DEVADDR0 = !A7 & !A6 & !A5 & !A4;
 DEVADDR1 = !A7 & !A6 & !A5 &  A4;
-DEVADDR2 = !A7 & !A6 &  A5 & !A4;
-PORTADDRI = !A15 & !A14 & !A13 & !A12 & !A11 & !A10 & !A9 & !A8 & !A6 & !A5 & !A4;
+PORTADDRI = !A15 & !A14 & !A13 & !A12 & !A11 & !A10 & !A9 & !A8 & !A7 & !A6 & !A5 & !A4;
 
