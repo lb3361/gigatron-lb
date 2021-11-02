@@ -12,11 +12,11 @@ Device   g22v10;
                                ______________
                               |   GAL1_v7    |
                   CTRLCLK x---|1           24|---x Vcc
-                PORTADDRI x---|2           23|---x CTRLCLKOUT
-                          x---|3           22|---x SCK1
-                          x---|4           21|---x !SS1
-                       A4 x---|5           20|---x SCK0
-                       A3 x---|6           19|---x
+               !PORTADDRI x---|2           23|---x CTRLCLKOUT
+                          x---|3           22|---x DEVCLKOUT
+                          x---|4           21|---x SCK1
+                       A4 x---|5           20|---x !SS1
+                       A3 x---|6           19|---x SCK0
                        A2 x---|7           18|---x !SS0
                        A1 x---|8           17|---x !WERAM
                        A0 x---|9           16|---x !OERAM
@@ -31,7 +31,7 @@ Device   g22v10;
 /* INPUT PINS */
 
 PIN 1   =  CTRLCLK;
-PIN 2   =  PORTADDRI;
+PIN 2   =  !PORTADDRI;
 /* PIN 3 */
 /* PIN 4 */
 PIN 5   =  A4;
@@ -51,9 +51,10 @@ PIN 15  =  !OEPORT;
 PIN 16  =  !OERAM;
 PIN 17  =  !WERAM;
 PIN 18  =  !SS0;
-PIN 20  =  SCK0;
-PIN 21  =  !SS1;
-PIN 22  =  SCK1;
+PIN 19  =  SCK0;
+PIN 20  =  !SS1;
+PIN 21  =  SCK1;
+PIN 22  =  DEVCLKOUT;
 PIN 23  =  CTRLCLKOUT;
 
 
