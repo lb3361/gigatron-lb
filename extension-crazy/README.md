@@ -3,7 +3,7 @@
 The goal of this expansion board is to provide an easy way to experiment with crazy expansion ideas for the Gigatron.
 This is work in progress. In fact this project may never go forward because it looks like an infinite time sink.
 
-The core of the board is a ATF1508AS CPLD with a 100 pins package and a fast CY7C1049G 512KB stattic ram.
+The core of the board is a ATF1508AS CPLD with a 100 pins package mediating access to a fast CY7C1049G 512KB static ram.
 The CPLD essentially interposes itself between the SRAM socket and the actual memory. This SRAM is so
 fast that the CPLD can perform multiple read and writes during each Gigatron cycle. One of them
 can be used to serve the Gigatron memory requests, the other ones can be used for many purposes
