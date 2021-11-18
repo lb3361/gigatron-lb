@@ -1,7 +1,7 @@
 # Crazy expansion board for the Gigatron
 
 The goal of this expansion board is to provide an easy way to experiment with crazy expansion ideas for the Gigatron.
-This is work in progress. And this project may never be finished because it looks like an infinite time sink.
+This is work in progress. In fact this project may never go forward because it looks like an infinite time sink.
 
 The core of the board is a ATF1508AS CPLD with a 100 pins package and a fast CY7C1049G 512KB stattic ram.
 The CPLD essentially interposes itself between the SRAM socket and the actual memory. This SRAM is so
