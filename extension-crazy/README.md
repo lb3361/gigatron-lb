@@ -1,7 +1,7 @@
 # Crazy expansion board for the Gigatron
 
 The goal of this expansion board is to provide an easy way to experiment with crazy expansion ideas for the Gigatron.
-This is work in progress. And this is work that may never be finished.
+This is work in progress. And this project may never be finished because it looks like an infinite time sink.
 
 The core of the board is a ATF1508AS CPLD with a 100 pins package and a fast CY7C1049G 512KB stattic ram.
 The CPLD essentially interposes itself between the SRAM socket and the actual memory. This SRAM is so
@@ -33,8 +33,9 @@ to split the Gigatron cycle into smaller parts and drive the SRAM at a faster ra
 The last chip is a 74HCT244 buffer that sits between the 8 low bits `A0..7` of the Gigatron address bus and the `RA0..7` wires
 that connect the CPLD to the 8 low bits of the SRAM address bus. This was necessary the CPLD did not have enough
 remaining I/O pins to receive the full Gigatron address bus on separate lines. When the 74HCT244 outputs are active,
-the Gigatron A0..7 go into both the SRAM address bus and the CPLD ports RA0..7. When the 74HCT244 outputs are tri-stated,
-the CPLD has exclusive control of the SRAM address bus.
+the Gigatron `A0..7` go into both the SRAM address bus and the CPLD ports `RA0..7`. When the 74HCT244 outputs are tri-stated,
+the CPLD has exclusive control of the SRAM address bus. Of course one has to be careful to tri-state these CPLD ports
+and to use them as inputs when the 74HCT244 has active outputs.
 
 The board layout places all the SMT components out-of-sign on the board underside. The visible side contains two
 connectors for SPI devices using the SD Card breakout pinout, a JTAG connector to program the CPLD, 
@@ -45,3 +46,5 @@ and the CPLD can be safely reprogrammed.
 ![Front view](images/front.jpg)
 
 ![Back view](images/back.jpg)
+
+![Schematics](Schematics.pdf)
