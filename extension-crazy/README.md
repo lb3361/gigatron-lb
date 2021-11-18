@@ -36,14 +36,18 @@ the Gigatron `A0..7` go into both the SRAM address bus and the CPLD ports `RA0..
 the CPLD has exclusive control of the SRAM address bus. Of course one has to be careful to tri-state these CPLD ports
 and to use them as inputs when the 74HCT244 has active outputs.
 
+![Schematics](Schematics.pdf)
+
+
 The board layout places all the SMT components out-of-sign on the board underside. The visible side contains two
 connectors for SPI devices using the SD Card breakout pinout, a JTAG connector to program the CPLD, 
-an expansion connector with 28 pins, and a button that controls a CPLD input that is expected to tri-state
+an expansion connector with 28 pins, a big capacitor, and a button that controls a CPLD input expected to tri-state
 the CPLD ports connected to the Gigatron BUS. When this is the case, the Gigatron reset routine enters an infinite loop
-and the CPLD can be safely reprogrammed.
+and the CPLD can be safely reprogrammed. 
+
+![Layout](images/layout.png)
 
 ![Front view](images/front.jpg)
 
 ![Back view](images/back.jpg)
 
-![Schematics](Schematics.pdf)
