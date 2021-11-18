@@ -3,10 +3,6 @@
 The goal of this expansion board is to provide an easy way to experiment with crazy expansion ideas for the Gigatron.
 This is work in progress. And this is work that may never be finished.
 
-
-The board attaches to the Gigatron like boards that combine the RAM & IO expansion with a video repeater. 
-It attaches to both the SRAM socket and the OUT register socket, and also needs a wire to the A15 pin.
-
 The core of the board is a ATF1508AS CPLD with a 100 pins package and a fast CY7C1049G 512KB stattic ram.
 The CPLD essentially interposes itself between the SRAM socket and the actual memory. This SRAM is so
 fast that the CPLD can perform multiple read and writes during each Gigatron cycle. One of them
@@ -26,4 +22,26 @@ that can be programmed in Verilog using the free Intel Quartus tool (version 13)
 the moderately priced Atmel ATDH1150 USB download cable. 
 See http://forum.6502.org/viewtopic.php?f=10&t=5948 for more pointers.
 
+The following diagram gives an overview of the board.
+
 ![Board diagram](images/diag.png)
+
+In addition to the CPLD and the SRAM, there is a CY2302 zero delay PLL that takes the 6.125MHz Gigatron clock
+and generates two additional clocks at 2x and 4x the frequency with aligned phases. These clocks can be used
+to split the Gigatron cycle into smaller parts and drive the SRAM at a faster rate.
+
+The last chip is a 74HCT244 buffer that sits between the 8 low bits `A0..7` of the Gigatron address bus and the `RA0..7` wires
+that connect the CPLD to the 8 low bits of the SRAM address bus. This was necessary the CPLD did not have enough
+remaining I/O pins to receive the full Gigatron address bus on separate lines. When the 74HCT244 outputs are active,
+the Gigatron A0..7 go into both the SRAM address bus and the CPLD ports RA0..7. When the 74HCT244 outputs are tri-stated,
+the CPLD has exclusive control of the SRAM address bus.
+
+The board layout places all the SMT components out-of-sign on the board underside. The visible side contains two
+connectors for SPI devices using the SD Card breakout pinout, a JTAG connector to program the CPLD, 
+an expansion connector with 28 pins, and a button that controls a CPLD input that is expected to tri-state
+the CPLD ports connected to the Gigatron BUS. When this is the case, the Gigatron reset routine enters an infinite loop
+and the CPLD can be safely reprogrammed.
+
+![Front view](images/front.jpg)
+
+![Back view](images/back.jpg)
