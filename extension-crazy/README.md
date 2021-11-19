@@ -39,7 +39,7 @@ and to use them as inputs when the 74HCT244 has active outputs.
 ![Schematics](Schematics.pdf)
 
 
-The board layout places all the SMT components out-of-sign on the board underside. The visible side contains two
+The board layout places all the SMT components out-of-sight on the back side od the board. The visible side contains two
 connectors for SPI devices using the SD Card breakout pinout, a JTAG connector to program the CPLD, 
 an expansion connector with 28 pins, a big capacitor, and a button that controls a CPLD input expected to tri-state
 the CPLD ports connected to the Gigatron BUS. When this is the case, the Gigatron reset routine enters an infinite loop
