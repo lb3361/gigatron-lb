@@ -11,7 +11,7 @@ possibly with a higher resolution than the normal Gigatron.
 Of course all depends on the CPLD program that one loads on this board. The idea is to start with
 a simple program that replicates the functionality of a normal RAM & IO expansion board, then
 to add the possibility to bank all 512KB of memory --Hello Gigatron 512K,--, then to recreate
-the functionality of a video repeater, then to authorize higher resolutions, etc...
+the functionality of a video repeater, then maybe to authorize higher resolutions, etc...
 
 The ATF1508 CPLD is not very powerful by today's standards. It can be compared to having
 a dozen GAL chips of the kind I use for the RAM & IO expansion board. Its main advantage
