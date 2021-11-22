@@ -88,6 +88,7 @@ Here are two examples
 * Output bits implemented in this way can be used for various purposes, including as chip select for additional SPI ports. The remaining SPI signals can be found on header H4. Note that such SPI device must be careful to never drive the common MISO line at the same time.  
 * A single TLC7524C can provide a 8 bit analog signal: connect pins `DB[0..7]` to `A[8..15]`, pin `/CS` to `/AUXDEV1`, and pin `/WR` to `/AUXCTRL`. For instance, using the somehow counter-intuitive "voltage mode" of the chip, using instruction `ctrl(0xYY10)` will set the voltage of pin `REF` to a value that interpolates the voltages provided on pins `OUT0` and `OUT1`.  
 
+Note that the extended CTRL code specification also defines codes with both bits 0 and 1 set as a reset signal. This is not implemented or decoded by this board.
 
 
 
