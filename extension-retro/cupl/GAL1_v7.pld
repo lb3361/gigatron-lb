@@ -1,0 +1,95 @@
+Name     GAL1_v7;
+PartNo   ;
+Date     11/01/2021;
+Revision 01;
+Designer lb3361;
+Company  ;
+Assembly ;
+Location ;
+Device   g22v10;
+
+/****************************************************************
+                               ______________
+                              |   GAL1_v7    |
+                  CTRLCLK x---|1           24|---x Vcc
+               !PORTADDRI x---|2           23|---x !STDCTRL
+                    MISO1 x---|3           22|---x !AUXCTRL
+                    MISO0 x---|4           21|---x SCK
+                       A4 x---|5           20|---x !SS1
+                       A3 x---|6           19|---x !SS0
+                       A2 x---|7           18|---x PORT0
+                       A1 x---|8           17|---x !WERAM
+                       A0 x---|9           16|---x !OERAM
+                      !OE x---|10          15|---x !OEPORT
+                      !WE x---|11          14|---x SCLK
+                      GND x---|12          13|---x MISOX
+                              |______________|
+
+*****************************************************************/
+
+
+/* INPUT PINS */
+
+PIN 1   =  CTRLCLK;
+PIN 2   =  !PORTADDRI;
+PIN 3   =  MISO1;
+PIN 4   =  MISO0;
+PIN 5   =  A4;
+PIN 6   =  A3;
+PIN 7   =  A2;
+PIN 8   =  A1;
+PIN 9   =  A0;
+PIN 10  =  !OE;
+PIN 11  =  !WE;
+PIN 13  =  MISOX;
+
+
+/* OUTPUT PINS */
+
+PIN 14  =  SCLK;
+PIN 15  =  !OEPORT;
+PIN 16  =  !OERAM;
+PIN 17  =  !WERAM;
+PIN 18  =  PORT0;
+PIN 19  =  !SS0;
+PIN 20  =  !SS1;
+PIN 21  =  SCK;
+PIN 22  =  !AUXCTRL;
+PIN 23  =  !STDCTRL;
+
+
+/* CLOCKS */
+
+SPECIALCODE = !A3 & !A2;
+STDCTRL = OE & WE & !SPECIALCODE;
+AUXCTRL = OE & WE & SPECIALCODE;
+
+/* SPI STATE */
+
+SCLK.D = A0;
+SCLK.AR = 'b'0;
+SCLK.SP = 'b'0;
+
+SS0.D = !A2;
+SS0.AR = 'b'0;
+SS0.SP = 'b'0;
+
+SS1.D = !A3;
+SS1.AR = 'b'0;
+SS1.SP = 'b'0;
+
+SCK.D = A0 $ !A4;
+SCK.AR = 'b'0;
+SCK.SP = 'b'0;
+
+/* MISO SOUP */
+
+PORT0 = (MISO0 & SS0) # (MISO1 & SS1) # (MISOX & !SS0 & !SS1);
+
+/* RAM AND PORT CONTROL */
+
+PORTSEL = PORTADDRI & !A4 & !A3 & !A2 & !A1 & !A0 & SCLK;
+OEPORT = OE & PORTSEL;
+OERAM = OE & !PORTSEL;
+WERAM = WE & !OE;
+

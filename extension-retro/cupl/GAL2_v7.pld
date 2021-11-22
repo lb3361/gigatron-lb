@@ -1,0 +1,97 @@
+Name     GAL2_v7;
+PartNo   ;
+Date     11/01/2021;
+Revision 01;
+Designer lb3361;
+Company  ;
+Assembly ;
+Location ;
+Device   g22v10;
+
+/****************************************************************
+
+This is the address decoding GAL
+
+                               ______________
+                              |   GAL2_v7    |
+                  CTRLCLK x---|1           24|---x Vcc
+                       A5 x---|2           23|---x !PORTADDRI
+                       A6 x---|3           22|---x MOSI
+                       A7 x---|4           21|---x B0
+                      A13 x---|5           20|---x B1
+                       A9 x---|6           19|---x A16RAM
+                       A8 x---|7           18|---x A15RAM
+                      A11 x---|8           17|---x !ZPBANK
+                      A10 x---|9           16|---x !AUXDEV0
+                      A12 x---|10          15|---x !AUXDEV1
+                      A14 x---|11          14|---x A4
+                      GND x---|12          13|---x A15
+                              |______________|
+
+*****************************************************************/
+
+
+/* INPUT PINS */
+
+PIN 1   =  CTRLCLK;
+PIN 2   =  A5;
+PIN 3   =  A6;
+PIN 4   =  A7;
+PIN 5   =  A13;
+PIN 6   =  A9;
+PIN 7   =  A8;
+PIN 8   =  A11;
+PIN 9   =  A10;
+PIN 10  =  A12;
+PIN 11  =  A14;
+PIN 13  =  A15;
+PIN 14  =  A4;
+
+/* OUTPUT PINS */
+
+PIN 15  =  !AUXDEV1;
+PIN 16 =   !AUXDEV0;
+PIN 17 =   !ZPBANK;
+PIN 18  =  A15RAM;
+PIN 19  =  A16RAM;
+PIN 20  =  B1;
+PIN 21  =  B0;
+PIN 22  =  MOSI;
+PIN 23  =  !PORTADDRI; /* incomplete decoding */
+
+/* BANKING STATE */
+
+ZPBANK.D = !A5;
+ZPBANK.AR = 'b'0;
+ZPBANK.SP = 'b'0;
+
+B0.D = A6;
+B0.AR = 'b'0;
+B0.SP = 'b'0;
+
+B1.D = A7;
+B1.AR = 'b'0;
+B1.SP = 'b'0;
+
+/* MOSI */
+
+MOSI.D = A15;
+MOSI.AR = 'b'0;
+MOSI.SP = 'b'0;
+
+/* BANKING EQUATIONS
+   Map the following address range to bank B0/B1
+    ZPBANK=0: [8000-ffff]
+    ZPBANK=1: [8000-ffff]+[0080-00ff]-[8080-80ff] */
+
+ZPBANKADDR = !A14 & !A13 & !A12 & !A11 & !A10 & !A9 & !A8 & A7;
+BANKENABLE = A15 $ (ZPBANK & ZPBANKADDR);
+A15RAM = BANKENABLE & B0;
+A16RAM = BANKENABLE & B1;
+
+/* ADDRESS DECODING */
+
+AUXDEV0 = !A7 & !A6 & !A5 & !A4;
+AUXDEV1 = !A7 & !A6 & !A5 &  A4;
+PORTADDRI = !A15 & !A14 & !A13 & !A12 & !A11 & !A10 & !A9 & !A8 & !A7 & !A6 & !A5 & !A4;
+
