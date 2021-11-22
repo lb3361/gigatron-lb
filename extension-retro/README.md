@@ -3,7 +3,7 @@
 
 # Gigatron RAM and IO expansion (v7, "dual drive")
 
-This is a 128KB RAM and IO extension that is compatible with [Marcel's design](https://forum.gigatron.io/viewtopic.php?f=4&t=64&start=50#p804) to require no change to the Gigatron software. It also provides a number of useful additional features:
+This is a 128KB RAM and IO extension for the Gigatron, compatible enopugh with [Marcel's design](https://forum.gigatron.io/viewtopic.php?f=4&t=64&start=50#p804) to require no change to the Gigatron software. It also provides a number of useful additional features:
 
 * Two SPI headers simultaneously usable with [most cheap SD Card breakouts with 5v level shift](https://www.amazon.com/HiLetgo-Adater-Interface-Conversion-Arduino/dp/B07BJ2P6X6), working around the poor SPI compliance of both SD Cards and breakouts. Signals to create more SPI ports are provided on header H4 (7 pins).
 * Improved support for [SPI modes](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface#Clock_polarity_and_phase) (CPOL, CPHA). Modes 0 and 2 are supported with the existing firmware. Modes 1 and 3 can be implemented with a new native routine.
