@@ -22,8 +22,8 @@ This is the address decoding GAL
                        A9 x---|6           19|---x A16RAM
                        A8 x---|7           18|---x A15RAM
                       A11 x---|8           17|---x !ZPBANK
-                      A10 x---|9           16|---x !DEVADDR0
-                      A12 x---|10          15|---x !DEVADDR1
+                      A10 x---|9           16|---x !AUXDEV0
+                      A12 x---|10          15|---x !AUXDEV1
                       A14 x---|11          14|---x A4
                       GND x---|12          13|---x A15
                               |______________|
@@ -49,8 +49,8 @@ PIN 14  =  A4;
 
 /* OUTPUT PINS */
 
-PIN 15  =  !DEVADDR1;
-PIN 16 =   !DEVADDR0;
+PIN 15  =  !AUXDEV1;
+PIN 16 =   !AUXDEV0;
 PIN 17 =   !ZPBANK;
 PIN 18  =  A15RAM;
 PIN 19  =  A16RAM;
@@ -91,7 +91,7 @@ A16RAM = BANKENABLE & B1;
 
 /* ADDRESS DECODING */
 
-DEVADDR0 = !A7 & !A6 & !A5 & !A4;
-DEVADDR1 = !A7 & !A6 & !A5 &  A4;
+AUXDEV0 = !A7 & !A6 & !A5 & !A4;
+AUXDEV1 = !A7 & !A6 & !A5 &  A4;
 PORTADDRI = !A15 & !A14 & !A13 & !A12 & !A11 & !A10 & !A9 & !A8 & !A7 & !A6 & !A5 & !A4;
 

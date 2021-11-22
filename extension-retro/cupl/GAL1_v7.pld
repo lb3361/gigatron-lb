@@ -12,8 +12,8 @@ Device   g22v10;
                                ______________
                               |   GAL1_v7    |
                   CTRLCLK x---|1           24|---x Vcc
-               !PORTADDRI x---|2           23|---x CTRLCLKOUT
-                    MISO1 x---|3           22|---x DEVCLKOUT
+               !PORTADDRI x---|2           23|---x !STDCTRL
+                    MISO1 x---|3           22|---x !AUXCTRL
                     MISO0 x---|4           21|---x SCK
                        A4 x---|5           20|---x !SS1
                        A3 x---|6           19|---x !SS0
@@ -54,7 +54,7 @@ PIN 18  =  PORT0;
 PIN 19  =  !SS0;
 PIN 20  =  !SS1;
 PIN 21  =  SCK;
-PIN 22  =  !DEVCTRL;
+PIN 22  =  !AUXCTRL;
 PIN 23  =  !STDCTRL;
 
 
@@ -62,7 +62,7 @@ PIN 23  =  !STDCTRL;
 
 SPECIALCODE = !A3 & !A2;
 STDCTRL = OE & WE & !SPECIALCODE;
-DEVCTRL = OE & WE & SPECIALCODE;
+AUXCTRL = OE & WE & SPECIALCODE;
 
 /* SPI STATE */
 
