@@ -91,4 +91,17 @@ Here are two examples
 Note that the extended CTRL code specification also defines codes with both bits 0 and 1 set as a reset signal. This is not implemented or decoded by this board.
 
 
+# 2.4 - Detecting different boards
+
+Native code can distinguish the kind of memory extension by setting `SCLK` and checking the byte read at address zero:
+
+* Marcel's original expansion board design leaves bits 4 to 7 left floating. 
+* GAL-based boards only return input data when reading from address zero. For instance, reading from address 0x1f0 while SCLK is set should still return 0x59 because this is the opcode of the first instruction of the reset code.
+* Version 6 GAL-based boards set bits 4 to 7 to zero.
+* Version 7 GAL-based boards connect bits 6 and 7 to the banking bits of the CTRL word. Bits 4 and 5 are connected to pins INP0 and INP1 of header H4.
+
+Detecting the presence of an expansion board is best left to the `Reset.gcl` code because using the ctrl instruction when no board is present can write random data in the memory address corrresponding to the ctrl code. Since ROMv5a, the reset code sets the byte at adddress 0x1f8 to zero when no board is present. Otherwise the ROM keeps this byte equal to the low eight bits of the latest standard control code.
+
+
+
 
