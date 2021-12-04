@@ -72,7 +72,7 @@ module main(
    assign nADEV[1] = GA[7:4] == 4'b0000;
    
    /* Ctrl bits */
-   always @(negedge CLK)
+   always @(negedge CLKx2)
      if (!nSCTRL) 
        begin
           MOSI <= GA[15];
