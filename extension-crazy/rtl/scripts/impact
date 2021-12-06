@@ -1,0 +1,32 @@
+#!/bin/bash 
+
+PROG=impact
+
+if test x$ISEDIR == x ; then
+    if test -f /opt/Xilinx/14.7/ISE_DS/settings64.sh ; then
+        ISEDIR=/opt/Xilinx/14.7/ISE_DS
+    elif test -f ${HOME}/.wine/drive_c/Xilinx/14.7/ISE_DS/settings64.bat ; then
+        ISEDIR=C:/Xilinx/14.7/ISE_DS
+    fi
+fi
+
+if test x$ISEDIR == x ; then
+    echo 1>&2 "%0: Please set ISEDIR to run " `basename "$0"`
+fi
+    
+case "$ISEDIR"
+in
+    C:/*) # Using ISE for Windows through wine
+        exec wine "$ISEDIR/ISE/bin/nt64/$PROG.exe" "$@"
+        ;;
+    *)    # Using ISE for Linux
+        args=("$@")
+        set --
+        . ${ISEDIR}/settings64.sh >/dev/null
+        exec $PROG "${args[@]}"
+        ;;
+esac
+
+
+
+

@@ -1,11 +1,8 @@
 SHELL=/bin/sh
 
-#XTCLSH=wine 'C:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\xtclsh.exe'
-#IMPACT=wine 'C:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\impact.exe'
-
-XTCLSH=../rise xtclsh
-IMPACT=../rise impact
-
+RTL=..
+XTCLSH=${RTL}/scripts/xtclsh
+IMPACT=${RTL}/scripts/impact
 
 PROJECT=basic
 

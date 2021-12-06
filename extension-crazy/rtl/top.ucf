@@ -78,5 +78,10 @@ NET "RD<6>"  LOC = "P71"  ;
 NET "RD<7>"  LOC = "P70"  ; 
 NET "SCK"  LOC = "P30"  ; 
 NET "XIN<3>"  LOC = "P56"  ; 
-NET "XIN<4>"  LOC = "P55"  ; 
+NET "XIN<4>"  LOC = "P55"  ;
 
+#Created by Constraints Editor (xc95144xl-tq100-10) - 2021/12/04
+NET "CLK" TNM_NET = CLK;
+TIMESPEC TS_CLK = PERIOD "CLK" 160 ns HIGH 40%;
+NET "CLKx2" TNM_NET = CLKx2;
+TIMESPEC TS_CLKx2 = PERIOD "CLKx2" 80 ns HIGH 50%;
