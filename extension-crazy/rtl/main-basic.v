@@ -57,9 +57,8 @@ module main(
    assign RDOUT = GBUSIN;
    
    /* Gigatron bus out */
-   wire       addr0 = (GA == 16'h0000);   
-   wire       portenable = SCLK && addr0;
-   assign GBUSOUT = (portenable) ? { BANK, XIN, 3'b000, MISO } : RDIN;
+   wire       port0enable = SCLK && (GA == 16'h0000);
+   assign GBUSOUT = (port0enable) ? { BANK, XIN, 3'b000, MISO } : RDIN;
    
    /* Ram control */
    assign nROE = nGOE | portenable;
@@ -69,7 +68,7 @@ module main(
    assign nSCTRL = nGOE || nGWE || GA[3:2] == 2'b00;
    assign nACTRL = nGOE || nGWE || GA[3:2] != 2'b00;
    assign nADEV[0] = GA[7:4] == 4'b0000;
-   assign nADEV[1] = GA[7:4] == 4'b0000;
+   assign nADEV[1] = GA[7:4] == 4'b0001;
    
    /* Ctrl bits */
    always @(negedge CLKx2)
