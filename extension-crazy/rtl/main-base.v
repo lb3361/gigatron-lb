@@ -28,7 +28,8 @@ module main(
    reg               SCLK;
    reg               nZPBANK;
    reg [1:0]         BANK;
-   wire              nSCTRL;
+   reg [3:0]         BANK0R;
+   reg [3:0]         BANK0W;
    
    /* OUT Register (like a 74HC377) */
    always @(posedge CLK)
@@ -37,7 +38,7 @@ module main(
           OUTD <= ALU;
      end
 
-   /* IO25 used purely as input.
+   /* XIN used purely as input.
     * This could also be used to output 
     * a signal for debugging purposes */
    assign XIN = 2'bZ;
@@ -48,41 +49,58 @@ module main(
    assign nAE = 1'b0;
    
    /* Ram address bus */
-   wire zpswap = !nZPBANK && ( GA[14:7] == 8'b00000001 );
-   wire bankenable = GA[15] ^ zpswap;
-   wire [3:0] gabank = (bankenable) ? { 2'b00, BANK } : { 4'b0000 };
-   assign RA = { gabank, GA[14:0] };
+   wire zpbankenable = !nZPBANK && (GA[14:7] == 8'h01);
+   wire bankenable = GA[15] ^~ zpbankenable;
+   wire [3:0] ghiaddr = (!bankenable) ? { 4'b0000 } : 
+              (BANK != 2'b00) ? { 2'b00, BANK } : 
+              (nGOE) ? BANK0W : BANK0R; 
+   assign RA = { ghiaddr, GA[14:0] };
 
    /* Ram data bus */
    assign RDOUT = GBUSIN;
    
    /* Gigatron bus out */
-   wire       portenable;
-   assign portenable = SCLK && (GA == 16'h0000);
-   assign GBUSOUT = (portenable) ? { BANK, XIN, 3'b000, MISO } : RDIN;
+   wire portenable = SCLK && (GA == 16'h0000 || GA[15:4] == 12'h00F);
+   assign GBUSOUT = (!portenable) ? RDIN: (GA[3:0] == 4'hF) ? { BANK0W, BANK0R } : { BANK, XIN, 3'b000, MISO };
    
    /* Ram control */
    assign nROE = nGOE | portenable;
    assign nRWE = nGWE | !nGOE;
    
    /* Ctrl detection */
-   assign nSCTRL = nGOE || nGWE || GA[3:2] == 2'b00;
-   assign nACTRL = nGOE || nGWE || GA[3:2] != 2'b00;
+   wire nCTRL = nGOE || nGWE;
+   assign nACTRL = nCTRL || GA[3:2] != 2'b00;
    assign nADEV[0] = GA[7:4] == 4'b0000;
    assign nADEV[1] = GA[7:4] == 4'b0001;
    
    /* Ctrl bits */
    always @(negedge CLKx2)
-     if (!nSCTRL) 
-       begin
-          MOSI <= GA[15];
-          BANK <= GA[7:6];
-          nZPBANK <= GA[5];
-          nSS <= GA[3:2];
-          SCLK <= GA[0];
-          SCK <= GA[0] ^~ GA[4];
-       end
-   
+     begin
+        /* Reset */
+        if (!nCTRL && GA[1:0] == 2'b11)
+          begin
+             BANK0R <= 4'b0;
+             BANK0W <= 4'b0;
+          end
+        /* Normal ctrl code */         
+        if (!nCTRL && GA[3:2] != 2'b00)
+          begin
+             MOSI <= GA[15];
+             BANK <= GA[7:6];
+             nZPBANK <= GA[5];
+             nSS <= GA[3:2];
+             SCLK <= GA[0];
+             SCK <= GA[0] ^~ GA[4];
+          end
+        /* Extended ctrl code */
+        if (!nACTRL)
+          case (GA[7:4])      /* Device 0xf : set BANK0W/R */
+            4'hf : begin
+               BANK0R <= GA[11:8];
+               BANK0W <= GA[15:12];
+            end
+          endcase
+     end
 endmodule 
 
 /* Local Variables: */

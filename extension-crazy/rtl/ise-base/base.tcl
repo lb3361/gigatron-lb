@@ -277,8 +277,8 @@ proc set_process_props {} {
    project set "I/O Pin Termination" "Keeper" -process "Fit"
    project set "Create Programmable GND Pins on Unused I/O" "true" -process "Fit"
    project set "HDL Equations Style" "ABEL" -process "Fit"
+   project set "Implementation Template" "Optimize Density" -process "Fit"
 
-   # project set "Implementation Template" "Optimize Density|Speed" -process "Fit"
    # project set "Preserve Unused Inputs" "false" -process "Fit"
    # project set "Exhaustive Fit Mode" "false" -process "Fit"
    # project set "Other CPLD Fitter Command Line Options" "" -process "Fit"

@@ -12,6 +12,7 @@ ${PROJECT}.jed: ../top.v ../top.ucf ../main-${PROJECT}.v ${PROJECT}.tcl
 	@echo
 	@echo "========== generating " $@
 	@echo
+	@rm top.jed
 	${XTCLSH} ${PROJECT}.tcl rebuild_project
 	cp top.jed ${PROJECT}.jed
 
