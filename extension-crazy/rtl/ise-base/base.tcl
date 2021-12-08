@@ -35,7 +35,7 @@
 #        when this script was generated.
 # 
 
-set myScript "basic.tcl"
+set myScript "base.tcl"
 set myProject "top"
 
 # 
@@ -224,7 +224,7 @@ proc add_source_files {} {
 
    puts "$myScript: Adding sources to project..."
 
-   xfile add "../main-basic.v"
+   xfile add "../main-base.v"
    xfile add "../top.ucf"
    xfile add "../top.v"
 

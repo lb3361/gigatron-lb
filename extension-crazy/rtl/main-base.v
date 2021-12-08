@@ -57,8 +57,9 @@ module main(
    assign RDOUT = GBUSIN;
    
    /* Gigatron bus out */
-   wire       port0enable = SCLK && (GA == 16'h0000);
-   assign GBUSOUT = (port0enable) ? { BANK, XIN, 3'b000, MISO } : RDIN;
+   wire       portenable;
+   assign portenable = SCLK && (GA == 16'h0000);
+   assign GBUSOUT = (portenable) ? { BANK, XIN, 3'b000, MISO } : RDIN;
    
    /* Ram control */
    assign nROE = nGOE | portenable;

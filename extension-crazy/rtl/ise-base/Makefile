@@ -4,7 +4,7 @@ RTL=..
 XTCLSH=${RTL}/scripts/xtclsh
 IMPACT=${RTL}/scripts/impact
 
-PROJECT=basic
+PROJECT=base
 
 all: ${PROJECT}.jed ${PROJECT}.svf ${PROJECT}.xsvf
 
