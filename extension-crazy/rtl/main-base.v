@@ -60,13 +60,15 @@ module main(
    assign RDOUT = GBUSIN;
    
    /* Gigatron bus out */
-   wire portenable = SCLK && (GA == 16'h0000 || GA[15:4] == 12'h00F);
-   assign GBUSOUT = (!portenable) ? RDIN: (GA[3:0] == 4'hF) ? { BANK0W, BANK0R } : { BANK, XIN, 3'b000, MISO };
+   assign GBUSOUT = (!SCLK) ? RDIN :                                 // ram data
+                    (GA == 16'h0000) ? { BANK, XIN, 3'b000, MISO } : // spi data
+                    (GA == 16'h0080) ? { BANK0W, BANK0R} :           // bank data
+                    RDIN;                                            // ram data
    
    /* Ram control */
-   assign nROE = nGOE | portenable;
+   assign nROE = nGOE;
    assign nRWE = nGWE | !nGOE;
-   
+
    /* Ctrl detection */
    wire nCTRL = nGOE || nGWE;
    assign nACTRL = nCTRL || GA[3:2] != 2'b00;
