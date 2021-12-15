@@ -4,7 +4,7 @@ RTL=..
 XTCLSH=${RTL}/scripts/xtclsh
 IMPACT=${RTL}/scripts/impact
 
-PROJECT=base
+PROJECT=snoop
 
 all: ${PROJECT}.jed
 

@@ -1,30 +1,30 @@
 
 
 module main(
-    input            CLK,
-    input            CLKx2,
-    input            CLKx4,
-    output reg [7:0] OUTD,
-    input [7:0]      ALU,
-    input            nOL,
-    output reg       nAE,
-    output [18:0]    RA,
-    input [7:0]      RDIN,
-    output [7:0]     RDOUT,
-    output           nROE,
-    output           nRWE,
-    input [15:0]     GA,
-    input [7:0]      GBUSIN,
-    output reg [7:0] GBUSOUT,
-    input            nGOE,
-    input            nGWE,
-    output           nACTRL,
-    output [1:0]     nADEV,
-    output reg       SCK,
-    input            MISO,
-    output reg       MOSI,
-    output reg [1:0] nSS,
-    inout [4:3]      XIN );
+    input             CLK,
+    input             CLKx2,
+    input             CLKx4,
+    output reg [7:0]  OUTD,
+    input [7:0]       ALU,
+    input             nOL,
+    output reg        nAE,
+    output reg [18:0] RA,
+    input [7:0]       RDIN,
+    output [7:0]      RDOUT,
+    output            nROE,
+    output            nRWE,
+    input [15:0]      GA,
+    input [7:0]       GBUSIN,
+    output reg [7:0]  GBUSOUT,
+    input             nGOE,
+    input             nGWE,
+    output            nACTRL,
+    output [1:0]      nADEV,
+    output reg        SCK,
+    input             MISO,
+    output reg        MOSI,
+    output reg [1:0]  nSS,
+    inout [4:3]       XIN );
 
    reg               SCLK;      // Ctrlbit 0   (sclk on)
    reg               nZPBANK;   // Ctrlbit 5   (zero page banking)
@@ -33,7 +33,7 @@ module main(
    reg [3:0]         BANK0W;    // Actual bank to write to when BANK=0
 
    reg               VRUN;      // automatic video generation
-   reg [7:1]         VCNT;      // pixel counter
+   reg [7:0]         VCNT;      // pixel counter
    reg [15:0]        VADDR;     // video address
    reg               HDBL;      // double horizontal pixels
    reg               nBE;       // strobe for first video memory access
@@ -73,62 +73,79 @@ module main(
           end
      end
 
+   /* Predicates to identify the four downedge CLKx4 */
+   wire edge0 = CLKx2 && CLK;
+   wire edge1 = !CLKx2 && !nAE;
+   wire edge2 = CLKx2 && !CLK;
+   wire edge3 = !CLKx2 && nAE;
+   
    /* Gigatron data bus output */
-   wire portenable = SCLK && (GA == 16'h0000 || GA[15:4] == 12'h00F);
    always @*
      if (! nAE) // Transparently latched when nAE==0
-       GBUSOUT = (!SCLK) ? RDIN :                                 // ram data
-                 (GA == 16'h0000) ? { BANK, XIN, 3'b000, MISO } : // spi data
-                 (GA == 16'h0080) ? { BANK0W, BANK0R} :           // bank data
-                 RDIN;                                            // ram data
+       case ( { SCLK, GA } )
+         { 1'b1, 16'h0000 } :   GBUSOUT = { BANK, XIN, 3'b000, MISO }; // spi data
+         { 1'b1, 16'h0080 } :   GBUSOUT = { BANK0W, BANK0R };          // bank data
+         default:               GBUSOUT = RDIN;
+       endcase
 
    /* Ram address bus */
    wire bankenable = GA[15] ^~ (!nZPBANK && GA[14:7] == 8'h01);
-   wire [3:0] ghiaddr = (!bankenable) ? { 4'b0000 } :       // Nonbanked space
-                        (BANK != 2'b00) ? { 2'b00, BANK } : // BANK=1,2,3
-                        (nGOE) ? BANK0W : BANK0R;           // BANK=0
-   assign RA = (! nAE) ? { ghiaddr, GA[14:0] } :       // Gigatron address
-               { VADDR[15], nBE, 2'b00, VADDR[14:0] }; // Video address
+   always @*
+     casez ( { nAE, bankenable, BANK, nGOE } )
+       5'b1???? :  RA = { nBE, VADDR[15], 2'b00, VADDR[14:0] }; // video snoop
+       5'b00??? :  RA = { 4'b0000, GA[14:0] };                  // no banking
+       5'b01000 :  RA = { BANK0R, GA[14:0] };                   // bank0, reading
+       5'b01001 :  RA = { BANK0W, GA[14:0] };                   // bank0, maybe writing
+       default  :  RA = { 2'b00, BANK, GA[14:0] };              // bank123
+     endcase
 
    /* Ram control */
-   assign nROE = (! nAE) ? nGOE : !VRUN;
-   assign nRWE = (! nAE) ? (nGWE && !nGOE) : 1'b1;
+   assign nROE = !(nAE ? VRUN : !nGOE);
+   assign nRWE = nGWE || !nGOE || nAE;  // avoid glitches
 
-   /* Ram data bus output (only reaches the pins when nROE=1) */
+   /* Ram data bus output */
    assign RDOUT = GBUSIN;
 
-
    /* Video address and counter */
+   wire lineend = VCNT == 8'd160 || OUTD[7:6] != 2'b11;
    always @(negedge CLKx4)
      begin
-        if (!nAE && !CLKx2)     // middle of gigatron cycle
+        if (edge1)
           begin
-             if (!nOL && !nGOE)
-               // Hmmmm : detecting rows does not seem to work like this....
-          end
-        if (nAE && !CLKx2)      // 20ns before CLK rising
-          begin
-             if (!nOL && ALU[7:6] != 2'b11)
-               VCNT <= 8'd0;    // stop output when hsync or vsync is touched
+             if (lineend)
+               begin
+                  VCNT <= 8'd0;
+               end
+             else if (VCNT != 8'd0)
+               begin
+                  VCNT <= VCNT + 8'd1;
+                  VADDR <= VADDR + 16'd1;
+               end
+             else if (!nOL)
+               begin
+                  VCNT <= 8'd1;
+                  VADDR <= GA;
+               end
           end
      end
-   // TODO
    
    /* Video data */
-   always @(negedge CLKx4)
+   wire snooping = VRUN && VCNT != 8'd0;
+      always @(negedge CLKx4)
      begin
-        if (VRUN && VCNT != 8'd0)
+        if (edge3)
           begin
-             if (AE & !CLKx2)
-               OUTD[5:0] <= RD[5:0];   // first pixel
-             if (HDBL && CLK && CLKx2)
-               OUTD[5:0] <= RD[5:0];   // second pixel 
+             if (snooping)
+               OUTD[5:0] <= RDIN[5:0];   // first pixel
+             else if (!nOL)
+               OUTD[5:0] <= ALU[5:0];    // pixel from Gigatron
+             if (!nOL)
+               OUTD[7:6] <= ALU[7:6];    // sync from Gigatron
           end
-        if (!nOL && AE && !CLKx2)
+        if (edge0)
           begin
-             OUTD[7:6] <= ALU[7:6];    // HSn`YNC/VSYNC from Gigatron
-             if (!VRUN)
-               OUTD[5:0] <= ALU[5:0];  // Normal gigatron generation
+             if (snooping && HDBL)
+               OUTD[5:0] <= RDIN[5:0];   // second pixel
           end
      end
 
@@ -162,11 +179,11 @@ module main(
         /* Extended ctrl code */
         if (!nACTRL)
           case (GA[7:4])        // Device 0xf : set BANK0W/R
-            4'hf : begin
+            4'b1111 : begin
                BANK0R <= GA[11:8];
                BANK0W <= GA[15:12];
             end
-            4'he : begin        // Decide 0xe : set video snooping
+            4'b1110 : begin     // Device 0xe : set video snooping
                VRUN <= GA[15];
                HDBL <= GA[14];
             end
