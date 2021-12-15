@@ -36,6 +36,7 @@ module main(
    reg [7:0]         VCNT;      // pixel counter
    reg [15:0]        VADDR;     // video address
    reg               HDBL;      // double horizontal pixels
+   reg               VSNOOP;    // video snoop in progress
    reg               nBE;       // strobe for first video memory access
    
    /*  TIMINGS
@@ -107,35 +108,39 @@ module main(
    assign RDOUT = GBUSIN;
 
    /* Video address and counter */
-   wire lineend = VCNT == 8'd160 || OUTD[7:6] != 2'b11;
    always @(negedge CLKx4)
      begin
         if (edge1)
           begin
-             if (lineend)
-               begin
+             if (!OUTD[6])
+               begin            // hsync pulse
                   VCNT <= 8'd0;
+                  VSNOOP <= 1'b0;
                end
-             else if (VCNT != 8'd0)
-               begin
-                  VCNT <= VCNT + 8'd1;
-                  VADDR <= VADDR + 16'd1;
-               end
-             else if (!nOL)
-               begin
-                  VCNT <= 8'd1;
+             else if (!nOL && !VSNOOP && VCNT[7:5] == 3'b000)
+               begin            // out within 32 cycles of end of hsync
+                  VCNT <= 8'd0;
+                  VSNOOP <= 1'b1;
                   VADDR <= GA;
+               end
+             else if (VCNT == 8'd159)
+               begin            // last pixel
+                  VSNOOP <= 1'b0;
+               end
+             else
+               begin            // increment
+                  VCNT <= VCNT + 8'd1;
+                  VADDR[7:0] <= VADDR[7:0] + 8'd1;
                end
           end
      end
    
    /* Video data */
-   wire snooping = VRUN && VCNT != 8'd0;
-      always @(negedge CLKx4)
+   always @(negedge CLKx4)
      begin
         if (edge3)
           begin
-             if (snooping)
+             if (VSNOOP)
                OUTD[5:0] <= RDIN[5:0];   // first pixel
              else if (!nOL)
                OUTD[5:0] <= ALU[5:0];    // pixel from Gigatron
@@ -144,7 +149,7 @@ module main(
           end
         if (edge0)
           begin
-             if (snooping && HDBL)
+             if (VSNOOP && HDBL)
                OUTD[5:0] <= RDIN[5:0];   // second pixel
           end
      end
@@ -193,6 +198,8 @@ module main(
    /* XIN used purely as input.
     * This could also be used to output 
     * a signal for debugging purposes */
-   assign XIN = 2'bZ;
+   //assign XIN = 2'bZ;
+   assign XIN = { VSNOOP, nBE };
+   
     
 endmodule
