@@ -83,7 +83,7 @@ module main(
    /* Gigatron data bus output */
    always @*
      if (! nAE) // Transparently latched when nAE==0
-       case ( { SCLK, GA } )
+       casez ( { SCLK, GA } )
          { 1'b1, 16'h0000 } :   GBUSOUT = { BANK, XIN, 3'b000, MISO }; // spi data
          { 1'b1, 16'h0080 } :   GBUSOUT = { BANK0W, BANK0R };          // bank data
          default:               GBUSOUT = RDIN;
