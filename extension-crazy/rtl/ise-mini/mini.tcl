@@ -35,7 +35,7 @@
 #        when this script was generated.
 # 
 
-set myScript "base.tcl"
+set myScript "mini.tcl"
 set myProject "top"
 
 # 
