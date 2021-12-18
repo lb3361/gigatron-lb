@@ -43,14 +43,14 @@ module top(
    
    /* Gigatron address bus.
     * The lower half is valid when nAE==0 only. */
-   assign GA = { GAH, (nAE) ? 8'bX : RAL };
+   assign GA = { GAH, (nAE) ? 8'bXXXXXXXX : RAL };
    
    /* Gigatron data bus.
     * This prevents from driving it when nGOE=1 */
-   assign GBUS = (nGOE) ? 8'bZ : GBUSOUT;
+   assign GBUS = (nGOE) ? 8'bZZZZZZZZ : GBUSOUT;
    
    /* Ram data bus. This prevents from driving it when nROE=1 */
-   assign RD = (nROE) ? 8'bZ : RDOUT;
+   assign RD = (nROE) ? 8'bZZZZZZZZ : RDOUT;
    
    /* MISO mixing */
    wire              MISOm;

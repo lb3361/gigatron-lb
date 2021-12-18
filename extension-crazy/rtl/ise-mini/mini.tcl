@@ -224,9 +224,8 @@ proc add_source_files {} {
 
    puts "$myScript: Adding sources to project..."
 
-   xfile add "../main-base.v"
    xfile add "../top.ucf"
-   xfile add "../top.v"
+   xfile add "../minitop.v"
 
    # Set the Top Module as well...
    project set top "top"

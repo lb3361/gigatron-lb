@@ -41,7 +41,7 @@ module main(
    /* XIN used purely as input.
     * This could also be used to output 
     * a signal for debugging purposes */
-   assign XIN = 2'bZ;
+   assign XIN = 2'bZZ;
    
    /* 74HCT244 always open.
     * Otherwise one could do something like:
