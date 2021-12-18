@@ -61,24 +61,24 @@ module top(
                 (MISO[1] & !nSS[1]) | 
                 (MISO[2] & nSS[0] & nSS[1]);
    always @*
-     casez ( { SCLK, GA } )
+     casez ( { SCLK, GA[15:0] } )
        { 1'b1, 16'h0000 } :   GBUSOUT = { BANK[1:0], XIN[4:3], 3'b000, MISOX }; // spi data
        { 1'b1, 16'h00F0 } :   GBUSOUT = { BANK0W[3:0], BANK0R[3:0] };           // bank data
-       default:               GBUSOUT = RD;                                     // ram data
+       default:               GBUSOUT = RD[7:0];                                // ram data
      endcase
    assign GBUS = (nGOE) ? 8'bZZZZZZZZ : GBUSOUT;
 
    /* Ctrl detection */
    wire nCTRL = nGOE || nGWE;
    assign nACTRL = nCTRL || GA[3:2] != 2'b00;
-   assign nADEV[0] = GA[7:4] == 4'b0000;
-   assign nADEV[1] = GA[7:4] == 4'b0001;
+   assign nADEV[0] = (GA[7:4] == 4'b0000);
+   assign nADEV[1] = (GA[7:4] == 4'b0001);
    
    /* Ctrl bits */
    always @(negedge CLKx2)
      begin
         /* Reset */
-        if (!nCTRL && GA[1:0] == 2'b11)
+        if (!nCTRL && GA == 8'h7F)
           begin
              BANK0R <= 4'b0;
              BANK0W <= 4'b0;

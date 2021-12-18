@@ -1,0 +1,5 @@
+#!/bin/bash
+
+XC3SPROG=${XC3SPROG-/home/quartus/xc3sprog/bin/xc3sprog}
+
+exec ${XC3SPROG} "$@"
