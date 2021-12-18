@@ -3,6 +3,7 @@ SHELL=/bin/sh
 RTL=..
 XTCLSH=${RTL}/scripts/xtclsh
 IMPACT=${RTL}/scripts/impact
+XC3SPROG=${RTL}/scripts/xc3sprog
 
 PROJECT=mini
 
@@ -50,3 +51,5 @@ broom:
 clean: broom
 	-rm ${PROJECT}.jed ${PROJECT}.svf ${PROJECT}.xsvf
 
+prog: ${PROJECT}.jed
+	${XC3SPROG} -c jtaghs2 -v ${PROJECT}.jed

@@ -43,11 +43,11 @@ module top(
    assign nAE = 1'b0;
    assign RAL = 8'bZZZZZZZZ;
    assign nROE = nGOE;
-   assign nRWE = nGWE;
+   assign nRWE = nGWE || !nGOE;
    assign RD = (nGOE) ? GBUS : 8'bZZZZZZZZ;
    assign GA = { GAH, RAL };
 
-   wire bankenable = GA[15]; // ^ (!nZPBANK && GA[14:7] == 8'h01);
+   wire bankenable = GA[15] ^ (!nZPBANK && GA[14:7] == 8'h01);
    always @*
      casez ( { bankenable, BANK[1:0], nGOE } )
        4'b0??? :  RA = { 4'b0000, GA[14:0] };            // no banking
