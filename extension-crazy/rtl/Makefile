@@ -1,6 +1,6 @@
 
 TARGETS=all broom clean
-SUBDIRS=ise-mini
+SUBDIRS=ise-mini ise-full
 
 ${TARGETS}:
 	for n in ${SUBDIRS}; do make -C $$n $@ ; done
