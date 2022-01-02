@@ -3,29 +3,29 @@
 /* Goal: Achieving parity with the V7 GAL-based boards.
    Bonus: Support for 512KB banking. */
 
-module top((* BUFG = "CLK" *) input CLK,
-           (* BUFG = "CLK"  *) input CLKx2,
-           (* BUFG = "CLK"  *) input CLKx4,
-           (* BUFG = "OE" *) input nGOE,
-           (* _ *) output reg [7:0] OUTD, 
-           (* _ *) input [7:0] ALU,
-           (* _ *) input nOL,
-           (* _ *) inout [7:0] RAL,
-           (* _ *) output [18:8] RAH,
-           (* BUFG = "OE" *) output nROE,
-           (* _ *) output nRWE,
-           (* _ *) inout [7:0] RD,
-           (* _ *) (* BUFG = "OE" *) output reg nAE,
-           (* PWR_MODE = "LOW" *) inout [7:0] GBUS,
-           (* _ *) input [15:8] GAH,
-           (* _ *) input nGWE,
-           (* PWR_MODE = "LOW" *) output nACTRL,
-           (* PWR_MODE = "LOW" *) output [1:0] nADEV,
-           (* PWR_MODE = "LOW" *) input [4:3] XIN,
-           (* PWR_MODE = "LOW" *) input [2:0] MISO,
-           (* PWR_MODE = "LOW" *) output reg MOSI,
-           (* PWR_MODE = "LOW" *) output reg SCK,
-           (* PWR_MODE = "LOW" *) output reg [1:0] nSS 
+module top(input CLK,
+           input            CLKx2,
+           input            CLKx4,
+           input            nGOE,
+           output reg [7:0] OUTD, 
+           input [7:0]      ALU,
+           input            nOL,
+           inout [7:0]      RAL,
+           output [18:8]    RAH,
+           output           nROE,
+           output           nRWE,
+           inout [7:0]      RD,
+           output reg       nAE,
+           inout [7:0]      GBUS,
+           input [15:8]     GAH,
+           input            nGWE,
+           output           nACTRL,
+           output [1:0]     nADEV,
+           input [4:3]      XIN,
+           input [2:0]      MISO,
+           output reg       MOSI,
+           output reg       SCK,
+           output reg [1:0] nSS 
            );
    
    (* PWR_MODE = "LOW" *) reg         SCLK;
@@ -34,8 +34,9 @@ module top((* BUFG = "CLK" *) input CLK,
    (* PWR_MODE = "LOW" *) reg [3:0]   BANK0R;
    (* PWR_MODE = "LOW" *) reg [3:0]   BANK0W;
    (* PWR_MODE = "LOW" *) reg [7:0]   GBUSOUT;
-   (* _ *) reg [15:0] GA;
-   (* _ *) reg [18:0] RA;
+
+   reg [15:0]               GA;
+   reg [18:0]               RA;
 
 
    /* Output register */
@@ -78,10 +79,10 @@ module top((* BUFG = "CLK" *) input CLK,
      end
    
    /* Ram addresses */
-   (* PWR_MODE = "LOW" *) wire zpbank;
+   (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) wire gahz;
    (* PWR_MODE = "STD" *) wire bankenable;
-   assign zpbank = !nZPBANK && GAH[14:8] == 7'h00;
-   assign bankenable = GA[15] ^ (zpbank && GA[7]);
+   assign gahz = (GAH[14:8] == 7'h00);
+   assign bankenable = GA[15] ^ (!nZPBANK && GA[7] && gahz);
    always @*
      casez ( { bankenable, BANK[1:0], nGOE } )
        4'b0??? :  RA = { 4'b0000, GA[14:0] };            // no banking
@@ -96,7 +97,7 @@ module top((* BUFG = "CLK" *) input CLK,
    (* PWR_MODE = "LOW" *) wire misox;
    (* PWR_MODE = "LOW" *) wire portx;
    assign misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
-   assign portx = SCLK && GAH[15:8] == 8'h00;
+   assign portx = SCLK && !GAH[15] && gahz;
    always @*
      if (! nAE)                 // transparent latch
        casez ( { portx, RAL[7:0] } )
@@ -123,7 +124,7 @@ module top((* BUFG = "CLK" *) input CLK,
    always @(posedge nCTRL)
      begin
         /* Reset */
-        if (GA == 8'h7F)
+        if (GA[3:0] == 4'hF)
           begin
              BANK0R <= 4'b0;
              BANK0W <= 4'b0;

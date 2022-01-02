@@ -7,39 +7,39 @@
            especially in conjunction with the delay
            between the CLK2 and CLK2 Gigatron clocks. */
 
-module top((* BUFG = "CLK" *) input CLK,
-           (* BUFG = "CLK"  *) input CLKx2,
-           (* BUFG = "CLK"  *) input CLKx4,
-           (* BUFG = "OE" *) input nGOE,
-           (* _ *) output reg [7:0] OUTD, 
-           (* _ *) input [7:0] ALU,
-           (* _ *) input nOL,
-           (* _ *) inout [7:0] RAL,
-           (* _ *) output [18:8] RAH,
-           (* _ *) output nROE,
-           (* _ *) output nRWE,
-           (* _ *) inout [7:0] RD,
-           (* _ *) (* BUFG = "OE" *) output nAE,
-           (* PWR_MODE = "LOW" *) inout [7:0] GBUS,
-           (* _ *) input [15:8] GAH,
-           (* _ *) input nGWE,
-           (* PWR_MODE = "LOW" *) output nACTRL,
-           (* PWR_MODE = "LOW" *) output [1:0] nADEV,
-           (* PWR_MODE = "LOW" *) input [4:3] XIN,
-           (* PWR_MODE = "LOW" *) input [2:0] MISO,
-           (* PWR_MODE = "LOW" *) output reg MOSI,
-           (* PWR_MODE = "LOW" *) output reg SCK,
-           (* PWR_MODE = "LOW" *) output reg [1:0] nSS 
+module top(input CLK,
+           input            CLKx2,
+           input            CLKx4,
+           input            nGOE,
+           output reg [7:0] OUTD, 
+           input [7:0]      ALU,
+           input            nOL,
+           inout [7:0]      RAL,
+           output [18:8]    RAH,
+           output           nROE,
+           output           nRWE,
+           inout [7:0]      RD,
+           output           nAE,
+           inout [7:0]      GBUS,
+           input [15:8]     GAH,
+           input            nGWE,
+           output           nACTRL,
+           output [1:0]     nADEV,
+           input [4:3]      XIN,
+           input [2:0]      MISO,
+           output reg       MOSI,
+           output reg       SCK,
+           output reg [1:0] nSS 
            );
    
-   (* PWR_MODE = "LOW" *) reg         SCLK;
-   (* PWR_MODE = "LOW" *) reg         nZPBANK;
-   (* PWR_MODE = "LOW" *) reg [1:0]   BANK;
-   (* PWR_MODE = "LOW" *) reg [3:0]   BANK0R;
-   (* PWR_MODE = "LOW" *) reg [3:0]   BANK0W;
-   (* PWR_MODE = "LOW" *) reg [7:0]   GBUSOUT;
-   (* _ *) wire [15:0] GA;
-   (* _ *) reg [18:0]  RA;
+   reg                      SCLK;
+   reg                      nZPBANK;
+   reg [1:0]                BANK;
+   reg [3:0]                BANK0R;
+   reg [3:0]                BANK0W;
+   reg [7:0]                GBUSOUT;
+   wire [15:0]              GA;
+   reg [18:0]               RA;
 
    always @(posedge CLK)
      begin
@@ -67,8 +67,8 @@ module top((* BUFG = "CLK" *) input CLK,
      endcase 
    assign RAH = RA[18:8];
 
-   (* PWR_MODE = "LOW" *) wire misox;
-   (* PWR_MODE = "LOW" *) wire portx;
+   wire misox;
+   wire portx;
    assign misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
    assign portx = SCLK && GAH[15:8] == 8'h00;
    always @*
