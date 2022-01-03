@@ -12,14 +12,14 @@ void old_set_bank(int bank)
 
 void new_set_bank(int rbank, int wbank)
 {
-  char bits = ctrlBits_v5;
+  register char bits = ctrlBits_v5;
   SYS_ExpanderControl( ((wbank & 0xf) << 12) | ((rbank & 0xf) << 8) | 0xF0 );
   SYS_ExpanderControl( bits & 0x3f );  // set old bank 0
 }
 
 void test_rw(int bank1, int bank2)
 {
-  char *addr = (char*)0x9000;
+  register char *addr = (char*)0x9000;
   new_set_bank(bank1, bank2);
   cprintf("Reading %d, writing %d\n", bank1, bank2);
   cprintf(" rd %02x, wr %02x, rd %02x\n", *addr, (*addr = 0xaa), *addr);
