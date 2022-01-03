@@ -81,7 +81,7 @@ The registers BANK0W and BANK0R are set using an [extented ctrl code](https://fo
 ``` 
      ld( ((BANKW & 0xf)<<4)|(BANKR & 0xf), Y)   #  Y is WWWWRRRR
      ctrl(Y,0xF0)                               #  Set BANK0W and BANK0R
-     ctrl(0x3F)                                 #  Select old style bank 0
+     ctrl(0x3C)                                 #  Select old style bank 0
 ```
 and in C code (vCPU  based):
 ```
@@ -89,10 +89,22 @@ void new_set_bank(int rbank, int wbank)
 {
   char bits = ctrlBits_v5;
   SYS_ExpanderControl( ((wbank & 0xf) << 12) | ((rbank & 0xf) << 8) | 0xF0 );
-  SYS_ExpanderControl( bits & 0x3f );  // set old bank 0
+  SYS_ExpanderControl( bits & 0x3c );  // set old bank 0
 }
 ```
 This is illustrated in the [memory test program](test/memtest).
+
+It is possible to read back the contents of the `BANK0W` and `BANK0R` 
+registers from native code by setting `SCLK` and reading address 0xF0.
+```
+    ld (hi(ctrlBits), Y)
+    ld ([Y, ctrlBits])
+    or (1,X)
+    ctrl(Y,Xpp)
+    ld(0xF0)
+    ctrl(Y,Xpp)
+```
+This is not possible from vCPU without a new SYS extension.
 
 TODO: Update `Reset.gcl` to detect a Gigatron 512K.
 

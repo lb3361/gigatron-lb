@@ -14,7 +14,7 @@ void new_set_bank(int rbank, int wbank)
 {
   register char bits = ctrlBits_v5;
   SYS_ExpanderControl( ((wbank & 0xf) << 12) | ((rbank & 0xf) << 8) | 0xF0 );
-  SYS_ExpanderControl( bits & 0x3f );  // set old bank 0
+  SYS_ExpanderControl( bits & 0x3c );  // set old bank 0
 }
 
 void test_rw(int bank1, int bank2)
