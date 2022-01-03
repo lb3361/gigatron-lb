@@ -19,8 +19,8 @@ This is the address decoding GAL
                        A6 x---|3           22|---x MOSI
                        A7 x---|4           21|---x B0
                       A13 x---|5           20|---x B1
-                       A9 x---|6           19|---x A16RAM
-                       A8 x---|7           18|---x A15RAM
+                       A8 x---|6           19|---x A16RAM
+                       A9 x---|7           18|---x A15RAM
                       A11 x---|8           17|---x !ZPBANK
                       A10 x---|9           16|---x !AUXDEV0
                       A12 x---|10          15|---x !AUXDEV1
@@ -38,8 +38,8 @@ PIN 2   =  A5;
 PIN 3   =  A6;
 PIN 4   =  A7;
 PIN 5   =  A13;
-PIN 6   =  A9;
-PIN 7   =  A8;
+PIN 6   =  A8;
+PIN 7   =  A9;
 PIN 8   =  A11;
 PIN 9   =  A10;
 PIN 10  =  A12;

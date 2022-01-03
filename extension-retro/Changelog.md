@@ -36,3 +36,6 @@
   asserted. These signals are left floating with values determined by
   the GAL's internal pin keeper.  Unlike version V6, all SPI ports
   receive the same clock `SCK`.
+
+* V7b -- Change serif on header H3 to reflect the A8/A9 swap. 
+
