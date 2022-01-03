@@ -104,4 +104,7 @@ Detecting the presence of an expansion board is best left to the `Reset.gcl` cod
 
 
 
+# 2.5 - Erratum
+
+Lines A8 and A9 were swapped. This was fixed in v7b by changing the serif on the extension header.
 
