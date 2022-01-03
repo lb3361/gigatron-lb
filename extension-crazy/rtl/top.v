@@ -1,8 +1,5 @@
 
 
-/* Goal: Achieving parity with the V7 GAL-based boards.
-   Bonus: Support for 512KB banking. */
-
 module top(input CLK,
            input            CLKx2,
            input            CLKx4,
@@ -34,14 +31,11 @@ module top(input CLK,
    (* PWR_MODE = "LOW" *) reg [3:0]   BANK0R;
    (* PWR_MODE = "LOW" *) reg [3:0]   BANK0W;
    (* PWR_MODE = "LOW" *) reg [4:0]   VBANK;
-   (* PWR_MODE = "LOW" *) reg [7:0]   GBUSOUT;
+   (* PWR_MODE = "LOW" *) reg [15:0]  VADDR;
+   (* PWR_MODE = "STD" *) reg [15:0]  GA;
+   (* PWR_MODE = "STD" *) reg         nBE;
 
-   reg [15:0]               GA;
-   reg [18:0]               RA;
-   reg                      nBE;
-   reg [15:0]               VADDR;
-
-   /*  TIMINGS
+   /*  Clocks
     *                              110000000000111111000000000011111100
     *                              450123456789012345012345678901234501
     *                               _____           _____           ___
@@ -57,22 +51,18 @@ module top(input CLK,
     *  /AE                             \_______/       \_______/       \
     *                                  ^ downedge(CLKX4) & CLKx2 & CLK
     *                                          ^ downedge(CLKx4) & CLKx2 & /CLK
-    *                              ____________     ___________     _____
-    *  /BE                                     \___/           \___/
+    *                                   ___________     ___________     
+    *  /BE                         \___/           \___/           \___/
     *                                              ^ downedge(CLKx4) & /CLKx2 & /AE
     */
-
    always @(negedge CLKx4)
      begin
         if (CLKx2)
           nAE <= !CLK;
-        if (CLKx2 && !CLK)
-          nBE <= 1'b0;
-        else
-          nBE <= 1'b1;
+        nBE <= (CLKx2 || !nAE);
      end
 
-   /* Gigatron addresses */
+   /* Gigatron address bus */
    always @*
      begin
         GA[15:8] = GAH[15:8];
@@ -80,74 +70,77 @@ module top(input CLK,
           GA[7:0] = RAL[7:0];
      end
    
-   /* Ram addresses */
+   /* Gigatron data bus */
+   (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) wire misox;
    (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) wire gahz;
-   (* PWR_MODE = "STD" *) wire bankenable;
-   assign gahz = (GAH[14:8] == 7'h00);
-   assign bankenable = GA[15] ^ (!nZPBANK && GA[7] && gahz);
-   always @*
-     if (nAE)                   // video memory cycles
-       RA = { VBANK[3:2], (nBE) ? VBANK[0] : VBANK[1], VADDR };
-     else                       // gigatron memory cycle
-       casez ( { bankenable, BANK[1:0], nGOE } )
-         4'b0??? :  RA = { 4'b0000, GA[14:0] };            // no banking
-         4'b1000 :  RA = { BANK0R[3:0], GA[14:0] };        // bank0, reading
-         4'b1001 :  RA = { BANK0W[3:0], GA[14:0] };        // bank0, writing
-         default :  RA = { 2'b00, BANK[1:0], GA[14:0] };   // bank123, read/write
-       endcase 
-   assign RAL = (nAE) ? RA[7:0] : 8'bZZZZZZZZ;
-   assign RAH = RA[18:8];
-   
-   /* Gigatron data */
-   (* PWR_MODE = "LOW" *) wire misox;
+   (* PWR_MODE = "LOW" *) reg [7:0] gbusout;
    (* PWR_MODE = "LOW" *) wire portx;
    assign misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
+   assign gahz = (GAH[14:8] == 7'h00);
    assign portx = SCLK && !GAH[15] && gahz;
    always @*
      if (! nAE)                 // transparent latch
        casez ( { portx, RAL[7:0] } )
-         { 1'b1, 8'h00 } :   GBUSOUT = { BANK[1:0], XIN[4:3], 3'b000, misox }; // spi data
-         { 1'b1, 8'hF0 } :   GBUSOUT = { BANK0W[3:0], BANK0R[3:0] };           // bank data
-         default:            GBUSOUT = RD[7:0];                                // ram data
+         { 1'b1, 8'h00 } :   gbusout = { BANK[1:0], XIN[4:3], 3'b000, misox }; // spi data
+         { 1'b1, 8'hF0 } :   gbusout = { BANK0W[3:0], BANK0R[3:0] };           // bank data
+         default:            gbusout = RD[7:0];                                // ram data
        endcase
-   assign GBUS = (nGOE) ? 8'bZZZZZZZZ : GBUSOUT;
+   assign GBUS = (nGOE) ? 8'bZZZZZZZZ : gbusout;
    
-   /* Ram data and control */
+   /* Ram signals */
+   (* PWR_MODE = "LOW" *) wire [18:8] rahv;
+   (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) reg [18:8] rahg;
+   wire bankenable = GAH[15] ^ (!nZPBANK && GA[7] && gahz);
+   always @*
+     casez ( { bankenable, BANK[1:0], nGOE } )
+       4'b0??? :  rahg = { 4'b0000, GAH[14:8] };            // no banking
+       4'b1000 :  rahg = { BANK0R[3:0], GAH[14:8] };        // bank0, reading
+       4'b1001 :  rahg = { BANK0W[3:0], GAH[14:8] };        // bank0, writing
+       default :  rahg = { 2'b00, BANK[1:0], GAH[14:8] };   // bank123
+     endcase 
+   assign rahv = { VBANK[3:1], VADDR[15:8] };
+   assign RAL = (nAE) ? GA[7:0] : 8'bZZZZZZZZ;  // should be: (nAE) ? VADDR[7:0] : 8'bZZZZZZZZ;
+   assign RAH = rahg[18:8];                     // should be: (nAE) ? rahv[18:8] : rahg[18:8];
    assign nROE = nGOE && !nAE;
    assign nRWE = nGWE || nAE || !nGOE;
    assign RD = (nROE) ? GBUS : 8'bZZZZZZZZ;
-
-   /* Video output register */
-   reg snoop;
-   always @(negedge CLKx4)
-     begin
-        if (!CLKx2 && nAE)      // 20ns before CLK's positive edge
-          begin
-             if (! nOL) OUTD[7:6] = ALU[7:6];           // sync bits 
-             OUTD[5:0] = (snoop) ? RD[5:0] : 6'b000000; // first half pixel
-          end
-        if (CLKx2 && CLK)       // 20ns after CLK's positive edge
-          begin
-             OUTD[5:0] = (snoop) ? RD[5:0] : 6'b000000; // second half pixel
-          end
-     end
-
-   /* Snoop control */
+   
+   /* Scanline detection */
+   (* PWR_MODE = "LOW" *) reg snoop;
+   (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) wire snoopchg = !nGOE && !(gahz && !GAH[15]);
+   (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) wire [7:0] nvaddr = VADDR[7:0] + 8'h01;
    always @(negedge CLKx4)
      if (!CLKx2 && !nAE)        // mid gigatron cycle
        begin
-          if (!nOL)
+          if (! nOL)
             // Snooping starts when an OUT instruction reads memory
             // outside page zero and stop on any other OUT opcode.
-            snoop <=  !nGOE && !GAH[15] && gahz;
-          if (!nOL && !nGOE)
+            snoop <=  snoopchg;
+          if (! nOL && ! nGOE)
             // Reset snooping address when an OUT reads memory
             VADDR <= GA;
           else
             // Otherwise increment address to next pixel
-            VADDR[7:0] <= VADDR[7:0] + 8'h01;
+            VADDR[7:0] <= nvaddr;
        end
    
+   /* Video output register */
+   always @(negedge CLKx4)
+     begin
+        // sync
+        if (!CLKx2 && nAE && !nOL)
+          OUTD[7:6] = ALU[7:6];
+        // first half pixel
+        if (!CLKx2 && nAE)
+          OUTD[5:0] = (snoop) ? RD[5:0] : 6'h00;
+     end
+   /* Video output register 
+   always @(posedge CLK)
+     begin
+        if (!nOL)
+          OUTD <= ALU;
+     end
+
    /* Ctrl detection */
    wire nCTRL;
    assign nCTRL = nGOE || nGWE;
@@ -176,8 +169,8 @@ module top(input CLK,
           end
         /* Extended ctrl code */
         else
-          case (GA[7:4])        // Device 0xf : extended banking
-            4'hf : begin
+          case (GA[7:4])
+            4'hf : begin        // Device 0xf : extended banking
                BANK0R[3:0] <= GA[11:8];
                BANK0W[3:0] <= GA[15:12];
             end
@@ -186,7 +179,7 @@ module top(input CLK,
             end
           endcase
      end
-   
+
 endmodule
 
 /* Local Variables: */
