@@ -38,7 +38,7 @@ int main()
 
   cprintf("\fReset test\n--------------------\n");
   old_set_bank(0);
-  if (memcmp((void*)0x100, (void*)0x8100, 0x100))
+  if (memcmp((void*)0x100, (void*)0x8100, 0x80))
     cprintf("bank0r is not zero");
   b = *(char*)0x200 ^ 0x55;
   *(char*)0x8200 = b;
