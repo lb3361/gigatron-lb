@@ -5,6 +5,8 @@ experiment with crazy expansion ideas for the Gigatron.  This is work
 in progress. In fact this project may never go forward because it
 looks like an infinite time sink.
 
+## 1. Idea
+
 The core of the board is a XC95144XL CPLD with a 100 pins package
 mediating access to a fast CY7C1049G 512KB static ram.  This static
 ram is fast enough to carry out multiple read and writes during each
@@ -49,6 +51,8 @@ them as inputs when the 74HCT244 has active outputs.
 
 ![Schematics](Schematics.pdf)
 
+## 2. Layout
+
 The board layout places all the SMT components out-of-sight on the
 back side od the board. The visible side contains two connectors for
 SPI devices using the SD Card breakout pinout, a JTAG connector to
@@ -61,4 +65,48 @@ because it was available.
 ![Front view](images/front.jpg)
 
 ![Back view](images/back.jpg)
+
+
+## 3. Usage
+
+Althouth the extension header has more signals and a different layout, this board is backward compatible with the latest version "dual drive" of the [GAL based extension board](../extension-retro). The following text only describes the features that are specific to this board. Nothing here is guaranteed to last as this is work in progress.
+
+## 3.1. Extended banking "Gigatron 512K"
+
+The goal was to provide ways to use all 512K of memory while remaining maximally compatible with software that knows only about the four banks scheme of the typical memory expansion boards. This software relies much on the [normal ctrl codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331) that `SYS_ExpanderControl` also saves in the `ctrlBits_v5` memory location (0x1f8). These only have provision for four banks. Yet software typically expects to be able to save and restore a banking configuration by copying and manipulating `ctrlBits_v5`.
+
+The chosen solution was to only modify the meaning of the old banking bits for bank 0 only. These bits control which of the four banks is shown at addresses 0x8000-0x7fff. Selecting banks 1, 2, or 3 in this way simply shows banks 1, 2, or 3 in address range 0x8000-0xffff. Selecting bank 0 used to simply duplicate the contents of 0x0000-0x7fff into 0x8000-0xffff like a Gigatron 32K. In this board, selecting bank 0 in this way enables a new banking scheme: two four bit registers `BANK0R` and `BANK0W` determine wich of the sixteen banks of the Gigatron 512K are shown in address range 0x8000-0xffff. More precisely, `BANK0R` determine from which bank the Gigatron reads memory, and `BANK0W` determines to which bank the Gigatron writes. Using different banks for reading and writing can be very convenient to copy data across banks.  Since these two registers are zero initialized on reset, software that does not know their existence sees a regular expansion baord.
+
+The registers BANK0W and BANK0R are set using an [extented ctrl code](https://forum.gigatron.io/viewtopic.php?f=4&t=331) with device address 0xF. The value of `BANK0W` is then read from address lines A12-A15, and `BANK0R` from address lines A8-A11.  In short to read from bank BANKR and write to bank BANKW, one needs to issue the following ctrl commands (native code):
+``` 
+     ld( ((BANKW & 0xf)<<4)|(BANKR & 0xf), Y)   #  Y is WWWWRRRR
+     ctrl(Y,0xF0)                               #  Set BANK0W and BANK0R
+     ctrl(0x3F)                                 #  Select old style bank 0
+```
+and in C code (vCPU  based):
+```
+void new_set_bank(int rbank, int wbank)
+{
+  char bits = ctrlBits_v5;
+  SYS_ExpanderControl( ((wbank & 0xf) << 12) | ((rbank & 0xf) << 8) | 0xF0 );
+  SYS_ExpanderControl( bits & 0x3f );  // set old bank 0
+}
+```
+This is illustrated in the [memory test program](test/memtest).
+
+TODO: Update `Reset.gcl` to detect a Gigatron 512K.
+
+## 3.2. Video snooping
+
+Work in progress
+
+## 3.3. Double resolution
+
+Work in progress
+
+## 3.4. Extended audio
+
+Work in progress (most likely needs PCB work)
+
+
 
