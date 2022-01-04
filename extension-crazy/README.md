@@ -33,7 +33,7 @@ following diagram gives an overview of the board.
 ![Board diagram](images/diag.png)
 
 In addition to the CPLD and the SRAM, there is a CY2302 zero delay PLL
-that takes the 6.125MHz Gigatron clock and generates two additional
+that takes the 6.25MHz Gigatron clock and generates two additional
 clocks at 2x and 4x the frequency with aligned phases. These clocks
 can be used to split the Gigatron cycle into smaller parts and drive
 the SRAM at a faster rate.

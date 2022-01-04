@@ -132,7 +132,7 @@ module top(input CLK,
           OUTD[7:6] = ALU[7:6];
         // first half pixel
         if (!CLKx2 && nAE)
-          OUTD[5:0] = (snoop) ? RD[5:0] : 6'h00;
+          OUTD[5:0] = (snoop) ? 6'h20 : 6'h00; // (snoop) ? RD[5:0] : 6'h00;
      end
    /* Video output register 
    always @(posedge CLK)
