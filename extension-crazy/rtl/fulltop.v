@@ -58,17 +58,23 @@ module top(input CLK,
     *  CLKx2                       __/   \___/   \___/   \___/   \___/
     *                                 _   _   _   _   _   _   _   _   _
     *  CLKx4                       \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \
-    *                              ____         _______         _______
-    *  /AE                             \_______/       \_______/       \
+    *                              ____             ___         _______
+    *  /AE                             \___________/   \_______/       
     *                                  ^ downedge(CLKX4) & CLKx2 & CLK
-    *                                          ^ downedge(CLKx4) & CLKx2 & /CLK
+    *                                              ^ downedge(CLKx4) & !CLKx2 & /CLK
     */
 
+   reg tmp;
    always @(negedge CLKx4)
-     begin
-        if (CLKx2)
-          nAE <= !CLK;
-     end
+     if (CLKx2 && CLK)
+       begin
+          tmp <= 1'b0;
+          nAE <= 1'b0;
+       end
+     else if (!CLKx2 && !tmp)
+       tmp <= 1'b1;
+     else if (!CLKx2)
+       nAE <= 1'b1;
 
    /* Gigatron addresses */
    always @*
