@@ -1,8 +1,8 @@
 
-NET "ALU<0>"   LOC = "P6"   ; 
-NET "ALU<1>"   LOC = "P11"  ; 
-NET "ALU<2>"   LOC = "P14"  ; 
-NET "ALU<3>"   LOC = "P17"  ; 
+NET "ALU<0>"   LOC = "P17"  ; 
+NET "ALU<1>"   LOC = "P14"  ; 
+NET "ALU<2>"   LOC = "P11"  ; 
+NET "ALU<3>"   LOC = "P6"   ; 
 NET "ALU<4>"   LOC = "P20"  ; 
 NET "ALU<5>"   LOC = "P13"  ; 
 NET "ALU<6>"   LOC = "P8"   ; 
@@ -41,10 +41,10 @@ NET "nROE"     LOC = "P2"   | PWR_MODE = STD  ;
 NET "nRWE"     LOC = "P92"  | PWR_MODE = STD  ; 
 NET "nSS<0>"   LOC = "P24"  | PWR_MODE = LOW  ; 
 NET "nSS<1>"   LOC = "P25"  | PWR_MODE = LOW  ; 
-NET "OUTD<0>"  LOC = "P10"  | PWR_MODE = STD  ; 
-NET "OUTD<1>"  LOC = "P12"  | PWR_MODE = STD  ; 
-NET "OUTD<2>"  LOC = "P16"  | PWR_MODE = STD  ; 
-NET "OUTD<3>"  LOC = "P18"  | PWR_MODE = STD  ; 
+NET "OUTD<0>"  LOC = "P18"  | PWR_MODE = STD  ; 
+NET "OUTD<1>"  LOC = "P16"  | PWR_MODE = STD  ; 
+NET "OUTD<2>"  LOC = "P12"  | PWR_MODE = STD  ; 
+NET "OUTD<3>"  LOC = "P10"  | PWR_MODE = STD  ; 
 NET "OUTD<4>"  LOC = "P19"  | PWR_MODE = STD  ; 
 NET "OUTD<5>"  LOC = "P15"  | PWR_MODE = STD  ; 
 NET "OUTD<6>"  LOC = "P9"   | PWR_MODE = STD  ; 

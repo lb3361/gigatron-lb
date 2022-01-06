@@ -99,7 +99,7 @@ module top(input            CLK,
     *
     * This is very tricky because we must ensure
     * that no conflict arises when we commute the 74lvc244.
-    * The solution is to ensure when nAE rises,
+    * The solution is to ensure that, when nAE rises,
     * both the xc95144 and the 74lvc244 have the same
     * idea of what should be on RAL.
     */
@@ -111,9 +111,9 @@ module top(input            CLK,
    (* PWR_MODE = "STD" *) reg [18:0] ra;
    always @(posedge CLKx4)
      if (nAE)
-       ra = { VBANK[3:2], VBANK[nBE], VADDR[15:0] };
+       ra <= { VBANK[3:2], VBANK[nBE], VADDR[15:0] };
      else
-       ra = { gbank, GAH[14:8], RAL[7:0] };
+       ra <= { gbank, GAH[14:8], RAL[7:0] };
    assign RAH = (nAE) ? ra[18:8] : { gbank, GAH[14:8] };
    assign RAL = (nAE) ? ra[7:0] : 8'hZZ;
 
@@ -141,9 +141,18 @@ module top(input            CLK,
    
    /* ================ Output register */
 
+   reg [5:0] outnxt;
    always @(posedge CLK)
      if (! nOL)
-       OUTD <= ALU;
+       OUTD[7:6] <= ALU[7:6];
+   always @(negedge CLKx4)
+     if (nBE && nAE)
+       OUTD[5:0] <= (snoop) ? RD[5:0] : 6'h00;
+     else if (!nBE && nAE)
+       outnxt[5:0] <= (snoop) ? RD[5:0] : 6'h00;
+     else if (nBE && !nAE)
+       OUTD[5:0] <= outnxt[5:0];
+
    
    /* ================ Ctrl codes */
    
