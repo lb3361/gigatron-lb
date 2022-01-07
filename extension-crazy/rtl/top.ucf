@@ -49,6 +49,7 @@ NET "OUTD<4>"  LOC = "P19"  | PWR_MODE = STD  ;
 NET "OUTD<5>"  LOC = "P15"  | PWR_MODE = STD  ; 
 NET "OUTD<6>"  LOC = "P9"   | PWR_MODE = STD  ; 
 NET "OUTD<7>"  LOC = "P7"   | PWR_MODE = STD  ; 
+NET "PWM"      LOC = "P56"  | PWR_MODE = LOW  ; 
 NET "RAH<10>"  LOC = "P79"  | PWR_MODE = STD  ; 
 NET "RAH<11>"  LOC = "P78"  | PWR_MODE = STD  ;
 NET "RAH<12>"  LOC = "P77"  | PWR_MODE = STD  ;
@@ -77,7 +78,7 @@ NET "RD<5>"    LOC = "P72"  | PWR_MODE = STD  ;
 NET "RD<6>"    LOC = "P71"  | PWR_MODE = STD  ;
 NET "RD<7>"    LOC = "P70"  | PWR_MODE = STD  ;
 NET "SCK"      LOC = "P30"  | PWR_MODE = LOW  ; 
-NET "XIN<3>"   LOC = "P56"  ; 
+NET "XIN<3>"   LOC = "P54"  ; 
 NET "XIN<4>"   LOC = "P55"  ;
 
 #Created by Constraints Editor (xc95144xl-tq100-10) - 2021/12/04

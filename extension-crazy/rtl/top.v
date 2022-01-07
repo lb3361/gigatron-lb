@@ -22,7 +22,8 @@ module top(input            CLK,
            input [2:0]      MISO,
            output reg       MOSI,
            output reg       SCK,
-           output reg [1:0] nSS 
+           output reg [1:0] nSS,
+           output reg       PWM
            );
    
    (* PWR_MODE = "LOW" *) reg         SCLK;
@@ -30,6 +31,7 @@ module top(input            CLK,
    (* PWR_MODE = "LOW" *) reg [1:0]   BANK;
    (* PWR_MODE = "LOW" *) reg [3:0]   BANK0R;
    (* PWR_MODE = "LOW" *) reg [3:0]   BANK0W;
+   (* PWR_MODE = "LOW" *) reg [5:0]   PWMD;
    (* PWR_MODE = "LOW" *) reg [3:0]   VBANK;
    (* PWR_MODE = "STD" *) reg [15:0]  VADDR;
 
@@ -121,8 +123,8 @@ module top(input            CLK,
    /* ================ Scanline detection */ 
    
    (* PWR_MODE = "LOW" *) reg snoop;
-   (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) wire snoopchg = !nGOE && !(gahz && !GAH[15]);
-   (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) wire [7:0] nvaddr = VADDR[7:0] + 8'h01;
+   (* PWR_MODE = "LOW" *) wire snoopchg = !nGOE && !(gahz && !GAH[15]);
+   (* PWR_MODE = "LOW" *) wire [7:0] nvaddr = VADDR[7:0] + 8'h01;
    always @(negedge CLKx2)
      if (! nAE)
        begin
@@ -176,6 +178,7 @@ module top(input            CLK,
                   BANK0R[3:0] <= 4'b0;
                   BANK0W[3:0] <= 4'b0;
                   VBANK[3:0] <= 4'b0;
+                  PWMD[5:0] <= 6'h00;
                end
           end
         /* Extended ctrl code */
@@ -188,8 +191,22 @@ module top(input            CLK,
             4'he : begin        // Decide 0xe : set video bank
                VBANK[3:0] <= GAH[11:8];
             end
+            4'hd : begin        // Set PWM threshold
+               PWMD[5:0] <= GAH[15:10];
+            end
           endcase
      end
+
+
+   /* ======== Bit reversed PWM */
+   
+   (* PWR_MODE = "LOW" *) reg [5:0] pwmcnt;
+   always @(posedge CLK)
+     pwmcnt <= pwmcnt + 6'h01;
+   wire [5:0] rpwmcnt = { pwmcnt[0], pwmcnt[1], pwmcnt[2], pwmcnt[3], pwmcnt[4], pwmcnt[5] };
+   always @(posedge CLK)
+     PWM <= (rpwmcnt < PWMD);
+
 endmodule
 
 

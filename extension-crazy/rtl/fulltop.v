@@ -25,7 +25,8 @@ module top(input CLK,
            input [2:0]      MISO,
            output reg       MOSI,
            output reg       SCK,
-           output reg [1:0] nSS 
+           output reg [1:0] nSS,
+           output           PWM
            );
    
    (* PWR_MODE = "LOW" *) reg         SCLK;
@@ -154,6 +155,9 @@ module top(input CLK,
             end
           endcase
      end
+
+   /* PWM */
+   assign PWM = 1'b0;
    
 endmodule
 
