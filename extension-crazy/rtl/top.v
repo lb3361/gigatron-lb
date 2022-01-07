@@ -188,17 +188,21 @@ module top(input            CLK,
                BANK0R[3:0] <= GAH[11:8];
                BANK0W[3:0] <= GAH[15:12];
             end
-            4'he : begin        // Decide 0xe : set video bank
+            4'he : begin        // Device 0xe : set video bank
                VBANK[3:0] <= GAH[11:8];
             end
-            4'hd : begin        // Set PWM threshold
+            4'hd : begin        // Device 0xd : PWM
                PWMD[5:0] <= GAH[15:10];
             end
           endcase
      end
 
 
-   /* ======== Bit reversed PWM */
+   /* ======== Bit reversed PWM 
+    *
+    * Reversed bit PWM moves noise into higher frequencies
+    * that are more easily filtered.
+    */
    
    (* PWR_MODE = "LOW" *) reg [5:0] pwmcnt;
    always @(posedge CLK)
