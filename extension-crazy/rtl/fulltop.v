@@ -36,7 +36,6 @@ module top(input            CLK,
    reg [3:0]   BANK0W;
    reg [7:0]   GBUSOUT;
    reg [15:0]  GA;
-   reg [18:0]  RA;
    
    
    /* Output register */
@@ -58,12 +57,19 @@ module top(input            CLK,
     *  CLKx2                       __/   \___/   \___/   \___/   \___/
     *                                 _   _   _   _   _   _   _   _   _
     *  CLKx4                       \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \
-    *                              ____             ___         _______
-    *  /AE                             \___________/   \_______/       
-    *                                  ^ downedge(CLKX4) & CLKx2 & CLK
-    *                                              ^ downedge(CLKx4) & !CLKx2 & /CLK
+    *                              ____             ___             ____
+    *  /AE (LONG_NAE)                  \___________/   \___________/    
+    *                              ____         _______         _______
+    *  /AE (EARLY_NAE)                 \_______/       \_______/       \
+    *                              ______         _______         ______
+    *  /AE (MIDDLE_NAE)                  \_______/       \_______/       
+    *                              ________         _______         ____
+    *  /AE (LATE_NAE)                      \_______/       \_______/       
     */
 
+   `define LONG_NAE 1
+   
+   `ifdef LONG_NAE
    reg tmp;
    always @(negedge CLKx4)
      if (CLKx2 && CLK)
@@ -75,6 +81,31 @@ module top(input            CLK,
        tmp <= 1'b1;
      else if (!CLKx2)
        nAE <= 1'b1;
+   `endif
+
+   `ifdef EARLY_NAE
+   always @(negedge CLKx4)
+     if (CLKx2)
+       nAE <= !CLK;
+   `endif
+
+   `ifdef MIDDLE_NAE  // this one does not work for some reason!
+   reg tmp;
+   always @(negedge CLKx4)
+     if (CLKx2)
+       tmp <= !CLK;
+   always @(posedge CLKx4)
+     nAE <= tmp;
+   `endif
+   
+   `ifdef LATE_NAE
+   reg tmp;
+   always @(negedge CLKx4)
+     if (CLKx2)
+       tmp <= !CLK;
+   always @(negedge CLKx4)
+     nAE <= tmp;
+   `endif
 
    /* Gigatron addresses */
    always @*
@@ -85,20 +116,23 @@ module top(input            CLK,
      end
    
    /* Ram addresses */
-   wire bankenable = GA[15] ^ (!nZPBANK && GA[7] && GAH[14:8] == 7'h00);
+   (* KEEP = "TRUE" *) wire gahz = (GAH[14:8] == 7'h00);
+   wire bankenable = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
+   reg [3:0] gbank;
    always @*
      casez ( { bankenable, BANK[1:0], nGOE } )
-       4'b0??? :  RA = { 4'b0000, GA[14:0] };            // no banking
-       4'b1000 :  RA = { BANK0R[3:0], GA[14:0] };        // bank0, reading
-       4'b1001 :  RA = { BANK0W[3:0], GA[14:0] };        // bank0, maybe writing
-       default :  RA = { 2'b00, BANK[1:0], GA[14:0] };   // bank123
+       4'b0??? :  gbank = { 4'b0000 };            // no banking
+       4'b1000 :  gbank = { BANK0R[3:0] };        // bank0, reading
+       4'b1001 :  gbank = { BANK0W[3:0] };        // bank0, maybe writing
+       default :  gbank = { 2'b00, BANK[1:0] };   // bank123
      endcase 
-   assign RAL = (nAE) ? RA[7:0] : 8'bZZZZZZZZ;
-   assign RAH = RA[18:8];
+   assign RAL = (nAE) ? GA[7:0] : 8'hZZ;
+   assign RAH = { gbank, GAH[14:8] };
+
    
    /* Gigatron data */
    wire misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
-   wire portx = SCLK && GAH[15:8] == 8'h00;
+   wire portx = SCLK && !GAH[15] && gahz;
    always @*
      if (! nAE)                 // transparent latch
        casez ( { portx, RAL[7:0] } )
@@ -106,13 +140,13 @@ module top(input            CLK,
          { 1'b1, 8'hF0 } :   GBUSOUT = { BANK0W[3:0], BANK0R[3:0] };           // bank data
          default:            GBUSOUT = RD[7:0];                                // ram data
        endcase
-   assign GBUS = (nGOE) ? 8'bZZZZZZZZ : GBUSOUT;
+   assign GBUS = (nGOE) ? 8'hZZ : GBUSOUT;
    
 
    /* Ram data and control */
    assign nROE = nGOE;
    assign nRWE = nGWE || nAE || !nGOE;
-   assign RD = (nROE) ? GBUS : 8'bZZZZZZZZ;
+   assign RD = (nROE) ? GBUS : 8'hZZ;
 
    /* Ctrl detection */
    wire nCTRL;

@@ -139,6 +139,11 @@ module top(input            CLK,
    
    /* ================ Output register */
 
+`ifdef DISABLE_VIDEO_SNOOP
+   always @(posedge CLK)
+     if (! nOL)
+       OUTD <= ALU;
+`else
    reg [5:0] outnxt;
    always @(posedge CLK)
      if (! nOL)
@@ -150,7 +155,7 @@ module top(input            CLK,
        outnxt[5:0] <= (snoop) ? RD[5:0] : 6'h00;
      else if (nBE && !nAE)
        OUTD[5:0] <= outnxt[5:0];
-
+`endif
    
    /* ================ Ctrl codes */
    
