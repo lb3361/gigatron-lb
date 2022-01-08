@@ -276,7 +276,6 @@ proc set_process_props {} {
    project set "I/O Pin Termination" "Keeper" -process "Fit"
    project set "HDL Equations Style" "ABEL" -process "Fit"
    project set "Implementation Template" "Optimize Density" -process "Fit"
-   project set "Macrocell Power Setting" "Low" -process "Fit"
 
    # project set "Create Programmable GND Pins on Unused I/O" "true" -process "Fit"
    # project set "Preserve Unused Inputs" "false" -process "Fit"

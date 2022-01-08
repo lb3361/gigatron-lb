@@ -26,14 +26,14 @@ module top(input            CLK,
            output reg       PWM
            );
    
-   (* PWR_MODE = "LOW" *) reg         SCLK;
-   (* PWR_MODE = "LOW" *) reg         nZPBANK;
-   (* PWR_MODE = "LOW" *) reg [1:0]   BANK;
-   (* PWR_MODE = "LOW" *) reg [3:0]   BANK0R;
-   (* PWR_MODE = "LOW" *) reg [3:0]   BANK0W;
-   (* PWR_MODE = "LOW" *) reg [5:0]   PWMD;
-   (* PWR_MODE = "LOW" *) reg [3:0]   VBANK;
-   (* PWR_MODE = "STD" *) reg [15:0]  VADDR;
+   reg         SCLK;
+   reg         nZPBANK;
+   reg [1:0]   BANK;
+   reg [3:0]   BANK0R;
+   reg [3:0]   BANK0W;
+   reg [5:0]   PWMD;
+   reg [3:0]   VBANK;
+   reg [15:0]  VADDR;
 
    /* ================ Clocks
     *
@@ -56,7 +56,7 @@ module top(input            CLK,
     *  Cycle                       --VVV-vvvGGGGGGGG-VVV-vvvGGGGGGGG-VVV
     */
    
-   (* PWR_MODE = "STD" *) reg nBE;
+   reg nBE;
    always @(negedge CLKx4)
      begin
         if (CLKx2)
@@ -66,13 +66,10 @@ module top(input            CLK,
    
    /* ================ Gigatron data bus */
    
-   (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) wire gahz;
-   assign gahz = (GAH[14:8] == 7'h00);
-   (* PWR_MODE = "LOW" *) wire portx;
-   assign portx = SCLK && !GAH[15] && gahz;
-   (* PWR_MODE = "LOW" *) wire misox;
-   assign misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
-   (* PWR_MODE = "LOW" *) reg [7:0] gbusout;
+   (* KEEP = "TRUE" *) wire gahz = (GAH[14:8] == 7'h00);
+   wire portx = SCLK && !GAH[15] && gahz;
+   wire misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
+   reg [7:0] gbusout;
    always @*
      if (! nAE)                 // transparent latch
        casez ( { portx, RAL[7:0] } )
@@ -85,9 +82,8 @@ module top(input            CLK,
    
    /* ================ Gigatron bank selection */
    
-   (* PWR_MODE = "STD" *) wire bankenable;
-   assign bankenable = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
-   (* PWR_MODE = "STD" *) (* KEEP = "TRUE" *) reg [3:0] gbank;
+   wire bankenable = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
+   reg [3:0] gbank;
    always @*
      casez ( { bankenable, BANK[1:0], nGOE } )
        4'b0??? :  gbank = { 4'b0000 };            // no banking
@@ -110,7 +106,7 @@ module top(input            CLK,
    assign nRWE = nGWE || nAE || !nGOE;
    assign RD = (nRWE) ? 8'hZZ : GBUS;
    
-   (* PWR_MODE = "STD" *) reg [18:0] ra;
+   reg [18:0] ra;
    always @(posedge CLKx4)
      if (nAE)
        ra <= { VBANK[3:2], VBANK[nBE], VADDR[15:0] };
@@ -122,9 +118,9 @@ module top(input            CLK,
    
    /* ================ Scanline detection */ 
    
-   (* PWR_MODE = "LOW" *) reg snoop;
-   (* PWR_MODE = "LOW" *) wire snoopchg = !nGOE && !(gahz && !GAH[15]);
-   (* PWR_MODE = "LOW" *) wire [7:0] nvaddr = VADDR[7:0] + 8'h01;
+   reg snoop;
+   wire snoopchg = !nGOE && !(gahz && !GAH[15]);
+   wire [7:0] nvaddr = VADDR[7:0] + 8'h01;
    always @(negedge CLKx2)
      if (! nAE)
        begin
@@ -158,45 +154,46 @@ module top(input            CLK,
    
    /* ================ Ctrl codes */
    
-   (* PWR_MODE = "LOW" *) wire nCTRL = nAE || nGOE || nGWE;
+   wire nCTRL = nAE || nGOE || nGWE;
    assign nACTRL =   nCTRL || RAL[3:2] != 2'b00;
    assign nADEV[0] = nAE   || RAL[7:4] == 4'b0000;
    assign nADEV[1] = nAE   || RAL[7:4] == 4'b0001;
-   always @(posedge nCTRL)
-     begin
-        /* Normal ctrl code */         
-        if (RAL[3:2] != 2'b00)
-          begin
-             MOSI <= GAH[15];
-             BANK <= RAL[7:6];
-             nZPBANK <= RAL[5];
-             nSS <= RAL[3:2];
-             SCLK <= RAL[0];
-             SCK <= RAL[0] ^~ RAL[4];
-             if (RAL[1:0] == 2'b11) // System reset
-               begin
-                  BANK0R[3:0] <= 4'b0;
-                  BANK0W[3:0] <= 4'b0;
-                  VBANK[3:0] <= 4'b0;
-                  PWMD[5:0] <= 6'h00;
-               end
-          end
-        /* Extended ctrl code */
-        else
-          case (RAL[7:4])
-            4'hf : begin        // Device 0xf : extended banking
-               BANK0R[3:0] <= GAH[11:8];
-               BANK0W[3:0] <= GAH[15:12];
+   always @(posedge CLKx4)
+     if (!nAE && nBE && !nCTRL)
+       begin
+          /* Normal ctrl code */         
+          if (RAL[3:2] != 2'b00)
+            begin
+               MOSI <= GAH[15];
+               BANK <= RAL[7:6];
+               nZPBANK <= RAL[5];
+               nSS <= RAL[3:2];
+               SCLK <= RAL[0];
+               SCK <= RAL[0] ^~ RAL[4];
+               if (RAL[1:0] == 2'b11) // System reset
+                 begin
+                    BANK0R[3:0] <= 4'b0;
+                    BANK0W[3:0] <= 4'b0;
+                    VBANK[3:0] <= 4'b0;
+                    PWMD[5:0] <= 6'h00;
+                 end
             end
-            4'he : begin        // Device 0xe : set video bank
-               VBANK[3:0] <= GAH[11:8];
-            end
-            4'hd : begin        // Device 0xd : PWM
-               PWMD[5:0] <= GAH[15:10];
-            end
-          endcase
-     end
-
+          /* Extended ctrl code */
+          else
+            case (RAL[7:4])
+              4'hf : begin        // Device 0xf : extended banking
+                 BANK0R[3:0] <= GAH[11:8];
+                 BANK0W[3:0] <= GAH[15:12];
+              end
+              4'he : begin        // Device 0xe : set video bank
+                 VBANK[3:0] <= GAH[11:8];
+              end
+              4'hd : begin        // Device 0xd : PWM
+                 PWMD[5:0] <= GAH[15:10];
+              end
+            endcase
+       end
+   
 
    /* ======== Bit reversed PWM 
     *
@@ -204,7 +201,7 @@ module top(input            CLK,
     * that are more easily filtered.
     */
    
-   (* PWR_MODE = "LOW" *) reg [5:0] pwmcnt;
+   reg [5:0] pwmcnt;
    always @(posedge CLK)
      pwmcnt <= pwmcnt + 6'h01;
    wire [5:0] rpwmcnt = { pwmcnt[0], pwmcnt[1], pwmcnt[2], pwmcnt[3], pwmcnt[4], pwmcnt[5] };

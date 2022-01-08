@@ -3,7 +3,7 @@
 /* Goal: Achieving parity with the V7 GAL-based boards.
    Bonus: Support for 512KB banking. */
 
-module top(input CLK,
+module top(input            CLK,
            input            CLKx2,
            input            CLKx4,
            input            nGOE,
@@ -29,17 +29,16 @@ module top(input CLK,
            output           PWM
            );
    
-   (* PWR_MODE = "LOW" *) reg         SCLK;
-   (* PWR_MODE = "LOW" *) reg         nZPBANK;
-   (* PWR_MODE = "LOW" *) reg [1:0]   BANK;
-   (* PWR_MODE = "LOW" *) reg [3:0]   BANK0R;
-   (* PWR_MODE = "LOW" *) reg [3:0]   BANK0W;
-   (* PWR_MODE = "LOW" *) reg [7:0]   GBUSOUT;
-
-   reg [15:0]               GA;
-   reg [18:0]               RA;
-
-
+   reg         SCLK;
+   reg         nZPBANK;
+   reg [1:0]   BANK;
+   reg [3:0]   BANK0R;
+   reg [3:0]   BANK0W;
+   reg [7:0]   GBUSOUT;
+   reg [15:0]  GA;
+   reg [18:0]  RA;
+   
+   
    /* Output register */
    always @(posedge CLK)
      begin
@@ -86,10 +85,7 @@ module top(input CLK,
      end
    
    /* Ram addresses */
-   (* PWR_MODE = "LOW" *) (* KEEP = "TRUE" *) wire gahz;
-   (* PWR_MODE = "STD" *) wire bankenable;
-   assign gahz = (GAH[14:8] == 7'h00);
-   assign bankenable = GA[15] ^ (!nZPBANK && GA[7] && gahz);
+   wire bankenable = GA[15] ^ (!nZPBANK && GA[7] && GAH[14:8] == 7'h00);
    always @*
      casez ( { bankenable, BANK[1:0], nGOE } )
        4'b0??? :  RA = { 4'b0000, GA[14:0] };            // no banking
@@ -101,10 +97,8 @@ module top(input CLK,
    assign RAH = RA[18:8];
    
    /* Gigatron data */
-   (* PWR_MODE = "LOW" *) wire misox;
-   (* PWR_MODE = "LOW" *) wire portx;
-   assign misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
-   assign portx = SCLK && !GAH[15] && gahz;
+   wire misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
+   wire portx = SCLK && GAH[15:8] == 8'h00;
    always @*
      if (! nAE)                 // transparent latch
        casez ( { portx, RAL[7:0] } )
