@@ -156,33 +156,35 @@ module top(input            CLK,
    assign nADEV[1] = (GA[7:4] == 4'b0001);
    
    /* Ctrl bits */
-   always @(posedge nCTRL)
-     begin
-        /* Normal ctrl code */         
-        if (GA[3:2] != 2'b00)
-          begin
-             MOSI <= GA[15];
-             BANK <= GA[7:6];
-             nZPBANK <= GA[5];
-             nSS <= GA[3:2];
-             SCLK <= GA[0];
-             SCK <= GA[0] ^~ GA[4];
-             /* System reset */
-             if (GA[1:0] == 2'b11)
-               begin
-                  BANK0R[3:0] <= 4'b0;
-                  BANK0W[3:0] <= 4'b0;
-               end
-          end
-        /* Extended ctrl code */
-        else
-          case (GA[7:4])      /* Device 0xf : set BANK0W/R */
-            4'hf : begin
-               BANK0R[3:0] <= GA[11:8];
-               BANK0W[3:0] <= GA[15:12];
+   /* Ctrl bits */
+   always @(negedge CLKx2)
+     if (!CLK && !nCTRL)
+       begin
+          /* Normal ctrl code */         
+          if (GA[3:2] != 2'b00)
+            begin
+               MOSI <= GA[15];
+               BANK <= GA[7:6];
+               nZPBANK <= GA[5];
+               nSS <= GA[3:2];
+               SCLK <= GA[0];
+               SCK <= GA[0] ^~ GA[4];
+               /* System reset */
+               if (GA[1:0] == 2'b11)
+                 begin
+                    BANK0R[3:0] <= 4'b0;
+                    BANK0W[3:0] <= 4'b0;
+                 end
             end
-          endcase
-     end
+          /* Extended ctrl code */
+          else
+            case (GA[7:4])      /* Device 0xf : set BANK0W/R */
+              4'hf : begin
+                 BANK0R[3:0] <= GA[11:8];
+                 BANK0W[3:0] <= GA[15:12];
+              end
+            endcase
+       end
 
    /* PWM */
    assign PWM = 1'b0;

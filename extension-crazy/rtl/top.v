@@ -83,7 +83,7 @@ module top(input            CLK,
    /* ================ Gigatron bank selection */
    
    wire bankenable = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
-   reg [3:0] gbank;
+   (* KEEP = "TRUE" *) reg [3:0] gbank;
    always @*
      casez ( { bankenable, BANK[1:0], nGOE } )
        4'b0??? :  gbank = { 4'b0000 };            // no banking
@@ -103,7 +103,7 @@ module top(input            CLK,
     */
 
    assign nROE = 1'b0;
-   assign nRWE = nGWE || nAE || !nGOE;
+   assign nRWE = nGWE || nAE || !nGOE || !nBE;
    assign RD = (nRWE) ? 8'hZZ : GBUS;
    
    reg [18:0] ra;
