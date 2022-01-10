@@ -12,8 +12,8 @@ module top(input            CLK,
            input            nOL,
            inout [7:0]      RAL,
            output [18:8]    RAH,
-           output           nROE,
-           output           nRWE,
+           output reg       nROE,
+           output reg       nRWE,
            inout [7:0]      RD,
            output reg       nAE,
            inout [7:0]      GBUS,
@@ -36,7 +36,7 @@ module top(input            CLK,
    reg [3:0]   BANK0W;
    reg [7:0]   GBUSOUT;
    reg [15:0]  GA;
-   
+   reg         nBE;
    
    /* Output register */
    always @(posedge CLK)
@@ -65,48 +65,58 @@ module top(input            CLK,
     *  /AE (MIDDLE_NAE)                  \_______/       \_______/       
     *                              ________         _______         ____
     *  /AE (LATE_NAE)                      \_______/       \_______/       
+    * 
+    *  /BE precedes /AE by one CLKx4 cycle.
     */
 
    `define LONG_NAE 1
    
    `ifdef LONG_NAE
-   reg tmp;
    always @(negedge CLKx4)
-     if (CLKx2 && CLK)
-       begin
-          tmp <= 1'b0;
-          nAE <= 1'b0;
-       end
-     else if (!CLKx2 && !tmp)
-       tmp <= 1'b1;
-     else if (!CLKx2)
-       nAE <= 1'b1;
+     if (CLKx2 && !CLK)
+       nBE <= 1'b1;
+     else
+       nBE <= 1'b0;
+   always @(negedge CLKx4)
+     nAE <= nBE;
    `endif
 
    `ifdef EARLY_NAE
    always @(negedge CLKx4)
      if (CLKx2)
        nAE <= !CLK;
+   always @(negedge CLKx4)
+     nBE <= !nAE;
    `endif
 
    `ifdef MIDDLE_NAE  // this one does not work for some reason!
-   reg tmp;
-   always @(negedge CLKx4)
-     if (CLKx2)
-       tmp <= !CLK;
    always @(posedge CLKx4)
-     nAE <= tmp;
+     if (CLKx2)
+       nAE <= !CLK;
+   always @(posedge CLKx4)
+     nBE <= !nAE;
    `endif
    
    `ifdef LATE_NAE
-   reg tmp;
    always @(negedge CLKx4)
      if (CLKx2)
-       tmp <= !CLK;
+       nBE <= !CLK;
    always @(negedge CLKx4)
-     nAE <= tmp;
+     nAE <= nBE;
    `endif
 
+   `ifdef MIDDLE_NAE
+   wire CLOCK = CLKx4;
+   `else
+   wire CLOCK = !CLKx4;
+   `endif
+  
+   `ifdef LONG_NAE
+   wire nBEraising = !nAE && !nBE && CLKx2;
+   `else
+   wire nBEraising = !nAE && !nBE;
+   `endif
+   
    /* Gigatron addresses */
    always @*
      begin
@@ -128,7 +138,6 @@ module top(input            CLK,
      endcase 
    assign RAL = (nAE) ? GA[7:0] : 8'hZZ;
    assign RAH = { gbank, GAH[14:8] };
-
    
    /* Gigatron data */
    wire misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
@@ -142,12 +151,24 @@ module top(input            CLK,
        endcase
    assign GBUS = (nGOE) ? 8'hZZ : GBUSOUT;
    
-
+   
    /* Ram data and control */
-   assign nROE = nGOE;
-   assign nRWE = nGWE || nAE || !nGOE;
-   assign RD = (nROE) ? GBUS : 8'hZZ;
+   always @(posedge CLOCK, posedge nAE)
+     if (nAE)
+       nROE <= 1'b0;
+     else if (nBEraising && !nGWE && nGOE)
+       nROE <= 1'b1;
 
+   assign RD = (nROE) ? GBUS : 8'hZZ;
+   
+   wire nRWEreset = CLOCK & nROE;
+   always @(posedge CLOCK, posedge nRWEreset)
+     if (nRWEreset)
+       nRWE <= 1'b0;
+     else
+       nRWE <= 1'b1;
+   
+   
    /* Ctrl detection */
    wire nCTRL;
    assign nCTRL = nGOE || nGWE;
@@ -155,7 +176,6 @@ module top(input            CLK,
    assign nADEV[0] = (GA[7:4] == 4'b0000);
    assign nADEV[1] = (GA[7:4] == 4'b0001);
    
-   /* Ctrl bits */
    /* Ctrl bits */
    always @(negedge CLKx2)
      if (!CLK && !nCTRL)
