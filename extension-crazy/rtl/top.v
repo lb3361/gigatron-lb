@@ -127,13 +127,22 @@ module top(input            CLK,
        nRWE <= nGWE || !nGOE;
      else
        nRWE <= 1'b1;
-   
+
+`define WRITE_WITH_NROE_AFTER_NRWE 1
+`ifdef WRITE_WITH_NROE_NRWE_TOGETHER
    always @(negedge CLKx4, posedge nAE)
      if (nAE)
        nROE <= 1'b0;
      else if (!nBE && !nAE)
        nROE <= !nGWE && nGOE;
-   
+`endif
+`ifdef WRITE_WITH_NROE_AFTER_NRWE
+   always @(posedge CLKx4, posedge nAE)
+     if (nAE)
+       nROE <= 1'b0;
+     else if (nBE && !nAE)
+       nROE <= !nRWE;
+`endif
    assign RD = (nROE) ? GBUS : 8'hZZ;
 
    
