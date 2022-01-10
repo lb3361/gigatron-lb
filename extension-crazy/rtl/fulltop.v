@@ -69,7 +69,7 @@ module top(input            CLK,
     *  /BE precedes /AE by one CLKx4 cycle.
     */
 
-   `define LONG_NAE 1
+   `define LATE_NAE 1
    
    `ifdef LONG_NAE
    always @(negedge CLKx4)
@@ -89,7 +89,14 @@ module top(input            CLK,
      nBE <= !nAE;
    `endif
 
-   `ifdef MIDDLE_NAE  // this one does not work for some reason!
+   `ifdef MIDDLE_NAE
+   /* This does not work, most likely because
+    * the CLKx4 signal occasionally rebounds
+    * above 0.4v when CLKx4 should be low.
+    * Hopefully this gets cured in new board versions
+    * by powering the PLL in 3.3v
+    * and adding a 22 ohms serial resistor on CLKx4.
+    */
    always @(posedge CLKx4)
      if (CLKx2)
        nAE <= !CLK;
@@ -153,21 +160,28 @@ module top(input            CLK,
    
    
    /* Ram data and control */
-   always @(posedge CLOCK, posedge nAE)
-     if (nAE)
-       nROE <= 1'b0;
-     else if (nBEraising && !nGWE && nGOE)
-       nROE <= 1'b1;
+   /* One could do:
+    * 
+    * assign nROE = 1'b0;
+    * assign nRWE = nGWE || nAE || !nGOE || !nBE;
+    * assign RD = (nRWE) ? 8'hZZ : GBUS;
+    * 
+    * but the following should give better write timings
+    */
 
-   assign RD = (nROE) ? GBUS : 8'hZZ;
-   
-   wire nRWEreset = CLOCK & nROE;
-   always @(posedge CLOCK, posedge nRWEreset)
-     if (nRWEreset)
-       nRWE <= 1'b0;
+   always @(negedge CLKx4)
+     if (!nBE && !nAE)
+       nRWE <= nGWE || !nGOE;
      else
        nRWE <= 1'b1;
    
+   always @(negedge CLKx4, posedge nAE)
+     if (nAE)
+       nROE <= 1'b0;
+     else if (!nBE && !nAE)
+       nROE <= !nGWE && nGOE;
+   
+   assign RD = (nROE) ? GBUS : 8'hZZ;
    
    /* Ctrl detection */
    wire nCTRL;

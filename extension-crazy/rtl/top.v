@@ -9,8 +9,8 @@ module top(input            CLK,
            input            nOL,
            inout [7:0]      RAL,
            output [18:8]    RAH,
-           output           nROE,
-           output           nRWE,
+           output reg       nROE,
+           output reg       nRWE,
            inout [7:0]      RD,
            output reg       nAE,
            inout [7:0]      GBUS,
@@ -102,9 +102,6 @@ module top(input            CLK,
     * idea of what should be on RAL.
     */
 
-   assign nROE = 1'b0;
-   assign nRWE = nGWE || nAE || !nGOE || !nBE;
-   assign RD = (nRWE) ? 8'hZZ : GBUS;
    
    reg [18:0] ra;
    always @(posedge CLKx4)
@@ -115,11 +112,36 @@ module top(input            CLK,
    assign RAH = (nAE) ? ra[18:8] : { gbank, GAH[14:8] };
    assign RAL = (nAE) ? ra[7:0] : 8'hZZ;
 
+
+   /* One could do:
+    * 
+    * assign nROE = 1'b0;
+    * assign nRWE = nGWE || nAE || !nGOE || !nBE;
+    * assign RD = (nRWE) ? 8'hZZ : GBUS;
+    * 
+    * but the following should give better write timings
+    */
+
+   always @(negedge CLKx4)
+     if (!nBE && !nAE)
+       nRWE <= nGWE || !nGOE;
+     else
+       nRWE <= 1'b1;
+   
+   always @(negedge CLKx4, posedge nAE)
+     if (nAE)
+       nROE <= 1'b0;
+     else if (!nBE && !nAE)
+       nROE <= !nGWE && nGOE;
+   
+   assign RD = (nROE) ? GBUS : 8'hZZ;
+
+   
    
    /* ================ Scanline detection */ 
    
-   reg snoop;
-   wire snoopchg = !nGOE && !(gahz && !GAH[15]);
+   reg        snoop;
+   wire       snoopchg = !nGOE && !(gahz && !GAH[15]);
    wire [7:0] nvaddr = VADDR[7:0] + 8'h01;
    always @(negedge CLKx2)
      if (! nAE)

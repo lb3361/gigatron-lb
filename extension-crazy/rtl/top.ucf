@@ -37,7 +37,7 @@ NET "nAE"      LOC = "P3"   | BUFG = OE  ;
 NET "nGOE"     LOC = "P4"   | BUFG = OE  ; 
 NET "nGWE"     LOC = "P53"  ; 
 NET "nOL"      LOC = "P99"  ; 
-NET "nROE"     LOC = "P2"   ; 
+NET "nROE"     LOC = "P2"   | BUFG = OE  ; 
 NET "nRWE"     LOC = "P92"  ; 
 NET "nSS<0>"   LOC = "P24"  ; 
 NET "nSS<1>"   LOC = "P25"  ; 
