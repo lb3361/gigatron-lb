@@ -32,8 +32,8 @@ module top(input            CLK,
    reg         SCLK;
    reg         nZPBANK;
    reg [1:0]   BANK;
-   reg [3:0]   BANK0R;
-   reg [3:0]   BANK0W;
+   reg [3:0]   NBANKR;
+   reg [3:0]   NBANKW;
    reg [7:0]   GBUSOUT;
    reg [15:0]  GA;
    reg         nBE;
@@ -134,17 +134,13 @@ module top(input            CLK,
    
    /* Ram addresses */
    (* KEEP = "TRUE" *) wire gahz = (GAH[14:8] == 7'h00);
-   wire bankenable = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
-   reg [3:0] gbank;
-   always @*
-     casez ( { bankenable, BANK[1:0], nGOE } )
-       4'b0??? :  gbank = { 4'b0000 };            // no banking
-       4'b1000 :  gbank = { BANK0R[3:0] };        // bank0, reading
-       4'b1001 :  gbank = { BANK0W[3:0] };        // bank0, maybe writing
-       default :  gbank = { 2'b00, BANK[1:0] };   // bank123
-     endcase 
-   assign RAL = (nAE) ? GA[7:0] : 8'hZZ;
+   (* KEEP = "TRUE" *) wire [3:0] nbank = (nGOE) ? NBANKW : NBANKR;
+   (* KEEP = "TRUE" *) wire nbankenable = GAH[15] && nbank != 4'b0000;
+   (* PWR_MODE = "STD" *) wire bankenable = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
+   wire [3:0] gbank = (nbankenable) ? nbank : (bankenable) ? { 2'b00, BANK } : 4'b0000;
    assign RAH = { gbank, GAH[14:8] };
+   assign RAL = (nAE) ? GA[7:0] : 8'hZZ;
+
    
    /* Gigatron data */
    wire misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
@@ -153,7 +149,7 @@ module top(input            CLK,
      if (! nAE)                 // transparent latch
        casez ( { portx, RAL[7:0] } )
          { 1'b1, 8'h00 } :   GBUSOUT = { BANK[1:0], XIN[4:3], 3'b000, misox }; // spi data
-         { 1'b1, 8'hF0 } :   GBUSOUT = { BANK0W[3:0], BANK0R[3:0] };           // bank data
+         { 1'b1, 8'hF0 } :   GBUSOUT = { NBANKW[3:0], NBANKR[3:0] };           // bank data
          default:            GBUSOUT = RD[7:0];                                // ram data
        endcase
    assign GBUS = (nGOE) ? 8'hZZ : GBUSOUT;
@@ -206,16 +202,16 @@ module top(input            CLK,
                /* System reset */
                if (GA[1:0] == 2'b11)
                  begin
-                    BANK0R[3:0] <= 4'b0;
-                    BANK0W[3:0] <= 4'b0;
+                    NBANKR[3:0] <= 4'b0;
+                    NBANKW[3:0] <= 4'b0;
                  end
             end
           /* Extended ctrl code */
           else
-            case (GA[7:4])      /* Device 0xf : set BANK0W/R */
+            case (GA[7:4])      /* Device 0xf : set NBANKW/R */
               4'hf : begin
-                 BANK0R[3:0] <= GA[11:8];
-                 BANK0W[3:0] <= GA[15:12];
+                 NBANKR[3:0] <= GA[11:8];
+                 NBANKW[3:0] <= GA[15:12];
               end
             endcase
        end

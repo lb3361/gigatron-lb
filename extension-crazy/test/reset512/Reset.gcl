@@ -50,7 +50,7 @@ $1f8 CtrlBits=
     _sysArgs0=                  {Copy result in sysArgs}
     255^ q.                     {Invert memory value again}
     _sysArgs0^                  {Compare with inverted copy}
-    [if<>0                      {If different then we have an A16 and 128K}
+    [if<>0                      {If different then we have an A16 and 128K or more}
       push Check512k! pop       {$1c31 for 128k, $0c35 for 512k}
       Char= PrintChar!          {Print '1'}
       >Char, 2<< i=  ]          {Obtain two low digits of memory size}
@@ -259,16 +259,14 @@ $1f8 CtrlBits=
 [def
   \SYS_ExpanderControl_v4_40 _sysFn=
   $8500 p=
-  $803c 40!! 
   $fff0 40!! $aa p. { write $aa into bank 15}
   $5ff0 40!! $55 p. { write $55 into bank 5 while reading from bank 15}
   p, $aa^           { read and compare with $aa }
   [if=0             { found 512k }
-    $00f0 40!!      { restore bank0r/bank0w }
+    $00f0 40!!      { restore new banking register to default }
     $0c35 i=
    else
     $1c31 i=]
-  $806c 40!!
   i ret
 ] Check512k=
 

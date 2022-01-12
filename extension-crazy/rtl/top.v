@@ -29,8 +29,8 @@ module top(input            CLK,
    reg         SCLK;
    reg         nZPBANK;
    reg [1:0]   BANK;
-   reg [3:0]   BANK0R;
-   reg [3:0]   BANK0W;
+   reg [3:0]   NBANKR;
+   reg [3:0]   NBANKW;
    reg [5:0]   PWMD;
    reg [3:0]   VBANK;
    reg [15:0]  VADDR;
@@ -74,23 +74,18 @@ module top(input            CLK,
      if (! nAE)                 // transparent latch
        casez ( { portx, RAL[7:0] } )
          { 1'b1, 8'h00 } :   gbusout = { BANK[1:0], XIN[4:3], 3'b000, misox }; // spi data
-         { 1'b1, 8'hF0 } :   gbusout = { BANK0W[3:0], BANK0R[3:0] };           // bank data
+         { 1'b1, 8'hF0 } :   gbusout = { NBANKW[3:0], NBANKR[3:0] };           // bank data
          default:            gbusout = RD[7:0];                                // ram data
        endcase
    assign GBUS = (nGOE) ? 8'hZZ : gbusout;
    
    
    /* ================ Gigatron bank selection */
-   
-   wire bankenable = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
-   (* KEEP = "TRUE" *) reg [3:0] gbank;
-   always @*
-     casez ( { bankenable, BANK[1:0], nGOE } )
-       4'b0??? :  gbank = { 4'b0000 };            // no banking
-       4'b1000 :  gbank = { BANK0R[3:0] };        // bank0, reading
-       4'b1001 :  gbank = { BANK0W[3:0] };        // bank0, maybe writing
-       default :  gbank = { 2'b00, BANK[1:0] };   // bank123
-     endcase 
+
+   (* KEEP = "TRUE" *) wire [3:0] nbank = (nGOE) ? NBANKW : NBANKR;
+   (* KEEP = "TRUE" *) wire nbankenable = GAH[15] && nbank != 4'b0000;
+   (* PWR_MODE = "STD" *) wire bankenable = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
+   wire [3:0] gbank = (nbankenable) ? nbank : (bankenable) ? { 2'b00, BANK } : 4'b0000;
    
    
    /* ================ SRAM interface 
@@ -101,24 +96,20 @@ module top(input            CLK,
     * both the xc95144 and the 74lvc244 have the same
     * idea of what should be on RAL.
     */
-
    
    reg [18:0] ra;
+   assign RAH = (nAE) ? ra[18:8] : { gbank, GAH[14:8] };
+   assign RAL = (nAE) ? ra[7:0] : 8'hZZ;
    always @(posedge CLKx4)
      if (nAE)
        ra <= { VBANK[3:2], VBANK[nBE], VADDR[15:0] };
      else
-       ra <= { gbank, GAH[14:8], RAL[7:0] };
-   assign RAH = (nAE) ? ra[18:8] : { gbank, GAH[14:8] };
-   assign RAL = (nAE) ? ra[7:0] : 8'hZZ;
-
+       ra <= { RAH, RAL };
 
    /* One could do:
-    * 
-    * assign nROE = 1'b0;
-    * assign nRWE = nGWE || nAE || !nGOE || !nBE;
-    * assign RD = (nRWE) ? 8'hZZ : GBUS;
-    * 
+    *   assign nROE = 1'b0;
+    *   assign nRWE = nGWE || nAE || !nGOE || !nBE;
+    *   assign RD = (nRWE) ? 8'hZZ : GBUS;
     * but the following should give better write timings
     */
 
@@ -208,8 +199,8 @@ module top(input            CLK,
                SCK <= RAL[0] ^~ RAL[4];
                if (RAL[1:0] == 2'b11) // System reset
                  begin
-                    BANK0R[3:0] <= 4'b0;
-                    BANK0W[3:0] <= 4'b0;
+                    NBANKR[3:0] <= 4'b0;
+                    NBANKW[3:0] <= 4'b0;
                     VBANK[3:0] <= 4'b0;
                     PWMD[5:0] <= 6'h00;
                  end
@@ -218,8 +209,8 @@ module top(input            CLK,
           else
             case (RAL[7:4])
               4'hf : begin        // Device 0xf : extended banking
-                 BANK0R[3:0] <= GAH[11:8];
-                 BANK0W[3:0] <= GAH[15:12];
+                 NBANKR[3:0] <= GAH[11:8];
+                 NBANKW[3:0] <= GAH[15:12];
               end
               4'he : begin        // Device 0xe : set video bank
                  VBANK[3:0] <= GAH[11:8];

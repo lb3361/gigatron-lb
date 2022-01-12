@@ -6,15 +6,14 @@
 
 void old_set_bank(int bank)
 {
-  bank = bank << 6;
-  SYS_ExpanderControl( ctrlBits_v5 ^ ((ctrlBits_v5 ^ bank) & 0xc0) );
+  char bits = ctrlBits_v5;
+  SYS_ExpanderControl( 0x00F0 ); // reset new banking registers
+  SYS_ExpanderControl( bits ^ ((bits ^ (bank << 6)) & 0xc0) );
 }
 
 void new_set_bank(int rbank, int wbank)
 {
-  register char bits = ctrlBits_v5;
   SYS_ExpanderControl( ((wbank & 0xf) << 12) | ((rbank & 0xf) << 8) | 0xF0 );
-  SYS_ExpanderControl( bits & 0x3c );  // set old bank 0
 }
 
 void test_rw(int bank1, int bank2)
@@ -27,8 +26,6 @@ void test_rw(int bank1, int bank2)
   cprintf("Reading %d, writing %d\n", bank2, bank1);
   cprintf(" rd %02x, wr %02x, rd %02x\n", *addr, (*addr = 0x55), *addr);
 }
-
-
 
 
 int main()

@@ -7,9 +7,8 @@ int main()
 {
   // Display a red line at the top of the screen
   SYS_ExpanderControl(0xe1f0u);
-  SYS_ExpanderControl(0x3c);
   memset((void*)0x8800u, 0x3, 160);
-  SYS_ExpanderControl(0x7c);
+  SYS_ExpanderControl(0x00f0u);
   
   // Print something
   cprintf("\n\nHello World\n\n");

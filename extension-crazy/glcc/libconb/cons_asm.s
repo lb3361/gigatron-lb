@@ -3,21 +3,18 @@
 def scope():
 
     def code_bank():
-        # This assumes that the main program only uses normal banking
-        # Clobbers R22. Use R21
+        # Clobbers R22. Use R21.
         
         ctrlBits_v5 = 0x1f8
         nohop()
         
-        ## save current bank
+        ## save current bank (to be completed)
         label('_cons_save_current_bank')
-        LDWI(v('_cons_restore_saved_bank')+12);STW(R22)
-        LDWI(ctrlBits_v5);PEEK();ANDI(0xC0);POKE(R22);RET();
-
+        RET()
+        
         ## restore_saved_bank
         label('_cons_restore_saved_bank')
         LDWI('SYS_ExpanderControl_v4_40');STW('sysFn');
-        LDWI(ctrlBits_v5);PEEK();ANDI(0x3C);ORI(0);SYS(40);
         LDWI(0x00F0);SYS(40);
         RET();
     
@@ -36,11 +33,10 @@ def scope():
         ## write to video bank for address in vAC
         label('_cons_write_to_video_bank')
         PUSH()
-        ORI(0xff);STW(R21)
+        ORI(0xff);STW(R21) # for update_extbank triggers
+        CALLI('_cons_save_current_bank')
         LDWI('SYS_ExpanderControl_v4_40');STW('sysFn')
         LDW(R21);CALLI('_cons_update_extbank')
-        CALLI('_cons_save_current_bank')
-        LDWI(ctrlBits_v5);PEEK();ANDI(0x3f);SYS(40);
         POP();RET();
         
     module(name='conb_bank.s',
