@@ -18,5 +18,7 @@ very fast and it does not use the opening book because, absent a
 Gigatron OS, there is no way to load the file "book.txt" from the SD
 card. But it plays...
 
-This works with the normal v5a ROM but wastes time because
+This also works with the normal v5a ROM but wastes time because
 we could run the vCPU instead of sending pixels to the screen.
+Note that the program spends a substantial time initializing
+tables at the beginning. Be patient.

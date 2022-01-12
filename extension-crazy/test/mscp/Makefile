@@ -3,10 +3,10 @@ CC=glcc
 DEFS=-DAVOID_SCANF
 CFLAGS=-rom=v5a
 LDFLAGS=-map=64k,./mscp.ovl
-LIBS=-L../../glcc/libconb -lconb
+LIBCONB=../../glcc/libconb/libconb.a
 
-mscp.gt1: mscp.o
-	${CC} ${CFLAGS} ${LDFLAGS} mscp.o ${LIBS} -o $@
+mscp.gt1: mscp.o ${LIBCONB}
+	${CC} ${CFLAGS} ${LDFLAGS} mscp.o ${LIBCONB} -o $@
 
 %.o: %.c
 	${CC} ${CFLAGS} ${DEFS} -c $<

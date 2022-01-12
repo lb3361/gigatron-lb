@@ -3,20 +3,16 @@ GLCC=glcc
 
 
 LIBNAME=libconb
-SFILES=$(wildcard *.s)
-CFILES=$(wildcard *.c)
-O4FILES=${patsubst %.c,%_4.o,${CFILES}}
+SFILES=cons_asm.s
+CFILES=cons_setup.c
 O5FILES=${patsubst %.c,%_5.o,${CFILES}}
 O6FILES=${patsubst %.c,%_6.o,${CFILES}}
-OFILES=${O4FILES} ${O5FILES} ${O6FILES}
+OFILES=${O5FILES} ${O6FILES}
 
 all: ${LIBNAME}.a test.gt1
 
 ${LIBNAME}.a: ${SFILES} ${O4FILES} ${O5FILES} ${O6FILES}
 	cat $+ > $@
-
-%_4.o: %.c
-	${GLCC} -c -cpu=4 -o $@ $<
 
 %_5.o: %.c
 	${GLCC} -c -cpu=5 -o $@ $<

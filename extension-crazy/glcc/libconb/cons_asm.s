@@ -2,33 +2,56 @@
 
 def scope():
 
-    # -- int _console_printchars(int fgbg, char *addr, const char *s, int len)
-
-    
     def code_bank():
-        ctrlBits_v5 = 0x1f8
         # This assumes that the main program only uses normal banking
+        # Clobbers R22. Use R21
+        
+        ctrlBits_v5 = 0x1f8
         nohop()
-        label('_write_to_video_bank')
+        
+        ## save current bank
+        label('_cons_save_current_bank')
+        LDWI(v('_cons_restore_saved_bank')+12);STW(R22)
+        LDWI(ctrlBits_v5);PEEK();ANDI(0xC0);POKE(R22);RET();
+
+        ## restore_saved_bank
+        label('_cons_restore_saved_bank')
         LDWI('SYS_ExpanderControl_v4_40');STW('sysFn');
-        LDWI(v('_restore_saved_bank')+6);STW(R22)
-        LDWI(ctrlBits_v5);PEEK();POKE(R22);
-        LDWI(0xE1f0);SYS(40);   # read bank1, write bank E
-        LDWI(ctrlBits_v5);PEEK()
-        ANDI(0x3f);SYS(40)       # old banking bits set to zero
+        LDWI(ctrlBits_v5);PEEK();ANDI(0x3C);ORI(0);SYS(40);
+        LDWI(0x00F0);SYS(40);
         RET();
-        label('_restore_saved_bank')
-        LDWI('SYS_ExpanderControl_v4_40');STW('sysFn');
-        LDI(0)                  # ctrlBits cached here
-        SYS(40)
-        LDWI(0x00f0);SYS(40);   # reset to default
+    
+        ## set extended banking code for address in vAC
+        label('_cons_update_extbank')
+        BGE('.wbb1')
+        LDWI(0xF1F0);BRA('.wbb2')
+        label('.wbb1')
+        LDWI(0xE1F0);
+        label('.wbb2')
+        XORW(R21);BEQ('.wbb3')
+        XORW(R21);STW(R21);SYS(40);
+        label('.wbb3')
         RET()
 
+        ## write to video bank for address in vAC
+        label('_cons_write_to_video_bank')
+        PUSH()
+        ORI(0xff);STW(R21)
+        LDWI('SYS_ExpanderControl_v4_40');STW('sysFn')
+        LDW(R21);CALLI('_cons_update_extbank')
+        CALLI('_cons_save_current_bank')
+        LDWI(ctrlBits_v5);PEEK();ANDI(0x3f);SYS(40);
+        POP();RET();
+        
     module(name='conb_bank.s',
-           code=[ ('EXPORT', '_write_to_video_bank'),
-                  ('EXPORT', '_restore_saved_bank'),
+           code=[ ('EXPORT', '_cons_save_current_bank'),
+                  ('EXPORT', '_cons_restore_saved_bank'),
+                  ('EXPORT', '_cons_update_extbank'),
+                  ('EXPORT', '_cons_write_to_video_bank'),
                   ('CODE', '_write_to_video_bank', code_bank) ] )
 
+    
+    # -- int _console_printchars(int fgbg, char *addr, const char *s, int len)
     
     # Draws up to `len` characters from string `s` at the screen
     # position given by address `addr`.  This assumes that the
@@ -42,7 +65,7 @@ def scope():
     def code_printchars():
         label('_console_printchars')
         PUSH()
-        _CALLJ('_write_to_video_bank')
+        LDW(R9);CALLI('_cons_write_to_video_bank')
         _LDI('SYS_VDrawBits_134');STW('sysFn')   # prep sysFn
         LDW(R8);STW('sysArgs0')                  # move fgbg, freeing R8
         LDI(0);STW(R12)                          # R12: character counter
@@ -58,11 +81,11 @@ def scope():
         STW(R8);SUBI(50);_BGE('.ret')            # >= 132
         _LDI('font82up');STW(R13)
         label('.draw')
-        _CALLJ('_printonechar')
+        CALLI('_printonechar')
         LDI(1);ADDW(R12);STW(R12);               # increment counter
         XORW(R11);_BNE('.loop')                  # loop
         label('.ret')
-        _CALLJ('_restore_saved_bank')
+        CALLI('_cons_restore_saved_bank')
         tryhop(5);LDW(R12);POP();RET()
 
     def code_printonechar():
@@ -80,8 +103,8 @@ def scope():
 
     module(name='cons_printchar.s',
            code=[ ('EXPORT', '_console_printchars'),
-                  ('IMPORT', '_write_to_video_bank'),
-                  ('IMPORT', '_restore_saved_bank'),
+                  ('IMPORT', '_cons_write_to_video_bank'),
+                  ('IMPORT', '_cons_restore_saved_bank'),
                   ('CODE', '_console_printchars', code_printchars),
                   ('CODE', '_printonechar', code_printonechar) ] )
     
@@ -92,11 +115,12 @@ def scope():
     def code_clear():
         label('_console_clear')
         PUSH()
-        _CALLJ('_write_to_video_bank')
-        LDWI('SYS_SetMemory_v2_54');STW('sysFn')
+        LDW(R8);CALLI('_cons_write_to_video_bank')
         LDI(160);SUBW(R8);ST(R11)
         LD(R9);ANDI(0x3f);ST('sysArgs1')
         label('.loop')
+        LDW(R8);CALLI('_cons_update_extbank')
+        LDWI('SYS_SetMemory_v2_54');STW('sysFn')
         LD(R11);ST('sysArgs0')
         LDWI(0x8000);ORW(R8);STW('sysArgs2')
         SYS(54)
@@ -105,13 +129,14 @@ def scope():
         SUBI(1);
         STW(R10);
         _BNE('.loop')
-        _CALLJ('_restore_saved_bank')
+        CALLI('_cons_restore_saved_bank')
         tryhop(2);POP();RET()
 
     module(name='cons_clear.s',
            code=[ ('EXPORT', '_console_clear'),
-                  ('IMPORT', '_write_to_video_bank'),
-                  ('IMPORT', '_restore_saved_bank'),
+                  ('IMPORT', '_cons_write_to_video_bank'),
+                  ('IMPORT', '_cons_update_extbank'),
+                  ('IMPORT', '_cons_restore_saved_bank'),
                   ('CODE', '_console_clear', code_clear) ] )
     
 scope()

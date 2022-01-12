@@ -13,8 +13,8 @@ static void console_exitm_msgfunc(int retcode, const char *s)
     console_print(s, console_info.ncolumns);
   }
 
-  if (1) {
-    /* Halting code */
+  {
+    /* Halting code (flash pixel using the proper screen) */
     char c = 0;
     char *row = (char*)(((*(char*)0x100)|0x80) << 8);
     SYS_ExpanderControl(0xe1f0u);
@@ -26,6 +26,7 @@ static void console_exitm_msgfunc(int retcode, const char *s)
 
 void _console_setup(void)
 {
+  // TODO: Test availability of the 512KB extension
   SYS_ExpanderControl(0x0fe0u);  /* display on pages 14/15. Only page 14 used here. */
   _exitm_msgfunc = console_exitm_msgfunc;
   //console_state.fgbg = (int)0xff0cu;
