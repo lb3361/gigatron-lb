@@ -69,15 +69,37 @@ because it was available.
 
 ## 3. Usage
 
-Althouth the extension header has more signals and a different layout, this board is backward compatible with the latest version "dual drive" of the [GAL based extension board](../extension-retro). The following text only describes the features that are specific to this board. Nothing here is guaranteed to last as this is work in progress.
+Althouth the extension header has more signals and a different layout,
+this board is backward compatible with the latest version "dual drive"
+of the [GAL based extension board](../extension-retro). The following
+text only describes the features that are specific to this
+board. Nothing here is guaranteed to last as this is work in progress.
 
 ## 3.1. Extended banking "Gigatron 512K"
 
-The goal was to provide ways to use all 512K of memory while remaining maximally compatible with software that knows only about the four banks scheme of the typical memory expansion boards. This software relies much on the [normal ctrl codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331) that `SYS_ExpanderControl` also saves in the `ctrlBits_v5` memory location (0x1f8). These only have provision for four banks. Yet software typically expects to be able to save and restore a banking configuration by copying and manipulating `ctrlBits_v5`.
+The goal was to provide ways to use all 512K of memory while remaining
+maximally compatible with software that knows only about the four
+banks scheme of the typical memory expansion boards, which relies on
+[normal ctrl codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331)
+that `SYS_ExpanderControl` also saves in the `ctrlBits_v5` memory
+location (0x1f8). These only have provision for four banks. Yet
+software typically expects to be able to save and restore a banking
+configuration by copying and manipulating `ctrlBits_v5`.
 
-The chosen solution was to introduce two new four-bits banking registers named `NBANKR` and `NBANKW` that separately determine wich bank is read or written when the CPU accesses an address in range 0x8000 to 0xFFFF. When these registers are zero, or when the CPU accesses an address in range 0x0000 to 0x7FFF, the target bank is chosen as with the GAL based expansion board on the basis of the bits `BANK0`, `BANK1`, and `/ZPBANK` set with normal ctrl codes.
+The chosen solution was to introduce two new four-bits banking
+registers named `NBANKR` and `NBANKW` that separately determine wich
+bank is read or written when the CPU accesses an address in range
+0x8000 to 0xFFFF. When these registers are zero, or when the CPU
+accesses an address in range 0x0000 to 0x7FFF, the target bank is
+chosen as with the GAL based expansion board on the basis of the bits
+`BANK0`, `BANK1`, and `/ZPBANK` set with normal ctrl codes.
 
-The registers NBANKW and NBANKR are set using an [extended ctrl code](https://forum.gigatron.io/viewtopic.php?f=4&t=331) with device address 0xF. The value of `NBANKW` is then read from address lines A12-A15, and `NBANKR` from address lines A8-A11. Native code can also read back the contents of the `NBANKW` and `NBANKR` by setting `SCLK` and reading address 0xF0.
+The registers NBANKW and NBANKR are set using an [extended ctrl
+code](https://forum.gigatron.io/viewtopic.php?f=4&t=331) with device
+address 0xF. The value of `NBANKW` is then read from address lines
+A12-A15, and `NBANKR` from address lines A8-A11. Native code can also
+read back the contents of the `NBANKW` and `NBANKR` by setting `SCLK`
+and reading address 0xF0.
 
 In short to read from bank `rbank` and write to bank `wbank`, one can use
 ```
@@ -95,7 +117,20 @@ Work in progress
 
 ## 3.4. Extended audio
 
+The center pin of the H5 header (or the XIN3 pin of the extension
+header on earlier boards) outputs an average voltage in range 0.0 to
+3.3V that depends linearly on the six upper bits of the last extended
+control code for device 13.  In other words,
+```
+  SYS_ExpanderControl( (x<<10) | 0XD0 );
+```
+sets an average voltage of x * 3.3 / 64 volts. This is achieved with
+reverse bit pwm scheme whose noise affects frequencies above 50kHZ. It
+is expected that the patched ROM will duplicate the Gigatron audio
+signal to the PWM header.  Therefore it is recommended to use a 7 kHZ
+low pass filter before sending this signal to a speaker.
 
+argument 
 
 Work in progress (most likely needs PCB work)
 
