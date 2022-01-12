@@ -130,9 +130,3 @@ is expected that the patched ROM will duplicate the Gigatron audio
 signal to the PWM header.  Therefore it is recommended to use a 7 kHZ
 low pass filter before sending this signal to a speaker.
 
-argument 
-
-Work in progress (most likely needs PCB work)
-
-
-
