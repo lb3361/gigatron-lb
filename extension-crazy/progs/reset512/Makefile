@@ -1,7 +1,6 @@
 SHELL=/bin/sh
-TOP=../../..
-GIGAROM=../gigatron-rom
-COMPILE_GCL=${TOP}/${GIGAROM}/Core/compilegcl.py -s ${TOP}/${GIGAROM}/interface.json
+COMPILE_GCL=python3 ../../rom/Core/compilegcl.py -s ../../rom/interface.json
+export PYTHONDONTWRITEBYTECODE:=please
 
 all: Reset.gt1
 
