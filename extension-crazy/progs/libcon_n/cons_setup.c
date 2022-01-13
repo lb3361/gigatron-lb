@@ -27,10 +27,7 @@ static void console_exitm_msgfunc(int retcode, const char *s)
 void _console_setup(void)
 {
   /* TODO: Test availability of the 512KB extension */
-
-  // Display even pixels from page 14/15
-  // and odd pixels from page 12/13
-  SYS_ExpanderControl(0x0ee0u);
   _exitm_msgfunc = console_exitm_msgfunc;
+  // Video mode is set in _console_reset.
   console_clear_screen();
 }

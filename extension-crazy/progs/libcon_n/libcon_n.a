@@ -191,14 +191,12 @@ def code1():
 # ======== ('CODE', '_console_setup', code2)
 def code2():
 	label('_console_setup');
-	_PROLOGUE(4,4,0x0); # save=None
-	_LDI(3808);STW(R8);
-	CALLI('SYS_ExpanderControl');
+	_PROLOGUE(2,2,0x0); # save=None
 	_LDI('_exitm_msgfunc');STW(R22);
 	_LDI('console_exitm_msgfunc');DOKE(R22);
 	CALLI('console_clear_screen');
 	label('.12');
-	_EPILOGUE(4,4,0x0);
+	_EPILOGUE(2,2,0x0);
 # ======== (epilog)
 code=[
 	('DATA', '.6', code0, 8, 2),
@@ -415,6 +413,8 @@ def code1():
 	_PROLOGUE(14,8,0xe0); # save=R5-7
 	LDW(R8);STW(R7);
 	_LDI(0x100);STW(R5);
+	_LDI(3808);STW(R8);
+	CALLI('SYS_ExpanderControl');
 	LDW(R7);_BLT('.4');
 	_LDI(0x800);STW(R8);
 	LDW(R7);STW(R9);
@@ -437,6 +437,7 @@ code=[
 	('DATA', 'console_info', code0, 20, 2),
 	('EXPORT', '_console_reset'),
 	('CODE', '_console_reset', code1),
+	('IMPORT', 'SYS_ExpanderControl'),
 	('IMPORT', '_console_clear') ]
 module(code=code, name='cons_geom.c', cpu=5);
 
@@ -486,13 +487,11 @@ def code1():
 # ======== ('CODE', '_console_setup', code2)
 def code2():
 	label('_console_setup');
-	_PROLOGUE(4,4,0x0); # save=None
-	_LDI(3808);STW(R8);
-	CALLI('SYS_ExpanderControl');
+	_PROLOGUE(2,2,0x0); # save=None
 	_LDI('_exitm_msgfunc');DOKEI('console_exitm_msgfunc');
 	CALLI('console_clear_screen');
 	label('.12');
-	_EPILOGUE(4,4,0x0);
+	_EPILOGUE(2,2,0x0);
 # ======== (epilog)
 code=[
 	('DATA', '.6', code0, 8, 2),
@@ -703,6 +702,8 @@ def code1():
 	_PROLOGUE(14,8,0xe0); # save=R5-7
 	LDW(R8);STW(R7);
 	_LDI(0x100);STW(R5);
+	_LDI(3808);STW(R8);
+	CALLI('SYS_ExpanderControl');
 	LDW(R7);_BLT('.4');
 	_LDI(0x800);STW(R8);
 	LDW(R7);STW(R9);
@@ -725,6 +726,7 @@ code=[
 	('DATA', 'console_info', code0, 20, 2),
 	('EXPORT', '_console_reset'),
 	('CODE', '_console_reset', code1),
+	('IMPORT', 'SYS_ExpanderControl'),
 	('IMPORT', '_console_clear') ]
 module(code=code, name='cons_geom.c', cpu=6);
 
