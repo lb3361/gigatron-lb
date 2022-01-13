@@ -3,7 +3,8 @@ TARGETS=all broom clean
 GIGAROM=../gigatron-rom
 GLCC=glcc
 
-SUBDIRS=libconb
+SUBDIRS=memtest pwmtest zpbanktest reset512 \
+        libcon_b libcon_n mscp
 
 ${TARGETS}:
 	for n in ${SUBDIRS}; do make -C $$n GIGAROM=${GIGAROM} GLCC=${GLCC} $@ ; done

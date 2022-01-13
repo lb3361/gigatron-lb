@@ -21,9 +21,9 @@ def scope():
         ## set extended banking code for address in vAC
         label('_cons_update_extbank')
         BGE('.wbb1')
-        LDWI(0xF1F0);BRA('.wbb2')
+        LDWI(0xF0F0);BRA('.wbb2')
         label('.wbb1')
-        LDWI(0xE1F0);
+        LDWI(0xE0F0);
         label('.wbb2')
         XORW(R21);BEQ('.wbb3')
         XORW(R21);STW(R21);SYS(40);

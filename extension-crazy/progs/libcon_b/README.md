@@ -1,4 +1,5 @@
-# LIBCONB
+
+# LIBCON_B - Banked console library
 
 This library relocates the screen into page 14 and implements a basic
 GLCC console. This potentially frees all the 64KB of the normally

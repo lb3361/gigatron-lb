@@ -26,9 +26,10 @@ static void console_exitm_msgfunc(int retcode, const char *s)
 
 void _console_setup(void)
 {
-  // TODO: Test availability of the 512KB extension
-  SYS_ExpanderControl(0x0fe0u);  /* display on pages 14/15. Only page 14 used here. */
+  /* TODO: Test availability of the 512KB extension */
+
+  // Display from pages 14/15. 
+  SYS_ExpanderControl(0x0fe0u);
   _exitm_msgfunc = console_exitm_msgfunc;
-  //console_state.fgbg = (int)0xff0cu;
   console_clear_screen();
 }

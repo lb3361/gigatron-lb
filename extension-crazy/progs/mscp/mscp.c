@@ -2016,7 +2016,7 @@ static char startup_message[] =
         "This is MSCP 1.4 (Marcel's Simple Chess Program)\n"
         "\n"
         "Copyright (C)1998-2003 Marcel van Kervinck\n"
-        "This program is distributed under the GNU General Public License.\n"
+        "This program is distributed under the GNU General Public License. "
         "(See file COPYING or http://combinational.com/mscp/ for details.)\n"
         "\n"
         "Type 'help' for a list of commands\n";
