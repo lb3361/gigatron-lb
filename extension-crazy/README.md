@@ -67,7 +67,7 @@ because it was available.
 ![Back view](images/back.jpg)
 
 
-## 3. Usage
+## 3. Functions
 
 Althouth the extension header has more signals and a different layout,
 this board is backward compatible with the latest version "dual drive"
@@ -109,9 +109,69 @@ as illustrated in the [memory test program](test/memtest).
 
 ## 3.2. Video snooping
 
-Work in progress
+During each Gigatron cycle, the board has time to perform a read or write cycle
+to serve the Gigatron and two additional read cycles. These read cycles
+are used to feed pixels to the video output in a manner that is compatible
+with the Gigatron operation.
 
-## 3.3. Double resolution
+* Native instructions that target the output register `OUT` only change
+  bits 6 and 7 of the output register which respectively represent the
+  horizontal and vertical sync signals. The other bits are discarded. 
+* When a native instruction targeting the out register reads its 
+  input from a non-page-zero location in memory, the memory 
+  address is recorded and video snooping starts. During each gigatron cycle,
+  including the current one, pixel data read at the recorded address is 
+  fed into bits 0..6 of the output register, and the address is incremented.
+  This process stops whenever anoter native instruction targets the
+  output register without recording a new address.
+  
+This process is compatible with the existing ROM. Each of the
+successive `or([Y,Xpp],OUT)` instruction that used to send
+pixels to the output register now restarts the snooping process
+at address `[Y,X]`. The final instruction of a scanline, `ld($c0,OUT)`
+then stops the snooping process. 
+
+The video snooping process becomes more useful with the patched ROM
+which issues a single `or([Y,Xpp],OUT)` instruction at the beginning
+of the scanline, a single `ld($c0,OUT)` instruction at the end of 
+the scanline, and execute vCPU instructions in the meantime, while
+the video snooping process emits the successive pixels without
+further intervention.
+
+## 3.3. Video banking and double resolution
+
+Unlike the normal Gigatron, the video snooping logic does not only 
+read pixels from bank 0 or from the bank currently accessed by the CPU.
+Pixels are read from a bank that depends on the contents of a four-bits
+video banking register and also on the high bit of the scanline page number
+in the Gigatron video Table located at address 0x100.
+
+Assume the banking register contains bits `XXYZ` and assume the high
+bit of the page number in the video table is `H`.  The video snooping logic
+in fact reads two pixels during each Gigatron cycle, one from page `XXYH` 
+and another from page `XXZH` and feed them to the output register
+at twice the Gigatron clock frequency.
+
+* When bits `Y` and `Z` of the video banking register are identical, 
+  the two identical pixels combine into pixels with the usual horizontal
+  Gigatron resolution of 160 pixels.
+* When bits `Y` and `Z` are different, we obtain double resolutio
+  scanlines with 320 pixels. Even and odd pixels are read from
+  the same address in different banks `XXYH` and `XXZH`.
+
+In addition to this double horizontal resolution, the patched ROM
+provides means to double the vertical resolution. Each of the 120 
+ordinary lines of the Gigatron display is in fact scanned four times
+using the same page number obtained from the video table. 
+
+To be continued....
+
+
+
+process doescan read pixels fdoes not only read pixels from memory bank 0
+
+
+
 
 Work in progress
 
