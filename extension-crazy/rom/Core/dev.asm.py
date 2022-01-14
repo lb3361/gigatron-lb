@@ -162,7 +162,7 @@ import gcl0x as gcl
 import font_v4 as font
 
 # Enable patches for 512k extension
-patchFor512k = True
+WITH_512K_BOARD = True
 
 enableListing()
 #-----------------------------------------------------------------------
@@ -665,13 +665,13 @@ st([Y,vIRQ_v5+1])               #22
 st([soundTimer])                #23 soundTimer
 assert userCode&255 == 0
 st([vLR])                       #24 vLR
-if patchFor512k:
+if WITH_512K_BOARD:
   st([videoModeC])              #   25
 ld(userCode>>8)                 #25 26
 st([vLR+1])                     #26 27
 ld('nopixels')                  #27 28 Video mode 3 (fast)
 st([videoModeB])                #28 29
-if not patchFor512k:
+if not WITH_512K_BOARD:
   st([videoModeC])              #29
 st([videoModeD])                #30
 ld('SYS_Exec_88')               #31 SYS_Exec_88
@@ -1204,7 +1204,7 @@ st(0,[0])                       #46(!) Reinitialize carry lookup, for robustness
 ld([videoY])                    #47
 anda(6)                         #48
 beq('vBlankSample')             #49
-if not patchFor512k:
+if not WITH_512K_BOARD:
   ld([sample])                    #50
 else:
   ld([sample],Y)                  #50
@@ -1215,7 +1215,7 @@ bra('sound1')                   #199
 ld([videoSync0],OUT)            #0 <New scan line start>
 
 label('vBlankSample')
-if not patchFor512k:
+if not WITH_512K_BOARD:
   ora(0x0f)                       #51 New sound sample is ready
   anda([xoutMask])                #52
   st([xout])                      #53
@@ -1293,7 +1293,7 @@ ld([buttonState])               #66 Check [Select] to switch modes
 xora(~buttonSelect)             #67 Only trigger when just [Select] is pressed
 bne('.select#70')               #68
 
-if not patchFor512k:
+if not WITH_512K_BOARD:
   ld([videoModeC])                #69
   bmi('.select#72')               #70 Branch when line C is off
   ld([videoModeB])                #71 Rotate: Off->D->B->C
@@ -1364,7 +1364,7 @@ fillers(until=0xff)
 #-----------------------------------------------------------------------
 
 assert pc() == 0x1ff            # Enables runVcpu() to re-enter into the next page
-if not patchFor512k:
+if not WITH_512K_BOARD:
   bra('sound3')                   #200,0 <New scan line start>
 else:
   ld(syncBits,OUT)                #200,0 <New scan line start>
@@ -1377,7 +1377,7 @@ else:
 align(0x100, size=0x100)
 
 
-if not patchFor512k:
+if not WITH_512K_BOARD:
 
   ld([channel])                   #1 Advance to next sound channel
   
@@ -1589,16 +1589,15 @@ else:
   ld([frameY],Y)                  #36
   ld(syncBits)                    #37
   bra([videoModeB])               #38
-  bra('videoBcont#41')            #39
-  label('videoBcont#41')
+  bra(pc()+2)                     #39
+  nop()                           #40 'pixels' or 'nopixels' 
   ld('videoC')                    #41
   st([nextVideo])                 #42
-  ld(hi(ctrlBits),Y)              #43
-  ld([Y,ctrlBits])                #44
-  anda(1)                         #45
-  adda([frameY])                  #46
-  st([frameY])                    #47
-  runVcpu(200-48,                 #48
+  ld([videoModeC])                #43 New role for videoModeC
+  anda(1)                         #44
+  adda([frameY])                  #45
+  st([frameY])                    #46
+  runVcpu(200-47,                 #47
           '-B-- line 40-520',
           returnTo=0x1ff )
   
@@ -1613,11 +1612,11 @@ else:
   anda([xoutMask])                #33
   st([xout])                      #34 Update [xout] with new sample (4 channels just updated)
   ld([frameX],X)                  #35
-  ld([frameY],Y)                  #36
-  ld(syncBits)                    #37
-  bra('pixels')                   #38 Ignore videoModeC. 
-  bra('videoCcont#41')            #39
-  label('videoCcont#41')
+  nop()                           #36
+  nop()                           #37
+  ld([frameY],Y)                  #38
+  ld(syncBits)                    #39
+  ora([Y,Xpp], OUT)               #40 Always outputs pixels on C lines
   ld([sample],Y)                  #41
   st(sample, [sample])            #42 Reset for next sample
   ld([xoutMask])                  #43
@@ -1644,11 +1643,11 @@ else:
   ld([frameY],Y)                  #36
   ld(syncBits)                    #37
   bra([videoModeD])               #38
-  bra('videoDcont#41')            #39
-  label('videoDcont#41')
+  bra(pc()+2)                     #39
+  nop()                           #40 'pixels' or 'nopixels'
   nop()                           #41
   ld('videoA')                    #42
-  label('videoDcont#43')
+  label('videoD#43')
   st([nextVideo])                 #43
   runVcpu(200-44,                 #44
           '---D line 40-520',
@@ -1663,9 +1662,9 @@ else:
   ld(syncBits)                    #36
   nop()                           #37
   bra([videoModeD])               #38
-  bra('videoDlast#41')            #39
-  label('videoDlast#41')
-  bra('videoDcont#43')            #41  
+  bra(pc()+2)                     #39
+  nop()                           #40 'pixels' or 'nopixels'
+  bra('videoD#43')                #41  
   ld('videoE')                    #42 no more scanlines
       
   # Back porch "E": after the last line
@@ -3408,7 +3407,7 @@ ld('pixels')                    #37
 ld('pixels')                    #37
 ld('nopixels')                  #37
 label('.sysSm#38')
-if patchFor512k:
+if WITH_512K_BOARD:
   nop()                           #38
 else:
   st([videoModeC])                #38
@@ -3928,25 +3927,24 @@ ld(-62/2)                       #59
 align(0x100)
 
 label('sys_ExpanderControl')   
-
-if not patchFor512k:
-  ld(0b00001100)                      #18 bits 2 and 3
-  anda([vAC])                         #19 check for special ctrl code space
-  beq('sysEx#22')                     #20
-  ld([vAC])                           #21 load low byte of ctrl code in delay slot
-  anda(0xfc)                          #22 sanitize normal ctrl code
-  st([Y,ctrlBits])                    #23 store in ctrlBits
-  st([vTmp])                          #24 store in vTmp
-  bra('sysEx#27')                     #25 jump to issuing normal ctrl code 
-  ld([vAC+1],Y)                       #26 load high byte of ctrl code in delay slot
-  label('sysEx#22')
-  anda(0xfc,X)                        #22 * special ctrl code
-  ld([Y,ctrlBits])                    #23 get previous normal code from ctrlBits
-  st([vTmp])                          #24 save it in vTmp
-  ld([vAC+1],Y)                       #25 load high byte of ctrl code
-  ctrl(Y,X)                           #26 issue special ctrl code
-  label('sysEx#27')
-  ld([vTmp])                          #27 load saved normal ctrl code
+ld(0b00001100)                      #18 bits 2 and 3
+anda([vAC])                         #19 check for special ctrl code space
+beq('sysEx#22')                     #20
+ld([vAC])                           #21 load low byte of ctrl code in delay slot
+anda(0xfc)                          #22 sanitize normal ctrl code
+st([Y,ctrlBits])                    #23 store in ctrlBits
+st([vTmp])                          #24 store in vTmp
+bra('sysEx#27')                     #25 jump to issuing normal ctrl code 
+ld([vAC+1],Y)                       #26 load high byte of ctrl code in delay slot
+label('sysEx#22')
+anda(0xfc,X)                        #22 * special ctrl code
+ld([Y,ctrlBits])                    #23 get previous normal code from ctrlBits
+st([vTmp])                          #24 save it in vTmp
+ld([vAC+1],Y)                       #25 load high byte of ctrl code
+ctrl(Y,X)                           #26 issue special ctrl code
+label('sysEx#27')
+ld([vTmp])                          #27 load saved normal ctrl code
+if not WITH_512K_BOARD:
   anda(0xfc,X)                        #28 sanitize ctrlBits
   ctrl(Y,X)                           #29 issue normal ctrl code
   ld([vTmp])                          #30 always load something after ctrl
@@ -3954,34 +3952,17 @@ if not patchFor512k:
   jmp(Y,'REENTER')                    #32
   ld(-36/2)                           #33
 else:
-  ld(0b00001100)                      #18 bits 2 and 3
-  anda([vAC])                         #19 special ctrl code?
-  beq('sysEx#22')                     #20
-  ld([vAC])                           #21 load low byte of ctrl code
-  xora([Y,ctrlBits])                  #22 store bits 7:2 into ctrlBits
-  anda(0xfc)                          #23  "
-  xora([Y,ctrlBits])                  #24  "
-  st([Y,ctrlBits])                    #25  "
-  st([vTmp])                          #26 copy ctrlBits into vTmp
-  anda(0xfc,X)                        #27 sanitize low byte of ctrl code into x
-  ld([vAC+1],Y)                       #28 load high byte of ctrl code into y
-  ctrl(Y,X)                           #29 issue normal ctrl code
-  ld([vTmp])                          #30 return ctrlBits
-  ld(hi('REENTER'),Y)                 #31
-  jmp(Y,'REENTER')                    #32
-  ld(-36/2)                           #33
-  label('sysEx#22')
-  anda(0xf0,X)                        #22 this is a special ctrl code
-  ld([Y,ctrlBits])                    #23 get previous normal code from ctrlBits
-  st([vTmp])                          #24 save it in vTmp
-  ld([vAC+1],Y)                       #25 load high byte of ctrl code
-  ctrl(Y,X)                           #26 issue special ctrl code
-  ld([vTmp])                          #27 return ctrlBits
-  ld(hi('NEXTY'),Y)                   #28 no need to reissue ctrlBits
-  jmp(Y,'NEXTY')                      #29   because the 512k board knows special
-  ld(-32/2)                           #30   ctrl codes from normal ones.
+  anda(0xfc)                          #28
+  ora(1,X)                            #29
+  ctrl(Y,Xpp)                         #30 issue normal ctrl code and set SCLK
+  ld([0xF0])                          #31 retrieve extended banking word
+  ctrl(Y,X)                           #32 clear SCLK
+  st([vAC])                           #33 save extended banking info into vAC
+  ld(hi('NEXTY'),Y)                   #34
+  jmp(Y,'NEXTY')                      #35
+  ld(-38/2)                           #36
 
-
+  
 #-----------------------------------------------------------------------
 
 label('sys_SpiExchangeBytes')

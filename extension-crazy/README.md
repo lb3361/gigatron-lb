@@ -181,8 +181,8 @@ The video bank register can be written with an extended ctrl code
 ```
   SYS_ExpanderControl(  (XXYZ << 8) | 0xE0 );
 ```
-The patched ROM feature that increments the page number
-is enabled when bit 0 of location 0x1f8 is set. This might change.
+The patched ROM feature that increments the page number is 
+enabled when bit 0 of location 0x0b is set (ex videoModeC location).
 
 ## 3.4. Extended audio
 
