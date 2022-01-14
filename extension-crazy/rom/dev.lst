@@ -66034,7 +66034,7 @@ Reset:        fb4b 0002  ld   $02         ;| RAM segment address (high byte firs
               fe75 0059  ld   $59         ;058d LDI
               fe76 0000  ld   $00
               fe77 00f0  ld   $f0         ;058f POKE
-              fe78 0054  ld   $54         ;058f 'ctrlBits'
+              fe78 0030  ld   $30         ;058f 'CtrlBits'
               fe79 00cf  ld   $cf         ;0591 CALL
               fe7a 003c  ld   $3c         ;0591 'CheckMemory'
               fe7b 00cd  ld   $cd         ;0593 DEF
