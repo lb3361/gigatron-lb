@@ -17,16 +17,20 @@ into a different memory bank, freeing the full address space.
   library named [libcon_n](../libcon_n) which not only displaces the
   video buffer but enables double horizontal resolution to display
   up to 52 characters per line. 
+  
+* The third version `mscp_h.gt1` uses library [libcon_h](../libcon_h)
+  which doubles both the horizontal and vertical video resolution,
+  yielding 320x240 pixels able to display 30 lines of 52 characters.
 
 Both `mscp.gt1` and `mscp_n.gt1` can work with the normal ROM v5a.
 This wastes time because we could run the vCPU instead of sending
-pixels to the screen.
+pixels to the screen. However `mscp_h.gt1` only runs with 
+the patched ROM.
 
-For the first time, Marcel's chess program runs on a real Gigatron.
-There are caveats. You have to be patient because the Gigatron is not
-a fast machine.  In addition, absent a Gigaton OS, the program cannot
-load its opening library. But it plays!
 
+I was happy to get Marcel's chess program running on a real Gigatron.
+However, to play against the Gigatron, one has to be willing to wait 
+a couple minutes between each ply...
 
 
 

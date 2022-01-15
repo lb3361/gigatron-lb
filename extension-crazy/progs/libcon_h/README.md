@@ -1,4 +1,4 @@
-# LIBCON_N - Narrow console library
+# LIBCON_H - High resolution console library
 
 This library overrides the default GLCC console to use double
 horizontal and vertical resolution with video buffers located in banks

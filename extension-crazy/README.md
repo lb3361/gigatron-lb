@@ -1,64 +1,54 @@
 # Crazy expansion board for the Gigatron
 
 The goal of this expansion board is to provide an easy way to
-experiment with crazy expansion ideas for the Gigatron.  This is work
-in progress. In fact this project may never go forward because it
-looks like an infinite time sink.
+experiment with all kind of hardware hacks for the Gigatron.
+Hans61's help was invaluable to get this idea off the ground.
+Yet this is still very experimental. Work in progress.
 
 ## 1. Idea
 
 The core of the board is a XC95144XL CPLD with a 100 pins package
-mediating access to a fast CY7C1049G 512KB static ram.  This static
-ram is fast enough to carry out multiple read and writes during each
-Gigatron cycle. One of them can be used to serve the Gigatron memory
-requests, the other ones can be used for many purposes such as
-generating the video signal while keeping the Gigatron CPU free for
-other tasks, possibly with a higher resolution than the normal
-Gigatron.  Of course all depends on the CPLD program that one loads on
-this board. The idea is to start with a simple program that replicates
-the functionality of a normal RAM & IO expansion board, then to add
-the possibility to bank all 512KB of memory --Hello Gigatron 512K,--,
-then to recreate the functionality of a video repeater, then maybe to
-authorize higher resolutions, etc...
+mediating access to a 512KB static RAM that is fast enough to perform
+multiple reads or writes during a single Gigatron cycle. For instance,
+in a single cycle, one could serve the Gigatron memory requests and
+fetch pixels from the memory to drive the VGA output. Of course, and
+this is the point of this board, we can easily change what the board
+does by reprogramming the CPLD.
 
 This CPLD is not very powerful by today's standards. The datasheet
 describes it as roughly comparable to eight 54v18 GALs. Its main
-advantage is that it has 5v-tolerant i/o pins and is well supported by
-old versions of the Xilinx tools which are freely available. An
-alternative design (v8a) uses an ATF1508 which is a true 5v part that
-is normally cheaper. While the ATF1508 may be a bette fit, in these
-times of chip shortages, what matters is what is available.  The
-following diagram gives an overview of the board.
+advantage are its 5v-tolerant I/O pins and the free availability of
+its software development suite. Another possible choice was the
+ATF1508 which is a true 5v part and is slighlty cheaper. Alas there
+are less free tools available to fully exploit the ATF1508...
 
 ![Board diagram](images/diag.png)
 
-In addition to the CPLD and the SRAM, there is a CY2302 zero delay PLL
-that takes the 6.25MHz Gigatron clock and generates two additional
-clocks at 2x and 4x the frequency with aligned phases. These clocks
-can be used to split the Gigatron cycle into smaller parts and drive
-the SRAM at a faster rate.
+The board also contains a CY2302 zero delay PLL that takes the 6.25MHz
+Gigatron clock and generates two additional clocks at 2x and 4x the
+frequency with aligned phases. These fast clocks can be used to drive
+the SRAM at a faster rate than the Gigatron CPU.
 
 The last chip is a 74HCT244 buffer that sits between the 8 low bits
 `A0..7` of the Gigatron address bus and the `RA0..7` wires that
-connect the CPLD to the 8 low bits of the SRAM address bus. This was
-necessary the CPLD did not have enough remaining I/O pins to receive
-the full Gigatron address bus on separate lines. When the 74HCT244
-outputs are active, the Gigatron `A0..7` go into both the SRAM address
-bus and the CPLD ports `RA0..7`. When the 74HCT244 outputs are
-tri-stated, the CPLD has exclusive control of the SRAM address bus. Of
-course one has to be careful to tri-state these CPLD ports and to use
-them as inputs when the 74HCT244 has active outputs.
+connect the CPLD to the 8 low bits of the SRAM address bus. When the
+74HCT244 outputs are active, the Gigatron `A0..7` go into both the
+SRAM address bus and the CPLD ports `RA0..7`. When the 74HCT244
+outputs are tri-stated, the CPLD has exclusive control of the SRAM
+address bus. Of course one has to be careful to prevent bus contention
+on these address lines.  This was useful to save CPLD I/O pins and
+turned out to be trickier than I expected.
 
 ![Schematics](Schematics.pdf)
 
 ## 2. Layout
 
 The board layout places all the SMT components out-of-sight on the
-back side od the board. The visible side contains two connectors for
+back side of the board. The visible side contains two connectors for
 SPI devices using the SD Card breakout pinout, a JTAG connector to
-program the CPLD, an expansion connector with 28 pins, and a good old
-74HCT377 near the OUT register which is there for nostalgia and also
-because it was available.
+program the CPLD, an expansion connector, and a good old 74HCT377 near
+the OUT register which is there for nostalgia and also because it was
+in my parts box.
 
 ![Layout](images/layout.png)
 
@@ -71,37 +61,33 @@ Building this board will be discussed in directory [fab](./fab).
 
 ## 3. Usage
 
-Althouth the extension header has more signals and a different layout,
-this board is backward compatible with the latest version "dual drive"
+This describes the current CPLD programming.
+
+This board is backward compatible with the latest version "dual drive"
 of the [GAL based extension board](../extension-retro). The following
-text only describes the features that are specific to this
-board.
-
-Although many of these features can be used with the 
-regular Gigatron ROM, their full benefit requires the
-patch ROM found in the [rom](./rom) directory.
-
-Note that this is work in progress...
+text only describes the features that are specific to this board.
+Many of these features can be used with the regular Gigatron ROM.
+However things get better when one uses the patched ROM found in the
+[rom](./rom) directory.
 
 
-## 3.1. Extended banking "Gigatron 512K"
+## 3.1. Extended banking
 
-The goal was to provide ways to use all 512K of memory while remaining
-maximally compatible with software that knows only about the four
-banks scheme of the typical memory expansion boards, which relies on
-[normal ctrl codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331)
-that `SYS_ExpanderControl` also saves in the `ctrlBits_v5` memory
-location (0x1f8). These only have provision for four banks. Yet
-software typically expects to be able to save and restore a banking
-configuration by copying and manipulating `ctrlBits_v5`.
+We want to use all 512K of memory while remaining maximally compatible
+with existing software. The [normal ctrl
+codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331) that
+`SYS_ExpanderControl` saves in the `ctrlBits_v5` memory location
+(0x1f8) only support four banks. Yet, banking-aware software expects
+to save and restore a banking configuration by copying and
+manipulating `ctrlBits_v5`.
 
 The chosen solution was to introduce two new four-bits banking
 registers named `NBANKR` and `NBANKW` that separately determine wich
 bank is read or written when the CPU accesses an address in range
 0x8000 to 0xFFFF. When these registers are zero, or when the CPU
 accesses an address in range 0x0000 to 0x7FFF, the target bank is
-chosen as with the GAL based expansion board on the basis of the bits
-`BANK0`, `BANK1`, and `/ZPBANK` set with normal ctrl codes.
+chosen as with the GAL based expansion board on the basis of 
+bits `BANK0`, `BANK1`, and `/ZPBANK` set with normal ctrl codes.
 
 The registers NBANKW and NBANKR are set using an [extended ctrl
 code](https://forum.gigatron.io/viewtopic.php?f=4&t=331) with device
@@ -114,7 +100,7 @@ In short to read from bank `rbank` and write to bank `wbank`, one can use
 ```
   SYS_ExpanderControl( ((wbank & 0xf) << 12) | ((rbank & 0xf) << 8) | 0xF0 );
 ```
-as illustrated in the [memory test program](test/memtest).
+as illustrated in the [memory test program](progs/memtest).
 
 ## 3.2. Video snooping
 
@@ -124,28 +110,29 @@ are used to feed pixels to the video output in a manner that is compatible
 with the Gigatron operation.
 
 * Native instructions that target the output register `OUT` only change
-  bits 6 and 7 of the output register which respectively represent the
+  bits 6 and 7 of the output register, which respectively represent the
   horizontal and vertical sync signals. The other bits are discarded. 
-* When a native instruction targeting the out register reads its 
+  
+* When a native instruction targeting the output register reads its 
   input from a non-page-zero location in memory, the memory 
-  address is recorded and video snooping starts. During each gigatron cycle,
+  address is recorded and video snooping starts. During each Gigatron cycle,
   including the current one, pixel data read at the recorded address is 
   fed into bits 0..6 of the output register, and the address is incremented.
-  This process stops whenever anoter native instruction targets the
-  output register without recording a new address.
-  
+  Any other output instruction stops this process. 
+    
 This process is compatible with the existing ROM. Each of the
 successive `or([Y,Xpp],OUT)` instruction that used to send
 pixels to the output register now restarts the snooping process
 at address `[Y,X]`. The final instruction of a scanline, `ld($c0,OUT)`
 then stops the snooping process. 
 
-The video snooping process becomes more useful with the patched ROM
-which issues a single `or([Y,Xpp],OUT)` instruction at the beginning
-of the scanline, a single `ld($c0,OUT)` instruction at the end of 
-the scanline, and execute vCPU instructions in the meantime, while
-the video snooping process emits the successive pixels without
-further intervention.
+This scheme becomes a lot more interesting with the patched ROM
+because it issues a single `or([Y,Xpp],OUT)` instruction at the
+beginning of the scanline and a single `ld($c0,OUT)` instruction at
+the end of the scanline. In the meantime, it executes vCPU
+instructions while the video snooping logic feeds the successive
+pixels into the VGA port.
+
 
 ## 3.3. Video banking and double resolution
 
@@ -164,6 +151,7 @@ at twice the Gigatron clock frequency.
 * When bits `Y` and `Z` of the video banking register are identical, 
   the two identical pixels combine into pixels with the usual horizontal
   Gigatron resolution of 160 pixels.
+  
 * When bits `Y` and `Z` are different, we obtain double resolutio
   scanlines with 320 pixels. Even and odd pixels are read from
   the same address in different banks `XXYH` and `XXZH`.
@@ -184,12 +172,13 @@ The video bank register can be written with an extended ctrl code
 The patched ROM feature that increments the page number is 
 enabled when bit 0 of location 0x0b is set (ex videoModeC location).
 
+
 ## 3.4. Extended audio
 
 The center pin of the PWM header (or the XIN3 pin of the extension
-header on earlier boards) outputs an average voltage in range 0.0 to
-3.3V that depends linearly on the six upper bits of the last extended
-control code for device 13.  In other words,
+header on earlier versions boards) outputs an average voltage in range
+0.0 to 3.3V that depends linearly on the six upper bits of the last
+extended control code for device 13.  In other words,
 ```
   SYS_ExpanderControl( (x<<10) | 0XD0 );
 ```
