@@ -4,7 +4,7 @@ GIGAROM=../gigatron-rom
 GLCC=glcc
 
 SUBDIRS=memtest pwmtest zpbanktest \
-        libcon_b libcon_n mscp
+        libcon_b libcon_n libcon_h mscp
 
 ${TARGETS}:
 	for n in ${SUBDIRS}; do make -C $$n GIGAROM=${GIGAROM} GLCC=${GLCC} $@ ; done
