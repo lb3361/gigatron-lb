@@ -140,6 +140,68 @@ def scope():
                   ('IMPORT', '_cons_set_bank_odd'),
                   ('IMPORT', '_cons_restore_saved_bank'),
                   ('CODE', '_console_clear', code_clear) ] )
+
+
+    # -- void console_set_pixel(int x, int y, char c)
+    # This is not too fast
+    
+    def code_set_pixel():
+        label('console_set_pixel')
+        PUSH()  # R8:x R9:y R10:c -- R11: addr  R12:bank
+        CALLI('_cons_save_current_bank')
+        _LDI('SYS_ExpanderControl_v4_40');STW('sysFn');
+        _LDI(0xE0F0);STW(R12)
+        _LDI(0x100);ADDW(R9);ORI(1);XORI(1);PEEK();STW(R11)
+        _BGE('.csp1')
+        LDI(0xF0);ST(R12+1)
+        label('.csp1')
+        LD(R8);ANDI(1);_BEQ('.csp2')
+        LD(R12+1);SUBI(0x20);ST(R12+1)
+        label('.csp2')
+        LDW(R12);SYS(40)
+        LD(R11+1);ORI(0x80);STW(R11+1)
+        LDW(R8);_SHRIU(1);ADDW(R11);STW(R11)
+        LDW(R10);POKE(R11);
+        CALLI('_cons_restore_saved_bank')
+        tryhop(2);POP();RET()
+
+    module(name='cons_setpix.s',
+        code=[('EXPORT', 'console_set_pixel'),
+              ('IMPORT', '_cons_save_current_bank'),
+              ('IMPORT', '_cons_restore_saved_bank'),
+              ('CODE', 'console_set_pixel', code_set_pixel) ])
+
+
+    # -- int console_get_pixel(int x, int y)
+    # This is not too fast
+    
+    def code_get_pixel():
+        org(0x500) ## somewhere in the low 32KB
+        label('console_get_pixel')
+        PUSH()  # R8:x R9:y  -- R11: addr  R12:bank
+        CALLI('_cons_save_current_bank')
+        _LDI('SYS_ExpanderControl_v4_40');STW('sysFn');
+        _LDI(0x0EF0);STW(R12)
+        _LDI(0x100);ADDW(R9);ORI(1);XORI(1);PEEK();STW(R11)
+        _BGE('.csp1')
+        LDI(0x0F);ST(R12+1)
+        label('.csp1')
+        LD(R8);ANDI(1);_BEQ('.csp2')
+        LD(R12+1);SUBI(2);ST(R12+1)
+        label('.csp2')
+        LDW(R12);SYS(40)
+        LD(R11+1);ORI(0x80);STW(R11+1)
+        LDW(R8);_SHRIU(1);ADDW(R11);STW(R11);PEEK();STW(R9)
+        CALLI('_cons_restore_saved_bank')
+        tryhop(2);LDW(R9);POP();RET()
+
+    module(name='cons_getpix.s',
+        code=[('EXPORT', 'console_get_pixel'),
+              ('IMPORT', '_cons_save_current_bank'),
+              ('IMPORT', '_cons_restore_saved_bank'),
+              ('CODE', 'console_get_pixel', code_get_pixel) ])
+        
+
     
 scope()
 
