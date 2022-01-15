@@ -47,7 +47,7 @@ dev.rom: Core/* ${APPS}/*/* Makefile interface.json
 		Reset=Core/Reset.gcl
 
 burn: $(DEV)
-	minipro -p 'AT27C1024 @DIP40' -w "$<" -y -s
+	minipro -p 'AT27C1024@DIP40' -w "$<" -y -s
 
 broom: FORCE
 

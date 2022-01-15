@@ -323,7 +323,6 @@ $47e {4: D-5} SetupChannel!
 }
 $814 Pos=
 [def `***`Gigatron` #0] PrintS!
-0 CtrlBits.
 CheckMemory!
 [def `K`***` #10
   ``TTL`microcomputer
