@@ -38,7 +38,8 @@ def scope():
                   ('EXPORT', '_cons_restore_saved_bank'),
                   ('EXPORT', '_cons_set_bank_even'),
                   ('EXPORT', '_cons_set_bank_odd'),
-                  ('CODE', '_cons_set_bank', code_bank) ] )
+                  ('CODE', '_cons_set_bank', code_bank),
+                  ('PLACE', '_cons_set_bank', 0x0000, 0x7fff) ] )
 
     
     # -- int _console_printchars(int fgbg, char *addr, const char *s, int len)
@@ -101,7 +102,10 @@ def scope():
                   ('IMPORT', '_cons_set_bank_odd'),
                   ('IMPORT', '_cons_restore_saved_bank'),
                   ('CODE', '_console_printchars', code_printchars),
-                  ('CODE', '_printonechar', code_printonechar) ] )
+                  ('PLACE', '_console_printchars', 0x0000, 0x7fff),
+                  ('CODE', '_printonechar', code_printonechar),
+                  ('PLACE', '_printonechar', 0x0000, 0x7fff) ] )
+
     
     # -- void _console_clear(char *addr, char clr, int nl)
     #
@@ -139,7 +143,9 @@ def scope():
                   ('IMPORT', '_cons_set_bank_even'),
                   ('IMPORT', '_cons_set_bank_odd'),
                   ('IMPORT', '_cons_restore_saved_bank'),
-                  ('CODE', '_console_clear', code_clear) ] )
+                  ('CODE', '_console_clear', code_clear),
+                  ('PLACE', '_console_clear', 0x0000, 0x7fff) ] )
+
     
 scope()
 

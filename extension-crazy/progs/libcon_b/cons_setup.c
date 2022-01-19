@@ -4,6 +4,10 @@
 #include <gigatron/libc.h>
 #include <gigatron/sys.h>
 
+#if _GLCC_VER < 104010
+# error "This library requires GLCC > 1.4-10"
+#endif
+
 static void console_exitm_msgfunc(int retcode, const char *s)
 {
   if (s) {

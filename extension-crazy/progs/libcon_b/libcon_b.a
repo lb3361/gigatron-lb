@@ -44,7 +44,8 @@ def scope():
                   ('EXPORT', '_cons_restore_saved_bank'),
                   ('EXPORT', '_cons_update_extbank'),
                   ('EXPORT', '_cons_write_to_video_bank'),
-                  ('CODE', '_write_to_video_bank', code_bank) ] )
+                  ('CODE', '_write_to_video_bank', code_bank),
+                  ('PLACE', '_write_to_video_bank', 0x0000, 0x7fff) ] )
 
     
     # -- int _console_printchars(int fgbg, char *addr, const char *s, int len)
@@ -102,7 +103,10 @@ def scope():
                   ('IMPORT', '_cons_write_to_video_bank'),
                   ('IMPORT', '_cons_restore_saved_bank'),
                   ('CODE', '_console_printchars', code_printchars),
-                  ('CODE', '_printonechar', code_printonechar) ] )
+                  ('PLACE', '_console_printchars', 0x0000, 0x7fff),
+                  ('CODE', '_printonechar', code_printonechar),
+                  ('PLACE', '_printonechar', 0x0000, 0x7fff) ] )
+
     
     # -- void _console_clear(char *addr, char clr, int nl)
     # Clears from addr to the end of line with color clr.
@@ -133,7 +137,8 @@ def scope():
                   ('IMPORT', '_cons_write_to_video_bank'),
                   ('IMPORT', '_cons_update_extbank'),
                   ('IMPORT', '_cons_restore_saved_bank'),
-                  ('CODE', '_console_clear', code_clear) ] )
+                  ('CODE', '_console_clear', code_clear),
+                  ('PLACE', '_console_clear', 0x0000, 0x7fff) ] )
     
 scope()
 
