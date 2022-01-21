@@ -684,3 +684,23 @@ def highlight(*args):
     print('Assembly failed')
     sys.exit(1)
 
+# Conditional compilation
+# - command line arguments of the form -DSYMBOL[=VALUE]
+#   are removed from sys.argv and collected into a dict.
+# - function defined('SYMBOL') returns VALUE or 1 if the
+#   symbol was defined, None if if wasn't.
+_defined = {}
+def defined(s):
+  if s in _defined:
+    return _defined[s]
+  return None
+import ast
+for (i,arg) in enumerate(sys.argv):
+  if arg.startswith("-D"):
+    arg, val = arg[2:], 1
+    if '=' in arg:
+      arg, val = arg.split('=', 1)
+      val = ast.literal_eval(val)
+    _defined[arg]=val
+    del sys.argv[i]
+

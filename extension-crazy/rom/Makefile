@@ -23,6 +23,7 @@ endif
 
 dev.rom: Core/* ${APPS}/*/* Makefile interface.json
 	python3 Core/dev.asm.py\
+		-DWITH_512K_BOARD=1\
 		packedPictures=${APPS}/Pictures/packedPictures.rgb\
 		Snake=${APPS}/Snake/Snake_v3.gcl\
 		SYS_Racer_v1.py\
