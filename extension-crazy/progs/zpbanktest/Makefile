@@ -9,6 +9,6 @@ zpbanktest.gt1: zpbanktest.c
 broom: FORCE
 
 clean: FORCE
-	-rm 2>/dev/null memtest.gt1
+	-rm 2>/dev/null zpbanktest.gt1
 
 .PHONY: FORCE

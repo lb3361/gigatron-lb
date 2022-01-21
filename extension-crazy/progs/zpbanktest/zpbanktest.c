@@ -3,10 +3,13 @@
 #include <gigatron/console.h>
 #include <gigatron/sys.h>
 
+#if _GLCC_VER < 104010
+# error This program requires a more recent version of GLCC.
+#endif
 
 /* From bankasm.h */
 extern int _banktest(char *addr, char bitmask);
-extern int _change_zbank(void);
+extern void _change_zpbank(void);
 
 int has_zbank(void)
 {
@@ -16,36 +19,11 @@ int has_zbank(void)
   return v;
 }
 
-int set_zbank(int ok)
+void do_something()
 {
-  if (! has_zbank())
-    return -1;
-  if (!(ctrlBits_v5 & 0x20) != !!ok)
-    _change_zbank();
-  return !(ctrlBits_v5 & 0x20);
-}
-
-
-
-int main()
-{
-  int v;
   const char *s = "pi";
   double x = 3.141592653589793;
   double y;
-
-  cprintf("\fZero page banking\n--------------------\n\n");
-  
-  cprintf("Testing /ZPBANK\n");
-  v = has_zbank();
-  cprintf("- %s\n", (v) ? "yes" : "no");
-  if (v == 0) {
-    cprintf("No /ZPBANK support\n");
-    return 10;
-  }
-
-  cprintf("Setting /ZPBANK:\n");
-  set_zbank(1);
 
   for (;;)
     {
@@ -53,7 +31,7 @@ int main()
       if (ctrlBits_v5 & 0x20)
         {
           cprintf("/ZPBANK not set!\n");
-          return 10;
+          exit(10);
         }
       cprintf("Doing stuff\n");
       cprintf("- %s=%.8g\n", s, x);
@@ -69,6 +47,25 @@ int main()
         break;
       cprintf("\fZero page banking\n--------------------\n\n");
     }
+}
+
+int main()
+{
+  int v;
+
+  cprintf("\fZero page banking\n--------------------\n\n");
+  
+  cprintf("Testing /ZPBANK\n");
+  v = has_zbank();
+  cprintf("- %s\n", (v) ? "yes" : "no");
+  if (v == 0) {
+    cprintf("No /ZPBANK support\n");
+    return 10;
+  }
+  cprintf("Changing /ZPBANK:\n");
+  _change_zpbank();
+  do_something();
+  _change_zpbank();
   return 0;
 }
 

@@ -18,10 +18,8 @@ def scope():
     sav0 =  0x66
     sav1 =  0x67
 
-    def code0(): # helper
-        org(0x300)
-
-        ## BANKTEST
+    def code0():
+        nohop()
         label('_banktest')
         PUSH()
         LDW(R8);STW(addr)
@@ -49,36 +47,34 @@ def scope():
         label('.b1')
         LD(ctrl1);SYS(40);LDW(addr);PEEK();RET()
 
-        ## CHANGEZBANK
-        label('_change_zbank')
-        LDWI(0x8080)
-        STW(R8);
-        LDI(0x80);
-        STW(R9);
-        # copy zbank area into alternate area
-        label('.loop')
-        LDW(R9);DEEK();DOKE(R8)
-        LDI(2);ADDW(R8);STW(R8);
-        INC(R9);INC(R9);LD(R9);_BNE('.loop')
-        # swap them
-        LDWI('SYS_ExpanderControl_v4_40');STW('sysFn')
-        LDWI(ctrlBits);PEEK();XORI(0x20)
-        SYS(40)
-        RET()
-
-        ## EXE
-        label('_reset_ctrl_and_exec')
-        LDWI('SYS_ExpanderControl_v4_40');STW('sysFn')
-        LDI(0x7c);SYS(40)
-        LDWI('SYS_Exec_88');STW('sysFn')
-        LDW(R8);STW('sysArgs0');LDWI(0x200);STW(vLR);SYS(88)
-
-    module(name='bankasm.s',
+    module(name='banktest.s',
            code=[('EXPORT', '_banktest'),
-                 ('EXPORT', '_change_zbank'),
-                 ('EXPORT', '_reset_ctrl_and_exec'),
-                 ('CODE', '_banktest', code0) ] )
-    
+                 ('CODE', '_banktest', code0),
+                 ('PLACE', '_banktest', 0x0000, 0x7fff) ] )
+
+
+    def code1():
+        nohop()
+        label('_change_zpbank')
+        # copy essential registers
+        LDWI('.buffer');STW(R22);LDW(SP);DOKE(R22)
+        # change bank
+        _LDI('SYS_ExpanderControl_v4_40');STW('sysFn')
+        LDWI(0x1f8);PEEK();XORI(0x20);SYS(40)
+        # restore essential registers
+        LDWI('.buffer');DEEK();STW(SP)
+        # and return
+        RET()
+        # safe place
+        align(2);
+        label('.buffer')
+        space(2)
+
+    module(name='chgzpbank.s',
+           code=[('EXPORT', '_change_zpbank'),
+                 ('CODE', '_change_zpbank', code1) ] )
+
+        
 scope()
 
 # Local Variables:
