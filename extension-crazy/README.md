@@ -73,6 +73,8 @@ However things get better when one uses the patched ROM found in the
 
 ## 3.1. Extended banking
 
+#### Warning: I need to change this because of https://forum.gigatron.io/viewtopic.php?p=2838#p2838.
+
 We want to use all 512K of memory while remaining maximally compatible
 with existing software. The [normal ctrl
 codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331) that
