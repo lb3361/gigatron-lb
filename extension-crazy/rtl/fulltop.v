@@ -133,18 +133,23 @@ module top(input            CLK,
      end
    
    /* Ram addresses */
-   (* KEEP = "TRUE" *) wire gahz = (GAH[14:8] == 7'h00);
+   (* KEEP = "TRUE" *) wire gahz = (GAH[15:8] == 8'h00);
    (* KEEP = "TRUE" *) wire [3:0] nbank = (nGOE) ? NBANKW : NBANKR;
-   (* KEEP = "TRUE" *) wire nbankenable = GAH[15] && nbank != 4'b0000;
-   (* PWR_MODE = "STD" *) wire bankenable = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
-   wire [3:0] gbank = (nbankenable) ? nbank : (bankenable) ? { 2'b00, BANK } : 4'b0000;
-   assign RAH = { gbank, GAH[14:8] };
-   assign RAL = (nAE) ? GA[7:0] : 8'hZZ;
+   reg [3:0] gbank;
+   always @*
+     if (GAH[15] && nbank != 4'b0000)
+       gbank = nbank;
+     else if (GAH[15])
+       gbank = { 2'b00, BANK };
+     else if (!nZPBANK && gahz && RAL[7])
+       gbank = 4'b0011;
+     else
+       gbank = 4'b0000;
 
    
    /* Gigatron data */
    wire misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
-   wire portx = SCLK && !GAH[15] && gahz;
+   wire portx = SCLK && gahz;
    always @*
      if (! nAE)                 // transparent latch
        casez ( { portx, RAL[7:0] } )

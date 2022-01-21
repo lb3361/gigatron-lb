@@ -45,7 +45,7 @@ dev.rom: Core/* ${APPS}/*/* Makefile interface.json
 		Egg=${APPS}/Horizon/Horizon_dev_c.gt1\
 		Boot=${APPS}/CardBoot/CardBoot.gt1\
 		Main=${APPS}/MainMenu/MainMenu_v5.gcl\
-		Reset=Core/Reset.gcl
+		Reset=../progs/reset512/Reset.gcl
 
 burn: $(DEV)
 	minipro -p 'AT27C1024@DIP40' -w "$<" -y -s

@@ -64,11 +64,13 @@ Building this board will be discussed in directory [fab](./fab).
 This describes the current CPLD programming.
 
 This board is backward compatible with the latest version "dual drive"
-of the [GAL based extension board](../extension-retro). The following
-text only describes the features that are specific to this board.
-Many of these features can be used with the regular Gigatron ROM.
-However things get better when one uses the patched ROM found in the
-[rom](./rom) directory.
+of the [GAL based extension board](../extension-retro) using
+the simplified version of zero page banking, i.e., setting
+`/ZPBANK` to zero maps bank 3 at addresses [0x0080-0x00ff].
+The following text only describes the features that are specific to
+this board.  Many of these features can be used with the regular
+Gigatron ROM.  However things get better when one uses the patched ROM
+found in the [rom](./rom) directory.
 
 
 ## 3.1. Extended banking

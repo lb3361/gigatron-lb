@@ -3,7 +3,7 @@ TARGETS=all broom clean
 GIGAROM=../gigatron-rom
 GLCC=glcc
 
-SUBDIRS=memtest pwmtest zpbanktest \
+SUBDIRS=memtest pwmtest zpbanktest reset512\
         libcon_b libcon_n libcon_h mscp
 
 ${TARGETS}:

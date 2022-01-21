@@ -862,33 +862,52 @@ ld(hi('REENTER'),Y)             #15 slot 0xdd
 jmp(Y,'REENTER')                #16
 ld(-20/2)                       #17
 
-ld(hi('REENTER'),Y)             #15 slot 0xe0
-jmp(Y,'REENTER')                #16
-ld(-20/2)                       #17
-
 #-----------------------------------------------------------------------
 # Extension SYS_OsCall_DEVROM_80
 #-----------------------------------------------------------------------
 
 # SYS function for calling OS routines in bank2
-# Returns 0x8080 when OS signature is wrong.
-# Otherwise returns status code
 #
 #  vAC: routine number
 #  sysArgs0-7: routine arguments
+#
+# Checks the presence of GTOS and call its entry point.
+# Returns 0x8080 when check fail.
 
 label('SYS_OsCall_DEVROM_80')
-ld(hi('sys_OsCall'),Y)          #15 slot 0xe3
+ld(hi('sys_OsCall'),Y)          #15 slot 0xe0
 jmp(Y,'sys_OsCall')             #16
 ld(hi(ctrlBits),Y)              #17
+
+
+#-----------------------------------------------------------------------
+# Extension SYS_ScanMemoryExt_DEVROM_50
+#-----------------------------------------------------------------------
+
+# SYS function for searching a byte in a 0 to 256 bytes string located
+# in a different bank. Doesn't cross page boundaries. Returns a
+# pointer to the target if found or zero. Temporarily deselects SPI
+# devices.
+#
+# sysArgs[0:1]            Start address
+# sysArgs[2], sysArgs[3]  Bytes to locate in the string
+# vACL                    Length of the string (0 means 256)
+# vACH                    Bit 6 and 7 contain the bank number
+
+label('SYS_ScanMemoryExt_DEVROM_50')
+ld(hi('sys_ScanMemoryExt'),Y)   #15 slot 0xe6
+jmp(Y,'sys_ScanMemoryExt')      #16
+ld([vAC+1])                     #17
+
 
 #-----------------------------------------------------------------------
 # Extension SYS_ScanMemory_DEVROM_50
 #-----------------------------------------------------------------------
 
-# SYS function for searching a byte in a 0 to 256 bytes string
-# Returns a pointer to the target if found or zero.
-# Doesn't cross page boundaries.
+# SYS function for searching a byte in a 0 to 256 bytes string.
+# Returns a pointer to the target if found or zero.  Doesn't cross
+# page boundaries.
+
 #
 # sysArgs[0:1]            Start address
 # sysArgs[2], sysArgs[3]  Bytes to locate in the string
@@ -1246,7 +1265,7 @@ else:
   st([xout])                      #58
   st(sample, [sample])            #59 Reset for next sample
   runVcpu(199-60,'--C- line 3-39')#60 Application cycles (vBlank scan lines with sound sample update)
-  
+
 bra('sound1')                   #199
 ld([videoSync0],OUT)            #0 <New scan line start>
 
@@ -1393,7 +1412,7 @@ align(0x100, size=0x100)
 if not WITH_512K_BOARD:
 
   ld([channel])                   #1 Advance to next sound channel
-  
+
   # Back porch A: first of 4 repeated scan lines
   # - Fetch next Yi and store it for retrieval in the next scan lines
   # - Calculate Xi from dXi, but there is no cycle time left to store it as well
@@ -1410,20 +1429,20 @@ if not WITH_512K_BOARD:
   label('pixels')
   ld([frameY],Y)                  #38
   ld(syncBits)                    #39
-  
+
   # Stream 160 pixels from memory location <Yi,Xi> onwards
   # Superimpose the sync signal bits to be robust against misprogramming
   for i in range(qqVgaWidth):
     ora([Y,Xpp],OUT)              #40-199 Pixel burst
   ld(syncBits,OUT)                #0 <New scan line start> Back to black
-    
+
   # Front porch
   ld([channel])                   #1 Advance to next sound channel
   label('sound3')                 # Return from vCPU interpreter
   anda([channelMask])             #2
   adda(1)                         #3
   ld(syncBits^hSync,OUT)          #4 Start horizontal pulse
-  
+
   # Horizontal sync and sound channel update for scanlines outside vBlank
   label('sound2')
   st([channel],Y)                 #5
@@ -1448,11 +1467,11 @@ if not WITH_512K_BOARD:
   ld(63)                          #23(!)
   adda([sample])                  #24
   st([sample])                    #25
-  
+
   ld([xout])                      #26 Gets copied to XOUT
   bra([nextVideo])                #27
   ld(syncBits,OUT)                #28 End horizontal pulse
-  
+
   # Back porch B: second of 4 repeated scan lines
   # - Recompute Xi from dXi and store for retrieval in the next scan lines
   label('videoB')
@@ -1465,7 +1484,7 @@ if not WITH_512K_BOARD:
   adda([Y,X])                     #35
   bra([videoModeB])               #36
   st([frameX],X)                  #37 Store in RAM and X
-  
+
   # Back porch C: third of 4 repeated scan lines
   # - Nothing new to for video do as Yi and Xi are known,
   # - This is the time to emit and reset the next sound sample
@@ -1479,7 +1498,7 @@ if not WITH_512K_BOARD:
   st(sample, [sample])            #35 Reset for next sample
   bra([videoModeC])               #36
   ld([frameX],X)                  #37
-  
+
   # Back porch D: last of 4 repeated scan lines
   # - Calculate the next frame index
   # - Decide if this is the last line or not
@@ -1493,7 +1512,7 @@ if not WITH_512K_BOARD:
   ld('videoA')                    #35
   bra([videoModeD])               #36
   st([nextVideo])                 #37
-  
+
   label('.lastpixels#34')
   if soundDiscontinuity == 1:
     st(sample, [sample])          #34 Sound continuity
@@ -1502,14 +1521,14 @@ if not WITH_512K_BOARD:
   ld('videoE')                    #35 No more pixel lines to go
   bra([videoModeD])               #36
   st([nextVideo])                 #37
-      
+
   # Back porch "E": after the last line
   # - Go back and and enter vertical blank (program page 2)
   label('videoE') # Exit visible area
   ld(hi('vBlankStart'),Y)         #29 Return to vertical blank interval
   jmp(Y,'vBlankStart')            #30
   ld(syncBits)                    #31
-      
+
   # Video mode that blacks out one or more pixel lines from the top of screen.
   # This yields some speed, but also frees up screen memory for other purposes.
   # Note: Sound output becomes choppier the more pixel lines are skipped
@@ -1531,7 +1550,7 @@ if not WITH_512K_BOARD:
   label('nopixels')
   runVcpu(200-38, 'ABCD line 40-520',
           returnTo=0x1ff)         #38 Application interpreter (black scanlines)
-    
+
 else:
 
   # Front porch
@@ -1539,7 +1558,7 @@ else:
   anda([channelMask])             #2
   adda(1)                         #3
   ld(syncBits^hSync,OUT)          #4 Start horizontal pulse (4)
-  
+
   # Horizontal sync and sound channel update for scanlines outside vBlank
   label('sound2')
   st([channel],Y)                 #5
@@ -1568,7 +1587,7 @@ else:
   bra([nextVideo])                #27
   ld(syncBits,OUT)                #28 End horizontal pulse
 
-  
+
   # Back porch A: first of 4 repeated scan lines
   # - Fetch next Yi and store it for retrieval in the next scan lines
   # - Calculate Xi from dXi, but there is no cycle time left to store it as well
@@ -1588,7 +1607,7 @@ else:
   runVcpu(200-41,                 #41
           'A--- line 40-520',
           returnTo=0x1ff )
-  
+
   # Back porch B: second of 4 repeated scan lines
   # - Recompute Xi from dXi and store for retrieval in the next scan lines
   label('videoB')
@@ -1603,7 +1622,7 @@ else:
   ld(syncBits)                    #37
   bra([videoModeB])               #38
   bra(pc()+2)                     #39
-  nop()                           #40 'pixels' or 'nopixels' 
+  nop()                           #40 'pixels' or 'nopixels'
   ld('videoC')                    #41
   st([nextVideo])                 #42
   ld([videoModeC])                #43 New role for videoModeC
@@ -1613,7 +1632,7 @@ else:
   runVcpu(200-47,                 #47
           '-B-- line 40-520',
           returnTo=0x1ff )
-  
+
   # Back porch C: third of 4 repeated scan lines
   # - Nothing new to for video do as Yi and Xi are known,
   # - This is the time to emit and reset the next sound sample
@@ -1641,7 +1660,7 @@ else:
   runVcpu(200-48,                 #48
           '--C- line 40-520',
         returnTo=0x1ff )
-  
+
   # Back porch D: last of 4 repeated scan lines
   # - Calculate the next frame index
   # - Decide if this is the last line or not
@@ -1665,7 +1684,7 @@ else:
   runVcpu(200-44,                 #44
           '---D line 40-520',
           returnTo=0x1ff )
-  
+
   label('.lastpixels#34')
   if soundDiscontinuity == 1:
     st(sample, [sample])          #34 Sound continuity
@@ -1677,16 +1696,16 @@ else:
   bra([videoModeD])               #38
   bra(pc()+2)                     #39
   nop()                           #40 'pixels' or 'nopixels'
-  bra('videoD#43')                #41  
+  bra('videoD#43')                #41
   ld('videoE')                    #42 no more scanlines
-      
+
   # Back porch "E": after the last line
   # - Go back and and enter vertical blank (program page 2)
   label('videoE') # Exit visible area
   ld(hi('vBlankStart'),Y)         #29 Return to vertical blank interval
   jmp(Y,'vBlankStart')            #30
   ld(syncBits)                    #31
-      
+
   # Video mode that blacks out one or more pixel lines from the top of screen.
   # This yields some speed, but also frees up screen memory for other purposes.
   # Note: Sound output becomes choppier the more pixel lines are skipped
@@ -1713,7 +1732,7 @@ else:
   ora([Y,Xpp],OUT)                #40
   label('nopixels')
   nop()                           #40
-      
+
 #-----------------------------------------------------------------------
 #
 #  $0300 ROM page 3: Application interpreter primary page
@@ -3939,7 +3958,7 @@ ld(-62/2)                       #59
 
 align(0x100)
 
-label('sys_ExpanderControl')   
+label('sys_ExpanderControl')
 ld(0b00001100)                      #18 bits 2 and 3
 anda([vAC])                         #19 check for special ctrl code space
 beq('sysEx#22')                     #20
@@ -3947,7 +3966,7 @@ ld([vAC])                           #21 load low byte of ctrl code in delay slot
 anda(0xfc)                          #22 sanitize normal ctrl code
 st([Y,ctrlBits])                    #23 store in ctrlBits
 st([vTmp])                          #24 store in vTmp
-bra('sysEx#27')                     #25 jump to issuing normal ctrl code 
+bra('sysEx#27')                     #25 jump to issuing normal ctrl code
 ld([vAC+1],Y)                       #26 load high byte of ctrl code in delay slot
 label('sysEx#22')
 anda(0xfc,X)                        #22 * special ctrl code
@@ -3964,7 +3983,7 @@ ld(hi('REENTER'),Y)                 #31
 jmp(Y,'REENTER')                    #32
 ld(-36/2)                           #33
 
-  
+
 #-----------------------------------------------------------------------
 
 label('sys_SpiExchangeBytes')
@@ -5660,7 +5679,7 @@ ld(-44/2)                       #42
 
 #-----------------------------------------------------------------------
 #
-#  $1300 ROM page 19/20: CopyMemory/CopyMemoryExt/ScanMemory
+#  $1300 ROM page 19/20: CopyMemory[Ext]/ScanMemory[Ext]/OsCall
 #
 #-----------------------------------------------------------------------
 
@@ -5774,112 +5793,108 @@ ld(-26/2)                            #23
 
 label('sys_CopyMemoryExt')
 
-st([vTmp])                           #18
-adda([vTmp])                         #19
-st([vTmp])                           #20
-adda([vTmp])                         #21
-ora(0x3f)                            #22
-st([vTmp])                           #23 [vTmp] = source ctrl value
-xora([vAC+1])                        #24
-anda(0xc0)                           #25
-xora([vTmp])                         #26
-st([vLR])                            #27 [vLR] = dest ctrl value
+adda(AC)                             #18
+adda(AC)                             #19
+ora(0x3c)                            #20
+st([vTmp])                           #21 [vTmp] = src ctrl value
+ld([vAC+1])                          #22
+anda(0xfc)                           #23
+ora(0x3c)                            #24
+st([vLR])                            #25 [vLR] = dest ctrl value
 
-label('.sysCme#28')
-ld([vAC])                            #28
-ble('.sysCme#31')                    #29   goto burst5
-suba(5)                              #30
-bge('.sysCme#33')                    #31   goto burst5
-ld([sysArgs+3],Y)                    #32
-adda(4)                              #33
+label('.sysCme#26')
+ld([vAC])                            #26
+ble('.sysCme#29')                    #27   goto burst5
+suba(5)                              #28
+bge('.sysCme#31')                    #29   goto burst5
+ld([sysArgs+3],Y)                    #30
+adda(4)                              #31
 
-st([vAC])                            #34   single
-ld([vTmp],X)                         #35
-ctrl(X)                              #36
-ld([sysArgs+2],X)                    #37
-ld([Y,X])                            #38
-ld([vLR],X)                          #39
-ctrl(X)                              #40
-ld([sysArgs+1],Y)                    #41
-ld([sysArgs+0],X)                    #42
-st([Y,X])                            #43
-ld(hi(ctrlBits), Y)                  #44
-ld([Y,ctrlBits])                     #45
-ld(AC,X)                             #46
-ctrl(X)                              #47
-ld([sysArgs+0])                      #48
-adda(1)                              #49
-st([sysArgs+0])                      #50
-ld([sysArgs+2])                      #51
-adda(1)                              #52
-st([sysArgs+2])                      #53
-ld([vAC])                            #54  done?
-beq(pc()+3)                          #55
-bra(pc()+3)                          #56
-ld(-2)                               #57  restart
-ld(0)                                #57! finished
-adda([vPC])                          #58
-st([vPC])                            #59
-ld(hi('NEXTY'),Y)                    #60
-jmp(Y,'NEXTY')                       #61
-ld(-64/2)                            #62
+st([vAC])                            #32   single
+ld([vTmp],X)                         #33
+ctrl(X)                              #34
+ld([sysArgs+2],X)                    #35
+ld([Y,X])                            #36
+ld([vLR],X)                          #37
+ctrl(X)                              #38
+ld([sysArgs+1],Y)                    #39
+ld([sysArgs+0],X)                    #40
+st([Y,X])                            #41
+ld(hi(ctrlBits), Y)                  #42
+ld([Y,ctrlBits])                     #43
+ld(AC,X)                             #44
+ctrl(X)                              #45
+ld([sysArgs+0])                      #46
+adda(1)                              #47
+st([sysArgs+0])                      #48
+ld([sysArgs+2])                      #49
+adda(1)                              #50
+st([sysArgs+2])                      #51
+ld([vAC])                            #52  done?
+beq(pc()+3)                          #53
+bra(pc()+3)                          #54
+ld(-2)                               #55  restart
+ld(0)                                #55! finished
+adda([vPC])                          #56
+st([vPC])                            #57
+ld(hi('NEXTY'),Y)                    #58
+jmp(Y,'NEXTY')                       #59
+ld(-62/2)                            #60
 
+label('.sysCme#29')
+nop()                                #29   burst5
+ld([sysArgs+3],Y)                    #30
 label('.sysCme#31')
-nop()                                #31   burst5
-ld([sysArgs+3],Y)                    #32
-label('.sysCme#33')
-st([vAC])                            #33   burst5
-ld([vTmp],X)                         #34
-ctrl(X)                              #35
-ld([sysArgs+2],X)                    #36
-for i in range(5):
-  ld([Y,X])                            #37+i*3
-  st([vLR+1 if i<1 else sysArgs+3+i])  #38+i*3
-  st([Y,Xpp]) if i<4 else None         #39+i*3 if i<4
-ld([vLR],X)                          #51
-ctrl(X)                              #52
-ld([sysArgs+1],Y)                    #53
-ld([sysArgs+0],X)                    #54
-for i in range(5):
-  ld([vLR+1 if i<1 else sysArgs+3+i])  #55+i*2
-  st([Y,Xpp])                          #56+i*2
-ld([sysArgs+0])                      #65
-adda(5)                              #66
-st([sysArgs+0])                      #67
-ld([sysArgs+2])                      #68
-adda(5)                              #69
-st([sysArgs+2])                      #70
-
-ld([vAC])                            #71
-bne('.sysCme#74')                    #72
-ld(hi(ctrlBits), Y)                  #73  we're done!
-ld([Y,ctrlBits])                     #74
-anda(0xfc,X)                         #75
-ctrl(X)                              #76
-ld([vTmp])                           #77  always read after ctrl
-ld(hi('NEXTY'),Y)                    #78
-jmp(Y,'NEXTY')                       #79
-ld(-82/2)                            #80
-
-label('.sysCme#74')
-ld(-52/2)                            #74
-adda([vTicks])                       #23 = 75 - 52
-st([vTicks])                         #24
-adda(min(0,maxTicks-(40+52)/2))      #25
-bge('.sysCme#28')                    #26  enough time for another loop
-ld(-2)                               #27
-adda([vPC])                          #28  restart
-st([vPC])                            #29
-ld(hi(ctrlBits), Y)                  #30
-ld([Y,ctrlBits])                     #31
-anda(0xfc,X)                         #32
+st([vAC])                            #31   burst5
+ld([vTmp],X)                         #32
 ctrl(X)                              #33
-ld([vTmp])                           #34 always read after ctrl
-ld(hi('REENTER'),Y)                  #35
-jmp(Y,'REENTER')                     #36
-ld(-40/2)                            #37 max: 40 + 52 = 92 cycles
+ld([sysArgs+2],X)                    #34
+for i in range(5):
+  ld([Y,X])                            #35+i*3
+  st([vLR+1 if i<1 else sysArgs+3+i])  #36+i*3
+  st([Y,Xpp]) if i<4 else None         #37+i*3 if i<4
+ld([vLR],X)                          #49
+ctrl(X)                              #50
+ld([sysArgs+1],Y)                    #51
+ld([sysArgs+0],X)                    #52
+for i in range(5):
+  ld([vLR+1 if i<1 else sysArgs+3+i])  #53+i*2
+  st([Y,Xpp])                          #54+i*2
+ld([sysArgs+0])                      #63
+adda(5)                              #64
+st([sysArgs+0])                      #65
+ld([sysArgs+2])                      #66
+adda(5)                              #67
+st([sysArgs+2])                      #68
 
+ld([vAC])                            #69
+bne('.sysCme#72')                    #70
+ld(hi(ctrlBits), Y)                  #71  we're done!
+ld([Y,ctrlBits])                     #72
+anda(0xfc,X)                         #73
+ctrl(X)                              #74
+ld([vTmp])                           #75  always read after ctrl
+ld(hi('NEXTY'),Y)                    #76
+jmp(Y,'NEXTY')                       #77
+ld(-80/2)                            #78
 
+label('.sysCme#72')
+ld(-52/2)                            #72
+adda([vTicks])                       #21 = 72 - 52
+st([vTicks])                         #22
+adda(min(0,maxTicks-(40+52)/2))      #23
+bge('.sysCme#26')                    #24  enough time for another loop
+ld(-2)                               #25
+adda([vPC])                          #26  restart
+st([vPC])                            #27
+ld(hi(ctrlBits), Y)                  #28
+ld([Y,ctrlBits])                     #29
+anda(0xfc,X)                         #30
+ctrl(X)                              #31
+ld([vTmp])                           #32 always read after ctrl
+ld(hi('REENTER'),Y)                  #33
+jmp(Y,'REENTER')                     #34
+ld(-38/2)                            #35 max: 38 + 52 = 90 cycles
 
 align(0x100, size=0x100)
 
@@ -5933,54 +5948,127 @@ jmp(Y,'REENTER')                     #30
 ld(-34/2)                            #31
 
 
+# SYS_ScanMemoryExt_DEVROM_50 implementation
+
+label('sys_ScanMemoryExt')
+ora(0x3c,X)                          #18
+ctrl(X)                              #19
+ld([sysArgs+1],Y)                    #20
+ld([sysArgs+0],X)                    #21
+ld([Y,X])                            #22
+nop()                                #23
+label('.sysSmx#24')
+xora([sysArgs+2])                    #24
+beq('.sysSmx#27')                    #25
+ld([Y,X])                            #26
+xora([sysArgs+3])                    #27
+beq('.sysSmx#30')                    #28
+ld([sysArgs+0])                      #29
+adda(1);                             #30
+st([sysArgs+0],X)                    #31
+ld([vAC])                            #32
+suba(1)                              #33
+beq('.sysSmx#36')                    #34 return zero
+st([vAC])                            #35
+ld(-18/2)                            #18 = 36 - 18
+adda([vTicks])                       #19
+st([vTicks])                         #20
+adda(min(0,maxTicks -(30+18)/2))     #21
+bge('.sysSmx#24')                    #22
+ld([Y,X])                            #23
+ld([vPC])                            #24
+suba(2)                              #25 restart
+st([vPC])                            #26
+ld(hi(ctrlBits),Y)                   #27 restore and return
+ld([Y,ctrlBits])                     #28
+anda(0xfc,X)                         #29
+ctrl(X)                              #30
+ld([vTmp])                           #31
+ld(hi('NEXTY'),Y)                    #32
+jmp(Y,'NEXTY')                       #33
+ld(-36/2)                            #34
+
+label('.sysSmx#27')
+nop()                                #27 success
+nop()                                #28
+ld([sysArgs+0])                      #29
+label('.sysSmx#30')
+st([vAC])                            #30 success
+ld([sysArgs+1])                      #31
+nop()                                #32
+nop()                                #33
+nop()                                #34
+nop()                                #35
+label('.sysSmx#36')
+st([vAC+1])                          #36
+ld(hi(ctrlBits),Y)                   #37 restore and return
+ld([Y,ctrlBits])                     #38
+anda(0xfc,X)                         #39
+ctrl(X)                              #40
+ld([vTmp])                           #41
+ld(hi('NEXTY'),Y)                    #42
+jmp(Y,'NEXTY')                       #43
+ld(-46/2)                            #44
+
+
+
 # SYS_OsCall_DEVROM_80 implementation
+# - check expansion present
+# - check bank 3 contains 'G','T','O','S',addrH,addrL-2,addrH^(addrL-2)
+# - save return address to vLR
+# - jumps to OS stub at [addrH,addrL+2]
+# OS stub must:
+# - PUSH() vLR to the stack
+# - save [vAC] to [sysFn]
+# - save [ctrlBits] to be restored later
+# - set [ctrlBits] to 0x7F
+# - setup page zero workspace (ZPBANK or copy)
+# - call the relevant c routine
+# - restore page zero workspace
+# - set [sysFn] to SYS_OsCall
+# - restore saved value of [ctrlBits]
+# - POP() vLR
+# - LDWI(0x1400);LUP(0)
 
 label('sys_OsCall')
 ld([Y,ctrlBits])                     #18 check ctrlBits!=0
 beq('.sysOsErr')                     #20
-ld(-30/2)                            #21
-ld([Y,ctrlBits])                     #22
-anda(0xfc)                           #23
-ora(0xc0,X)                          #24
-ld(0x80,Y)                           #25
-ctrl(X)                              #26 set bank 3
-ld([Y,0])                            #27 check 'GTOS' signature in 0x8000
-xora(0x47)                           #28 'G'
-st([vTmp])                           #29
-ld([Y,1])                            #30
-xora(0x54)                           #31 'T'
-ora([vTmp])                          #32
-st([vTmp])                           #33
-ld([Y,2])                            #34
-xora(0x4f)                           #35 'O'
-ora([vTmp])                          #36
-st([vTmp])                           #37
-ld([Y,3])                            #38
-xora(0x53)                           #39 'S'
-ora([vTmp])                          #40
-st([vTmp])                           #41
-bne('.sysOsErrCtrl')                 #42
-ld(-58/2)                            #43
-ld([vPC])                            #44
-adda(2)                              #45
-st([vLR])                            #46 save return address
-ld([vPC+1])                          #47
-st([vLR+1])                          #48
-ld([vAC],X)                          #49 load vector index
-ld([Y,X])                            #50 low byte
-st([Y,Xpp])                          #51 just increment
-st([vTmp])                           #52
-ld([Y,X])                            #53
-bpl('.sysOsErrCtrl')                 #54
-ld(-70/2)                            #55
-ld([Y,X])                            #56
-st([vPC+1])                          #57
-ld([vTmp])                           #58
-suba(2)                              #59
-st([vPC])                            #60 warning: calling os routine
-ld(hi('REENTER'),Y)                  #61   with [ctrlBits] matching the
-jmp(Y,'REENTER')                     #62   previous bank, not bank 2.
-ld(-66/2)                            #63
+ld(-30/2)                            #21 + 9 = 30
+ld(0x7f)                             #22
+ctrl(X)                              #23 set bank 3
+ld([Y,0])                            #24 check 'GTOS' signature in 0x8000
+xora(0x47)                           #25 'G'
+st([vTmp])                           #26
+ld([Y,1])                            #27
+xora(0x54)                           #28 'T'
+ora([vTmp])                          #29
+st([vTmp])                           #30
+ld([Y,2])                            #31
+xora(0x4f)                           #32 'O'
+ora([vTmp])                          #33
+st([vTmp])                           #34
+ld([Y,3])                            #35
+xora(0x53)                           #36 'S'
+ora([vTmp])                          #37
+bne('.sysOsErrCtrl')                 #38
+ld(-54/2)                            #39 + 15 = 54
+ld([vPC])                            #40
+adda(2)                              #41
+st([vLR])                            #42 save return address
+ld([vPC+1])                          #43
+st([vLR+1])                          #44
+ld([Y,4])                            #45 check OS entry XOR
+xora([Y,5])                          #46
+xora([Y,6])                          #47
+bne('.sysOsErrCtrl')                 #48
+ld(-64/2)                            #49 + 15 = 64
+ld([Y,4])                            #50
+st([vPC])                            #51
+ld([Y,5])                            #52
+st([vPC+1])                          #53
+ld(hi('NEXTY'),Y)                    #54
+jmp(Y,'NEXTY')                       #55
+ld(-58/2)                            #56
 
 label('.sysOsErrCtrl')
 st([vTmp])                          #T-14 vAC must contain (-T/2)
@@ -5997,6 +6085,27 @@ st([vAC+1])                         #T-5
 ld(hi('NEXTY'),Y)                   #T-4
 jmp(Y,'NEXTY')                      #T-3
 ld([vTmp])                          #T-2
+
+label('.sysOsReturn#16')
+ctrl(X)                            #16
+ld([vLR])                          #17
+suba(2)                            #18
+st([vPC])                          #19
+ld([vLR+1])                        #20
+st([vPC+1])                        #21
+ld(hi('NEXTY'),Y)                  #22
+jmp(Y,'NEXTY')                     #23
+ld(-26/2)                          #24
+
+# vOsReturn entry point
+fillers(until=251)
+assert(pc()&255 == 251)  # The landing offset 251 for LUP trampoline is fixed
+assert(pc()>>8 == 0x14)  # LUP address for sysOsReturn
+ld(hi(ctrlBits),Y)                 #13  (251)
+ld([Y,ctrlBits])                   #14  (252)
+bra('.sysOsReturn#16')
+anda(0xfc, X)                      #15  (253)
+
 
 
 #-----------------------------------------------------------------------
