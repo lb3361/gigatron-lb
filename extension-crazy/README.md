@@ -75,36 +75,53 @@ found in the [rom](./rom) directory.
 
 ## 3.1. Extended banking
 
-#### Warning: I need to change this because of https://forum.gigatron.io/viewtopic.php?p=2838#p2838.
-
 We want to use all 512K of memory while remaining maximally compatible
-with existing software. The [normal ctrl
-codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331) that
+with existing software and allowing fast bank switches. The [normal
+ctrl codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331) that
 `SYS_ExpanderControl` saves in the `ctrlBits_v5` memory location
 (0x1f8) only support four banks. Yet, banking-aware software expects
 to save and restore a banking configuration by copying and
 manipulating `ctrlBits_v5`.
 
-The chosen solution was to introduce two new four-bits banking
-registers named `NBANKR` and `NBANKW` that separately determine wich
-bank is read or written when the CPU accesses an address in range
-0x8000 to 0xFFFF. When these registers are zero, or when the CPU
-accesses an address in range 0x0000 to 0x7FFF, the target bank is
-chosen as with the GAL based expansion board on the basis of 
-bits `BANK0`, `BANK1`, and `/ZPBANK` set with normal ctrl codes.
-
-The registers NBANKW and NBANKR are set using an [extended ctrl
-code](https://forum.gigatron.io/viewtopic.php?f=4&t=331) with device
-address 0xF. The value of `NBANKW` is then read from address lines
-A12-A15, and `NBANKR` from address lines A8-A11. Native code can also
-read back the contents of the `NBANKW` and `NBANKR` by setting `SCLK`
-and reading address 0xF0.
-
-In short to read from bank `rbank` and write to bank `wbank`, one can use
+The current CPLD program defines a new four bit banking register NBANK
+and two flags NBANKP and NBANKZ. They can be set using an [extended
+ctrl code](https://forum.gigatron.io/viewtopic.php?f=4&t=331) with
+device address 0xF. Register NBANK is read from the top four bits of
+the code, flags NBANKP and NBANKZ from the following two bits.
+In other words, we can set them with
 ```
-  SYS_ExpanderControl( ((wbank & 0xf) << 12) | ((rbank & 0xf) << 8) | 0xF0 );
+  SYS_ExpanderControl( (NBANK<<12) | (NBANKP<<11) | (NBANKZ<<10) | 0xF0 );
 ```
-as illustrated in the [memory test program](progs/memtest).
+The flags define two modes of operation:
+
+* When flag NBANKP is not set, everything works as usual except that
+  selecting bank 0 with the normal banking bits actually maps bank
+  NBANK in the address range [0x8000-0xffff].
+
+  This mode provides a means to use the additional memory that masquerades
+  as bank 0 using code that is only aware of the normal banking
+  bits. Such code can temporarily map a different bank then restore
+  the new bank using only the normal control codes. Zero page banking
+  also works as usual, essentially swapping address ranges [0x80-0xff]
+  and [0x8080-0x80ff].
+
+* When flag NBANKP is set, bank NBANK is mapped in [0x8000-0xffff]
+  regardless of the normal control bits. Meanwhile the low
+  addresses [0x0000-0x7fff] shows bank 0 as usual. If zero page
+  banking is enabled, showing the bank specified by
+  the normal banking bits in [0x80-0xff]. However is flag NBANKZ
+  is also set, zero page banking is disabled.
+
+  This mode provides a quick way to temporarily map any bank, do
+  something, and almost immediately restore the previous state by
+  resetting the extended banking bits to their previous value.
+
+The function `SYS_ExpanderControl` implemented by the patched ROM
+recognizes extended banking codes and saves them into the six
+high bits of memory location 0xb (ex `videoModeC`).
+
+Both modes are exercised by the [memory test program](progs/memtest).
+
 
 ## 3.2. Video snooping
 
@@ -115,20 +132,20 @@ with the Gigatron operation.
 
 * Native instructions that target the output register `OUT` only change
   bits 6 and 7 of the output register, which respectively represent the
-  horizontal and vertical sync signals. The other bits are discarded. 
-  
-* When a native instruction targeting the output register reads its 
-  input from a non-page-zero location in memory, the memory 
+  horizontal and vertical sync signals. The other bits are discarded.
+
+* When a native instruction targeting the output register reads its
+  input from a non-page-zero location in memory, the memory
   address is recorded and video snooping starts. During each Gigatron cycle,
-  including the current one, pixel data read at the recorded address is 
+  including the current one, pixel data read at the recorded address is
   fed into bits 0..6 of the output register, and the address is incremented.
-  Any other output instruction stops this process. 
-    
+  Any other output instruction stops this process.
+
 This process is compatible with the existing ROM. Each of the
 successive `or([Y,Xpp],OUT)` instruction that used to send
 pixels to the output register now restarts the snooping process
 at address `[Y,X]`. The final instruction of a scanline, `ld($c0,OUT)`
-then stops the snooping process. 
+then stops the snooping process.
 
 This scheme becomes a lot more interesting with the patched ROM
 because it issues a single `or([Y,Xpp],OUT)` instruction at the
@@ -140,7 +157,7 @@ pixels into the VGA port.
 
 ## 3.3. Video banking and double resolution
 
-Unlike the normal Gigatron, the video snooping logic does not only 
+Unlike the normal Gigatron, the video snooping logic does not only
 read pixels from bank 0 or from the bank currently accessed by the CPU.
 Pixels are read from a bank that depends on the contents of a four-bits
 video banking register and also on the high bit of the scanline page number
@@ -148,32 +165,32 @@ in the Gigatron video Table located at address 0x100.
 
 Assume the banking register contains bits `XXYZ` and assume the high
 bit of the page number in the video table is `H`.  The video snooping logic
-in fact reads two pixels during each Gigatron cycle, one from page `XXYH` 
+in fact reads two pixels during each Gigatron cycle, one from page `XXYH`
 and another from page `XXZH` and feed them to the output register
 at twice the Gigatron clock frequency.
 
-* When bits `Y` and `Z` of the video banking register are identical, 
+* When bits `Y` and `Z` of the video banking register are identical,
   the two identical pixels combine into pixels with the usual horizontal
   Gigatron resolution of 160 pixels.
-  
+
 * When bits `Y` and `Z` are different, we obtain double resolutio
   scanlines with 320 pixels. Even and odd pixels are read from
   the same address in different banks `XXYH` and `XXZH`.
 
 In addition to this double horizontal resolution, the patched ROM
-provides means to double the vertical resolution. Each of the 120 
+provides means to double the vertical resolution. Each of the 120
 ordinary lines of the Gigatron display is in fact scanned four times
-using the same page number obtained from the video table. The 
-patched ROM optionally increments the page number 
+using the same page number obtained from the video table. The
+patched ROM optionally increments the page number
 betweeen the second and third line. This means that each
-entry of the video table at location 0x100 now describes 
+entry of the video table at location 0x100 now describes
 two lines located in successive pages in memory.
 
 The video bank register can be written with an extended ctrl code
 ```
   SYS_ExpanderControl(  (XXYZ << 8) | 0xE0 );
 ```
-The patched ROM feature that increments the page number is 
+The patched ROM feature that increments the page number is
 enabled when bit 0 of location 0x0b is set (ex videoModeC location).
 
 
@@ -187,10 +204,10 @@ extended control code for device 13.  In other words,
   SYS_ExpanderControl( (x<<10) | 0XD0 );
 ```
 sets an average voltage of x * 3.3 / 64 volts. This is achieved with
-``bit-reversed`` pulse modulation scheme whose noise goes into 
+``bit-reversed`` pulse modulation scheme whose noise goes into
 frequencies above 50kHZ.
 
-When the Gigatron sound output is active, the patched ROM forwards 
+When the Gigatron sound output is active, the patched ROM forwards
 the high 6 bits of the sound sample to this pulse modulation output.
 To change this into a reasonable audio signal, one needs a high pass
 filter cutting frequencies below a couple Hz, and a low pass filter

@@ -9,6 +9,7 @@ DEV=dev.rom
 
 # This should point into the gigatron-rom app directory
 APPS=../../../gigatron-rom/Apps
+RESET=../progs/reset512/Reset.gcl
 
 dev: $(DEV)
 
@@ -21,7 +22,7 @@ ifdef OS # Windows
  export PYTHONPATH:=$(subst :,;,$(PYTHONPATH))
 endif
 
-dev.rom: Core/* ${APPS}/*/* Makefile interface.json
+dev.rom: Core/* ${APPS}/*/* ${RESET} Makefile interface.json
 	python3 Core/dev.asm.py\
 		-DWITH_512K_BOARD=1\
 		packedPictures=${APPS}/Pictures/packedPictures.rgb\
@@ -45,7 +46,7 @@ dev.rom: Core/* ${APPS}/*/* Makefile interface.json
 		Egg=${APPS}/Horizon/Horizon_dev_c.gt1\
 		Boot=${APPS}/CardBoot/CardBoot.gt1\
 		Main=${APPS}/MainMenu/MainMenu_v5.gcl\
-		Reset=../progs/reset512/Reset.gcl
+		Reset=${RESET}
 
 burn: $(DEV)
 	minipro -p 'AT27C1024@DIP40' -w "$<" -y -s

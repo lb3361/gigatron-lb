@@ -3959,29 +3959,53 @@ ld(-62/2)                       #59
 align(0x100)
 
 label('sys_ExpanderControl')
-ld(0b00001100)                      #18 bits 2 and 3
-anda([vAC])                         #19 check for special ctrl code space
-beq('sysEx#22')                     #20
-ld([vAC])                           #21 load low byte of ctrl code in delay slot
-anda(0xfc)                          #22 sanitize normal ctrl code
-st([Y,ctrlBits])                    #23 store in ctrlBits
-st([vTmp])                          #24 store in vTmp
-bra('sysEx#27')                     #25 jump to issuing normal ctrl code
-ld([vAC+1],Y)                       #26 load high byte of ctrl code in delay slot
-label('sysEx#22')
-anda(0xfc,X)                        #22 * special ctrl code
-ld([Y,ctrlBits])                    #23 get previous normal code from ctrlBits
-st([vTmp])                          #24 save it in vTmp
-ld([vAC+1],Y)                       #25 load high byte of ctrl code
-ctrl(Y,X)                           #26 issue special ctrl code
-label('sysEx#27')
-ld([vTmp])                          #27 load saved normal ctrl code
-anda(0xfc,X)                        #28 sanitize ctrlBits
-ctrl(Y,X)                           #29 issue normal ctrl code
-ld([vTmp])                          #30 always load something after ctrl
-ld(hi('REENTER'),Y)                 #31
-jmp(Y,'REENTER')                    #32
-ld(-36/2)                           #33
+if not WITH_512K_BOARD:
+  ld(0b00001100)                      #18 bits 2 and 3
+  anda([vAC])                         #19 check for special ctrl code space
+  beq('sysEx#22')                     #20
+  ld([vAC])                           #21 load low byte of ctrl code in delay slot
+  anda(0xfc)                          #22 sanitize normal ctrl code
+  st([Y,ctrlBits])                    #23 store in ctrlBits
+  st([vTmp])                          #24 store in vTmp
+  bra('sysEx#27')                     #25 jump to issuing normal ctrl code
+  ld([vAC+1],Y)                       #26 load high byte of ctrl code in delay slot
+  label('sysEx#22')
+  anda(0xfc,X)                        #22 * special ctrl code
+  ld([Y,ctrlBits])                    #23 get previous normal code from ctrlBits
+  st([vTmp])                          #24 save it in vTmp
+  ld([vAC+1],Y)                       #25 load high byte of ctrl code
+  ctrl(Y,X)                           #26 issue special ctrl code
+  label('sysEx#27')
+  ld([vTmp])                          #27 load saved normal ctrl code
+  anda(0xfc,X)                        #28 sanitize ctrlBits
+  ctrl(Y,X)                           #29 issue normal ctrl code
+  ld([vTmp])                          #30 always load something after ctrl
+  ld(hi('REENTER'),Y)                 #31
+  jmp(Y,'REENTER')                    #32
+  ld(-36/2)                           #33
+else:
+  ld(0b00001100)                      #18 bits 2 and 3
+  anda([vAC])                         #19 check for special ctrl code space
+  beq('sysEx#22')                     #20
+  ld([vAC])                           #21 
+  anda(0xfc)                          #22 sanitize normal ctrl code
+  st([Y,ctrlBits])                    #23 store in ctrlBits
+  ld(AC,X)                            #24
+  ld([vAC+1],Y)                       #25
+  ctrl(Y,X)                           #26 issue ctrl code
+  label('sysEx#27') 
+  ld(hi('REENTER'),Y)                 #27
+  jmp(Y,'REENTER')                    #28
+  ld(-32/2)                           #29
+  label('sysEx#22')
+  ld(AC,X)                            #22 special ctrl code
+  ld([vAC+1],Y)                       #23
+  xora(0xf0)                          #24
+  bne('sysEx#27')                     #25
+  ctrl(Y,X)                           #26 issue ctrl code
+  ld(hi('sysEx#30'),Y)                #27
+  jmp(Y,'sysEx#30')                   #28 jump to a place with more space
+  ld([vAC+1])                         #29
 
 
 #-----------------------------------------------------------------------
@@ -6097,6 +6121,20 @@ ld(hi('NEXTY'),Y)                  #22
 jmp(Y,'NEXTY')                     #23
 ld(-26/2)                          #24
 
+
+# Continuation of SYS_ExpanderControl
+# dealing with extended banking codes
+if WITH_512K_BOARD:
+  label('sysEx#30')
+  xora([videoModeC])                  #30
+  anda(0xfe)                          #31 Save 7 bits of extended banking
+  xora([videoModeC])                  #32 code into videomodeC.
+  st([videoModeC])                    #33 
+  ld(hi('NEXTY'),Y)                   #34
+  jmp(Y,'NEXTY')                      #35
+  ld(-38/2)                           #36
+
+
 # vOsReturn entry point
 fillers(until=251)
 assert(pc()&255 == 251)  # The landing offset 251 for LUP trampoline is fixed
@@ -6106,6 +6144,9 @@ ld([Y,ctrlBits])                   #14  (252)
 bra('.sysOsReturn#16')
 anda(0xfc, X)                      #15  (253)
 
+
+
+  
 
 
 #-----------------------------------------------------------------------

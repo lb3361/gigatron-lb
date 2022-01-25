@@ -26,16 +26,17 @@ module top(input            CLK,
            output reg       PWM
            );
    
-   reg         SCLK;
-   reg         nZPBANK;
-   reg [1:0]   BANK;
-   reg [3:0]   NBANKR;
-   reg [3:0]   NBANKW;
-   reg [5:0]   PWMD;
-   reg [3:0]   VBANK;
-   reg [15:0]  VADDR;
+   reg         SCLK;            // ctrlBits: SCLK
+   reg         nZPBANK;         // ctrlBits: /ZPBANK
+   reg [1:0]   BANK;            // ctrlBits: BANK
+   reg [3:0]   NBANK;           // extended bank register
+   reg         NBANKP;          // override normal banking scheme
+   reg         NBANKZ;          // override zpbank
+   reg [5:0]   PWMD;            // pwm threshold
+   reg [3:0]   VBANK;           // video bank
+   reg [15:0]  VADDR;           // video snoop address
 
-   /* ================ Clocks
+   /* ================ clocks
     *
     *                              110000000000111111000000000011111100
     *                              450123456789012345012345678901234501
@@ -64,40 +65,36 @@ module top(input            CLK,
         nAE <= nBE;
      end
    
-   /* ================ Gigatron data bus */
-   
-   (* KEEP = "TRUE" *) wire gahz = (GAH[15:8] == 8'h00);
-   wire portx = SCLK && gahz;
-   wire misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
-   reg [7:0] gbusout;
-   always @*
-     if (! nAE)                 // transparent latch
-       casez ( { portx, RAL[7:0] } )
-         { 1'b1, 8'h00 } :   gbusout = { BANK[1:0], XIN[4:3], 3'b000, misox }; // spi data
-         { 1'b1, 8'hF0 } :   gbusout = { NBANKW[3:0], NBANKR[3:0] };           // bank data
-         default:            gbusout = RD[7:0];                                // ram data
-       endcase
-   assign GBUS = (nGOE) ? 8'hZZ : gbusout;
-   
-   
    /* ================ Gigatron bank selection */
 
-   (* KEEP = "TRUE" *) wire [3:0] nbank = (nGOE) ? NBANKW : NBANKR;
-   (* PWR_MODE = "STD" *) reg [3:0] gbank;
+   (* KEEP = "TRUE" *) wire gahz = GAH[14:8] == 7'h00;
+   wire bankenable  = GAH[15] ^ (!nZPBANK && !NBANKZ && RAL[7] && gahz);
+   reg [3:0] gbank;
    always @*
-     if (GAH[15] && nbank != 4'b0000)
-       gbank = nbank;
-     else if (GAH[15])
-       gbank = { 2'b00, BANK };
-     else if (!nZPBANK && gahz && RAL[7])
-       gbank = 4'b0011;
+     if (NBANKP && GAH[15])
+       gbank = NBANK;           // nbank bank overrides ctrlbits bank
+     else if (!bankenable)
+       gbank = 4'b0000;         // no banking
+     else if (BANK == 2'b00)
+       gbank = NBANK;           // nbank applies when bank is 00
      else
-       gbank = 4'b0000;
+       gbank = { 2'b00, BANK }; // normal banking
+   
+   
+   /* ================ Gigatron data bus */
+   
+   reg [7:0] gbusout;
+   wire misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
+   wire portx = SCLK && !GAH[15] && gahz && RAL[7:0] == 8'h00;
+   always @*
+     if (! nAE) // transparent latch
+       gbusout = (portx) ? { BANK[1:0], XIN[4:3], 3'b000, misox } : RD[7:0];
+   assign GBUS = (nGOE) ? 8'hZZ : gbusout;
    
    
    /* ================ SRAM interface 
     *
-    * This is very tricky because we must ensure
+    * This is tricky because we must ensure
     * that no conflict arises when we commute the 74lvc244.
     * The solution is to ensure that, when nAE rises,
     * both the xc95144 and the 74lvc244 have the same
@@ -189,9 +186,11 @@ module top(input            CLK,
    /* ================ Ctrl codes */
    
    wire nCTRL = nAE || nGOE || nGWE;
+
    assign nACTRL =   nCTRL || RAL[3:2] != 2'b00;
    assign nADEV[0] = nAE   || RAL[7:4] == 4'b0000;
    assign nADEV[1] = nAE   || RAL[7:4] == 4'b0001;
+
    always @(posedge CLKx4)
      if (!nAE && nBE && !nCTRL)
        begin
@@ -206,31 +205,32 @@ module top(input            CLK,
                SCK <= RAL[0] ^~ RAL[4];
                if (RAL[1:0] == 2'b11) // System reset
                  begin
-                    NBANKR[3:0] <= 4'b0;
-                    NBANKW[3:0] <= 4'b0;
-                    VBANK[3:0] <= 4'b0;
-                    PWMD[5:0] <= 6'h00;
+                    NBANK <= 4'b0;
+                    NBANKP <= 1'b0;
+                    NBANKZ <= 1'b0;
+                    VBANK <= 4'b0;
+                    PWMD  <= 6'h00;
                  end
             end
           /* Extended ctrl code */
           else
             case (RAL[7:4])
-              4'hf : begin        // Device 0xf : extended banking
-                 NBANKR[3:0] <= GAH[11:8];
-                 NBANKW[3:0] <= GAH[15:12];
+              4'hf : begin // Device 0xf : set new bank register
+                 NBANK <= GAH[15:12];
+                 NBANKP <= GAH[11];
+                 NBANKZ <= GAH[11] && GAH[10];
               end
-              4'he : begin        // Device 0xe : set video bank
+              4'he : begin // Device 0xe : set video bank
                  VBANK[3:0] <= GAH[11:8];
               end
-              4'hd : begin        // Device 0xd : PWM
+              4'hd : begin // Device 0xd : PWM
                  PWMD[5:0] <= GAH[15:10];
               end
             endcase
        end
    
-
+   
    /* ======== Bit reversed PWM 
-    *
     * Reversed bit PWM moves noise into higher frequencies
     * that are more easily filtered.
     */
@@ -242,6 +242,7 @@ module top(input            CLK,
    always @(posedge CLK)
      PWM <= (rpwmcnt < PWMD);
 
+   
 endmodule
 
 

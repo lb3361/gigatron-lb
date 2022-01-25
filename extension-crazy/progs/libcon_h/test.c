@@ -8,9 +8,9 @@ int main()
   int i;
   
   // Display a red line at the top of the screen
-  SYS_ExpanderControl(0xe1f0u);
+  SYS_ExpanderControl(0xe8f0u);
   memset((void*)0x8800u, 0x3, 160);
-  SYS_ExpanderControl(0xc1f0u);
+  SYS_ExpanderControl(0xc8f0u);
   memset((void*)0x8800u, 0xc, 160);
   SYS_ExpanderControl(0x00f0u);
   

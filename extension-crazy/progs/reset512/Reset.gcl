@@ -259,14 +259,15 @@ $1f8 CtrlBits=
 [def
   \SYS_ExpanderControl_v4_40 _sysFn=
   $8500 p=
-  $fff0 40!! $aa p. { write $aa into bank 15}
-  $5ff0 40!! $55 p. { write $55 into bank 5 while reading from bank 15}
+  $fcf0 40!! $aa p. { write $aa into bank 15}
+  $5cf0 40!! $55 p. { write $55 into bank 5}
+  $fcf0 40!!        { back to bank 15 }
   p, $aa^           { read and compare with $aa }
   [if=0             { found 512k }
-    $00f0 40!!      { restore new banking register to default }
     $0c35 i=
    else
     $1c31 i=]
+  $00f0 40!!      { restore new banking register to default }
   i ret
 ] Check512k=
 

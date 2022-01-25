@@ -2,29 +2,37 @@
 
 def scope():
     ctrlBits_v5 = 0x1f8
+    videoModeB = 0xa   # contain bankinfo on patched rom
+    videoModeC = 0xb   # >= 0xfc on patched rom
 
     def code_bank():
         # Clobbers R21, R22
         nohop()
-        ## save current bank (to be completed)
+        ## save current bank
         label('_cons_save_current_bank')
+        LD(videoModeB);ANDI(0xfc);XORI(0xfc);BNE('.cscb1')
+        LDWI('.savx');STW(R22);LD(videoModeC);POKE(R22)
+        label('.cscb1')
         RET()
         ## restore_saved_bank
         label('_cons_restore_saved_bank')
+        LDW('sysFn');STW(R21)
         LDWI('SYS_ExpanderControl_v4_40');STW('sysFn');
-        LDWI(0x00F0);SYS(40);
-        RET();
+        label('.savx', pc()+2)
+        LDWI(0x00F0);SYS(40)
+        LDW(R21);STW('sysFn')
+        RET()
         ## set extended banking code for address in vAC
         label('_cons_set_bank_even')
         BGE('.wbb1')
-        LDWI(0xF0F0);BRA('.wbb3')
+        LDWI(0xF8F0);BRA('.wbb3')
         label('.wbb1')
-        LDWI(0xE0F0);BRA('.wbb3')
+        LDWI(0xE8F0);BRA('.wbb3')
         label('_cons_set_bank_odd')
         BGE('.wbb2')
-        LDWI(0xD0F0);BRA('.wbb3')
+        LDWI(0xD8F0);BRA('.wbb3')
         label('.wbb2')
-        LDWI(0xC0F0);BRA('.wbb3')
+        LDWI(0xC8F0);BRA('.wbb3')
         label('.wbb3')
         STW(R22)
         LDW('sysFn');STW(R21)
@@ -57,6 +65,7 @@ def scope():
         label('_console_printchars')
         PUSH()
         CALLI('_cons_save_current_bank')
+        _LDI('SYS_VDrawBits_134');STW('sysFn')
         LDW(R8);STW('sysArgs0')                  # move fgbg, freeing R8
         LDI(0);STW(R12)                          # R12: character counter
         label('.loop')
@@ -75,14 +84,12 @@ def scope():
         LDI(1);ADDW(R12);STW(R12);               # increment counter
         XORW(R11);_BNE('.loop')                  # loop
         label('.ret')
-        CALLI('_cons_restore_saved_bank')
         tryhop(4);LDW(R12);POP();RET()
 
     def code_printonechar():
         nohop()
         label('_printonechar')
         PUSH()
-        _LDI('SYS_VDrawBits_134');STW('sysFn')
         LDW(R9);CALLI('_cons_set_bank_even')
         LDW(R8);LSLW();LSLW();ADDW(R8);ADDW(R13)
         STW(R13);LUP(0);ST('sysArgs2');SYS(134);INC('sysArgs4')
@@ -93,6 +100,7 @@ def scope():
         LDI(1);ADDW(R13);LUP(0);ST('sysArgs2');SYS(134);INC('sysArgs4')
         LDI(3);ADDW(R13);LUP(0);ST('sysArgs2');SYS(134);INC('sysArgs4')
         LDI(0);ST('sysArgs2');SYS(134)
+        CALLI('_cons_restore_saved_bank')
         tryhop(2);POP();RET()
 
     module(name='cons_printchar.s',

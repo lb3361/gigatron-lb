@@ -4,55 +4,33 @@
 #include <gigatron/sys.h>
 
 
+#define bankInfo_DEVROM (*(char*)0xb)
+
 void old_set_bank(int bank)
 {
   char bits = ctrlBits_v5;
-  SYS_ExpanderControl( 0x00F0 ); // reset new banking registers
-  SYS_ExpanderControl( bits ^ ((bits ^ (bank << 6)) & 0xc0) );
+  SYS_ExpanderControl(bits ^ ((bits ^ (bank << 6)) & 0xc0));
 }
 
-void new_set_bank(int rbank, int wbank)
+void new_set_bank(int nbank, int flags)
 {
-  SYS_ExpanderControl( ((wbank & 0xf) << 12) | ((rbank & 0xf) << 8) | 0xF0 );
+  int code = ((nbank & 0xf) << 12) | ((flags & 0xf) << 8) | 0x0F0;
+  SYS_ExpanderControl(code);
+#if DEBUG_BANKINFO
+  cprintf(" sys(%04x): %02x %02x\n", code, ctrlBits_v5, bankInfo_DEVROM);
+#endif
 }
-
-void test_rw(int bank1, int bank2)
-{
-  register char *addr = (char*)0x9000;
-  new_set_bank(bank1, bank2);
-  cprintf("Reading %d, writing %d\n", bank1, bank2);
-  cprintf(" rd %02x, wr %02x, rd %02x\n", *addr, (*addr = 0xaa), *addr);
-  new_set_bank(bank2, bank1);
-  cprintf("Reading %d, writing %d\n", bank2, bank1);
-  cprintf(" rd %02x, wr %02x, rd %02x\n", *addr, (*addr = 0x55), *addr);
-}
-
 
 int main()
 {
   int b;
-  char *addr;
+  char *addr = (char*)0x8100;
 
-  cprintf("\fReset test\n--------------------\n");
-  old_set_bank(0);
-  if (memcmp((void*)0x100, (void*)0x8100, 0x80))
-    cprintf("bank0r is not zero");
-  b = *(char*)0x200 ^ 0x55;
-  *(char*)0x8200 = b;
-  if (*(char*)(0x200) != b)
-    cprintf("bank0w is not zero");
-  *(char*)0x200 = b ^ 0x55;
-  cprintf("Press any key\n");
-  console_waitkey();
+  cprintf("\fInitial bits\n--------------------\n");
+  cprintf(" ctrlBits=%02x\n", ctrlBits_v5);
+  cprintf(" bankInfo=%02x\n", bankInfo_DEVROM);
   
-  cprintf("\fRead/write test\n--------------------\n");
-  test_rw(3,4);
-  test_rw(3,12);
-  cprintf("Press any key\n");
-  console_waitkey();
-
-  cprintf("\fTest banks 1-3 old style\n--------------------\n");
-  new_set_bank(0,0);
+  cprintf("\n\nTest banks 1-3 old style\n--------------------\n");
   cprintf("Writing patterns, old way\n");
   for (b=1; b != 4; b++) {
     old_set_bank(b);
@@ -81,9 +59,10 @@ int main()
         break;
     }
   }
+  old_set_bank(0);
   for (b=1; b != 4; b++) {
-    cprintf("Testing bank %d (new way)\n", b);
-    new_set_bank(b, b);
+    cprintf("Testing bank %d (new,b0)\n", b);
+    new_set_bank(b, 0);
     for (addr = (char*)0x8000; addr; addr += 0x1000) {
       char *p = addr;
       char *e = addr + 0x1000;
@@ -99,16 +78,19 @@ int main()
         break;
     }
   }
+  new_set_bank(0,0);
+  old_set_bank(1);
   
-  cprintf("\fTest banks 1-15 new style\n--------------------\n");
-  cprintf("Writing patterns, new way\n");
+  cprintf("\n\nTest banks 1-15 new style\n--------------------\n");
+  cprintf("Writing patterns (new, p)\n");
   for (b=1; b != 16; b++) {
-    new_set_bank(b, b);
+    new_set_bank(b,8);
     for (addr = (char*)0x8000; addr; addr += 0x1000) {
       char v = b ^ ((size_t)addr >> 8);
       memset(addr, v, 0x1000);
     }
   }
+  new_set_bank(0,0);
   for (b=1; b != 4; b++) {
     cprintf("Testing bank %d (old way)\n", b);
     old_set_bank(b);
@@ -128,8 +110,9 @@ int main()
     }
   }
   for (b=1; b != 16; b++) {
-    cprintf("Testing bank %d\n", b);
-    new_set_bank(b, b);
+    cprintf("Testing bank %d (new, p)\n", b);
+    new_set_bank(b,8);
+    old_set_bank(b); // mess with ctrlBits - shouldn't change
     for (addr = (char*)0x8000; addr; addr += 0x1000) {
       char *p = addr;
       char *e = addr + 0x1000;
@@ -145,7 +128,8 @@ int main()
         break;
     }
   }
-  
+  new_set_bank(0,0);
+  old_set_bank(1);
   return 0;
 }
 

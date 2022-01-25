@@ -1,10 +1,10 @@
-# RTL Projects.
+# Verilog code for the CPLD
 
-This directory contains the programming information for the CPLD. 
+File `ise-main/main.jed` contains the programming information for the CPLD.
+A good way to do this is to use program `xc3sprog` with a FTDI232 cable.
 
-There are two projects
-
-* `ise-full/full.jed` only attempts to achieve parity with the v7 extension boards (the "dual drive" boards) without any enhanced video or audio. This is also a playground for setting up the memory timings. The Verilog source file is `fulltop.v`.
-
-* `ise-main/main.jed` is the main project with support for enhanced video and pwm output. It is compiled from source file `top.v`.
-
+To regenerate this file from the source `top.v`, `top.ucf`, and from the settings
+found in `ise-main/main.tcl`, you must make sure that the shell scripts found
+in directory `script` invoke the Xilinx ISE Webpack `xtclsh` program. The default
+script searches a Wine install of the Win7 version or a Linux install which can
+be capricious because it relies on lots of obselete libraries.
