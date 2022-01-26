@@ -31,7 +31,6 @@ module top(input            CLK,
    reg [1:0]   BANK;            // ctrlBits: BANK
    reg [3:0]   NBANK;           // extended bank register
    reg         NBANKP;          // override normal banking scheme
-   reg         NBANKZ;          // override zpbank
    reg [5:0]   PWMD;            // pwm threshold
    reg [3:0]   VBANK;           // video bank
    reg [15:0]  VADDR;           // video snoop address
@@ -68,7 +67,7 @@ module top(input            CLK,
    /* ================ Gigatron bank selection */
 
    (* KEEP = "TRUE" *) wire gahz = GAH[14:8] == 7'h00;
-   wire bankenable  = GAH[15] ^ (!nZPBANK && !NBANKZ && RAL[7] && gahz);
+   wire bankenable  = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
    reg [3:0] gbank;
    always @*
      if (NBANKP && GAH[15])
@@ -207,7 +206,6 @@ module top(input            CLK,
                  begin
                     NBANK <= 4'b0;
                     NBANKP <= 1'b0;
-                    NBANKZ <= 1'b0;
                     VBANK <= 4'b0;
                     PWMD  <= 6'h00;
                  end
@@ -218,7 +216,6 @@ module top(input            CLK,
               4'hf : begin // Device 0xf : set new bank register
                  NBANK <= GAH[15:12];
                  NBANKP <= GAH[11];
-                 NBANKZ <= GAH[11] && GAH[10];
               end
               4'he : begin // Device 0xe : set video bank
                  VBANK[3:0] <= GAH[11:8];

@@ -84,13 +84,12 @@ to save and restore a banking configuration by copying and
 manipulating `ctrlBits_v5`.
 
 The current CPLD program defines a new four bit banking register NBANK
-and two flags NBANKP and NBANKZ. They can be set using an [extended
+and a flag NBANKP. They can be set using an [extended
 ctrl code](https://forum.gigatron.io/viewtopic.php?f=4&t=331) with
 device address 0xF. Register NBANK is read from the top four bits of
-the code, flags NBANKP and NBANKZ from the following two bits.
-In other words, we can set them with
+the code, flags NBANKP from the following bit:
 ```
-  SYS_ExpanderControl( (NBANK<<12) | (NBANKP<<11) | (NBANKZ<<10) | 0xF0 );
+  SYS_ExpanderControl( (NBANK<<12) | (NBANKP<<11) | 0xF0 );
 ```
 The flags define two modes of operation:
 
@@ -109,8 +108,7 @@ The flags define two modes of operation:
   regardless of the normal control bits. Meanwhile the low
   addresses [0x0000-0x7fff] shows bank 0 as usual. If zero page
   banking is enabled, showing the bank specified by
-  the normal banking bits in [0x80-0xff]. However is flag NBANKZ
-  is also set, zero page banking is disabled.
+  the normal banking bits in [0x80-0xff].
 
   This mode provides a quick way to temporarily map any bank, do
   something, and almost immediately restore the previous state by
