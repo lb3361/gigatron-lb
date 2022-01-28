@@ -1,0 +1,12 @@
+
+# Map overlay that allows using nearly all 32kb in bank 0.
+# Only makes sense if the video buffer has been moved elsewhere
+
+segments = [(0x00fa, 0x0200, 0x0100, 0x0500, 1),
+	    (0x0200, 0x0500, None,   None,   1),
+            (0x7800, 0x0800, None,   None,   0) ]
+
+# Local Variables:
+# mode: python
+# indent-tabs-mode: ()
+# End:
