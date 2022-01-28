@@ -1,0 +1,31 @@
+
+Simple opcodes:
+
+ENCODING           OPCODE     DESCRIPTION         
+C111/ctrl(0x11)   ld(AC,Z)     copy AC into register Z
+C121/ctrl(0x21)   ld(Y,Z)      copy Y into register Z
+C1d2/ctrl(0xd2)   ld(d,Z)      load immediate d into register Z
+C101/ctrl(0x01)   nop()        no operation
+
+Prefix opcodes:
+
+       These change the addressing mode of the next
+       opcode (load or store) as follows:
+
+               [d],AC      -->  [Z,0,d],AC
+               [X],AC      -->  [Z,0,X],AC
+               [Y,d],AC    -->  [Z,Y,d],AC
+               [Y,X],AC    -->  [Z,Y,X],AC
+               [d],X       -->  [Z,0,d],X
+               [d],Y       -->  [Z,0,d],Y
+               [d],OUT     -->  [Z,0,d],OUT    (load only)
+               [Y,X++],OUT -->  [Z,Y,X++],OUT  (load only)
+               [Y,X++]     -->  [Z,Y,X++]      (store only)
+
+ENCODING          OPCODE          DESCRIPTION         
+C181/ctrl(0x01)   far()            prefix for next insn
+C191/ctrl(0x11)   far+ld(AC,Z)     copy AC into register Z + prefix
+C1a1/ctrl(0x21)   far+ld(Y,Z)      copy Y into register Z + prefix
+C1d3/ctrl(0xd2)   far+ld(d,Z)      load immediate d into register Z + prefix
+
+

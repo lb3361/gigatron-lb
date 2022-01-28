@@ -34,6 +34,9 @@ module top(input            CLK,
    reg [5:0]   PWMD;            // pwm threshold
    reg [3:0]   VBANK;           // video bank
    reg [15:0]  VADDR;           // video snoop address
+   reg [3:0]   ZREG;            // extended ops: Z register
+   reg         FARADDR;         // extended ops: far addressing
+   
 
    /* ================ clocks
     *
@@ -70,7 +73,9 @@ module top(input            CLK,
    wire bankenable  = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
    reg [3:0] gbank;
    always @*
-     if (NBANKP && GAH[15])
+     if (FARADDR)
+       gbank = { ZREG, GAH[15] };
+     else if (NBANKP && GAH[15])
        gbank = NBANK;           // nbank bank overrides ctrlbits bank
      else if (!bankenable)
        gbank = 4'b0000;         // no banking
@@ -182,51 +187,6 @@ module top(input            CLK,
        OUTD[5:0] <= outnxt[5:0];
 `endif
    
-   /* ================ Ctrl codes */
-   
-   wire nCTRL = nAE || nGOE || nGWE;
-
-   assign nACTRL =   nCTRL || RAL[3:2] != 2'b00;
-   assign nADEV[0] = nAE   || RAL[7:4] == 4'b0000;
-   assign nADEV[1] = nAE   || RAL[7:4] == 4'b0001;
-
-   always @(posedge CLKx4)
-     if (!nAE && nBE && !nCTRL)
-       begin
-          /* Normal ctrl code */         
-          if (RAL[3:2] != 2'b00)
-            begin
-               MOSI <= GAH[15];
-               BANK <= RAL[7:6];
-               nZPBANK <= RAL[5];
-               nSS <= RAL[3:2];
-               SCLK <= RAL[0];
-               SCK <= RAL[0] ^~ RAL[4];
-               if (RAL[1:0] == 2'b11) // System reset
-                 begin
-                    NBANK <= 4'b0;
-                    NBANKP <= 1'b0;
-                    VBANK <= 4'b0;
-                    PWMD  <= 6'h00;
-                 end
-            end
-          /* Extended ctrl code */
-          else
-            case (RAL[7:4])
-              4'hf : begin // Device 0xf : set new bank register
-                 NBANK <= GAH[15:12];
-                 NBANKP <= GAH[11];
-              end
-              4'he : begin // Device 0xe : set video bank
-                 VBANK[3:0] <= GAH[11:8];
-              end
-              4'hd : begin // Device 0xd : PWM
-                 PWMD[5:0] <= GAH[15:10];
-              end
-            endcase
-       end
-   
-   
    /* ======== Bit reversed PWM 
     * Reversed bit PWM moves noise into higher frequencies
     * that are more easily filtered.
@@ -235,10 +195,105 @@ module top(input            CLK,
    reg [5:0] pwmcnt;
    always @(posedge CLK)
      pwmcnt <= pwmcnt + 6'h01;
-   wire [5:0] rpwmcnt = { pwmcnt[0], pwmcnt[1], pwmcnt[2], pwmcnt[3], pwmcnt[4], pwmcnt[5] };
+   wire [5:0] rpwmcnt = { pwmcnt[0], pwmcnt[1], pwmcnt[2], 
+                          pwmcnt[3], pwmcnt[4], pwmcnt[5] };
    always @(posedge CLK)
      PWM <= (rpwmcnt < PWMD);
 
+   
+   /* ================ Ctrl codes */
+   
+   wire nCTRL = nAE || nGOE || nGWE;
+
+   assign nACTRL =   nCTRL || RAL[3:2] != 2'b00;
+   assign nADEV[0] = nAE   || RAL[7:4] == 4'b0000;
+   assign nADEV[1] = nAE   || RAL[7:4] == 4'b0001;
+
+   reg v_faraddr = 0;
+   always @(posedge CLKx4)
+     if (!nAE && nBE)
+       begin
+          v_faraddr = 1'b0;
+          if (! nCTRL)
+            begin
+               casez (RAL[3:0])
+                 4'b0000:       // extended ctrl codes
+                   begin
+                      case (RAL[7:4])
+                        4'hf : 
+                          begin // dev15: set new bank register
+                             NBANK <= GAH[15:12];
+                             NBANKP <= GAH[11];
+                          end
+                        4'he : 
+                          begin // dev14: set video bank
+                             VBANK[3:0] <= GAH[11:8];
+                          end
+                        4'hd : 
+                          begin // dev13: set PWM threshold
+                             PWMD[5:0] <= GAH[15:10];
+                          end
+                      endcase
+                   end
+                 4'b0001:       // new opcodes
+                   begin
+                      case (RAL[6:4])
+                        3'b000: // nop(), farprefix()
+                          begin //  -- ctrl(0x01)/ctrl(0x81)
+                          end
+                        3'b001: // ld(AC, Z)/farprefix+ld(AC,Z)
+                          begin // -- ctrl(0x11)/ctrl(0x91)
+                             ZREG <= ALU[2:0];
+                          end
+                        3'b010: // ld(Y, Z)/farprefix+ld(Y,Z)
+                          begin // -- ctrl(0x21)/ctrl(0xa1)
+                             ZREG <= GAH[10:8];
+                          end
+                      endcase // case (RAL[6:4])
+                      if (RAL[7])
+                        begin
+                           // 
+                           // changes addressing mode of next opcode
+                           //  [d],AC      -->  [Z,0,d],AC
+                           //  [X],AC      -->  [Z,0,X],AC
+                           //  [Y,d],AC    -->  [Z,Y,d],AC
+                           //  [Y,X],AC    -->  [Z,Y,X],AC
+                           //  [d],X       -->  [Z,0,d],X
+                           //  [d],Y       -->  [Z,0,d],Y
+                           //  [d],OUT     -->  [Z,0,d],OUT
+                           //  [Y,X++],OUT -->  [Z,Y,X++],OUT
+                           v_faraddr = 1'b1;
+                        end // if (RAL[7])
+                   end
+                 4'b0010:       // ld(imm,Z)
+                   begin        // -- ctrl((imm<<4)|0x2)
+                      ZREG <= RAL[6:4];
+                   end
+                 4'b0011:       // farprefix+ld(imm,Z)
+                   begin        // -- ctrl((imm<<4)|0x3)
+                      ZREG <= RAL[6:4];
+                      v_faraddr = 1'b1;
+                   end
+                 default:       // normal ctrl codes
+                   begin
+                      MOSI <= GAH[15];
+                      BANK <= RAL[7:6];
+                      nZPBANK <= RAL[5];
+                      nSS <= RAL[3:2];
+                      SCLK <= RAL[0];
+                      SCK <= RAL[0] ^~ RAL[4];
+                      if (RAL[1:0] == 2'b11)
+                        begin   // reset
+                           NBANK <= 4'b0;
+                           NBANKP <= 1'b0;
+                           VBANK <= 4'b0;
+                           PWMD  <= 6'h00;
+                        end
+                   end
+               endcase // casez (RAL[3:0])
+            end // if (! nCTRL)
+          FARADDR <= v_faraddr;
+       end // if (!nAE && nBE)
    
 endmodule
 
