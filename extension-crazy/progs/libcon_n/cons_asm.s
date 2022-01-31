@@ -38,46 +38,6 @@ def scope():
         LDW('sysFn');STW(R21)
         LDWI('SYS_ExpanderControl_v4_40');STW('sysFn')
         LDW(R22);SYS(40)
-        LDWI(ctrlBits_v5);PEEK();ANDI(0x3c);SYS(40)
-        LDW(R21);STW('sysFn')
-        RET()
-    def code_bank():
-        # Clobbers R21, R22
-        # This is complicated to deal with several kinds of ROMs
-        nohop()
-        ## save current bank
-        label('_cons_save_current_bank')
-        LD(videoModeB);ANDI(0xfc);XORI(0xfc);BNE('.cscb1')
-        LDWI('.savx');STW(R22);LD(videoModeC);POKE(R22)
-        label('.cscb1')
-        LDWI('.savy');STW(R22);LDWI(ctrlBits_v5);PEEK();POKE(R22)
-        RET()
-        ## restore_saved_bank
-        label('_cons_restore_saved_bank')
-        LDW('sysFn');STW(R21)
-        LDWI('SYS_ExpanderControl_v4_40');STW('sysFn');
-        label('.savx', pc()+2)
-        LDWI(0x00F0);SYS(40)
-        label('.savy', pc()+1)
-        LDI(0);SYS(40)
-        LDW(R21);STW('sysFn')
-        RET()
-        ## set extended banking code for address in vAC
-        label('_cons_set_bank_even')
-        BGE('.wbb1')
-        LDWI(0xF0F0);BRA('.wbb3')
-        label('.wbb1')
-        LDWI(0xE0F0);BRA('.wbb3')
-        label('_cons_set_bank_odd')
-        BGE('.wbb2')
-        LDWI(0xD0F0);BRA('.wbb3')
-        label('.wbb2')
-        LDWI(0xC0F0);BRA('.wbb3')
-        label('.wbb3')
-        STW(R22)
-        LDW('sysFn');STW(R21)
-        LDWI('SYS_ExpanderControl_v4_40');STW('sysFn')
-        LDW(R22);SYS(40)
         LDW(R21);STW('sysFn')
         RET()
         
