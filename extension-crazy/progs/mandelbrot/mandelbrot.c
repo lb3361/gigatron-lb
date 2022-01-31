@@ -99,7 +99,7 @@ void worm(register fixed_t x0, register fixed_t y0, fixed_t step, action_t act)
 
 #define NSQUARES (1<<(3+8))
 
-fixed_t squares[NSQUARES];
+fixed_t squares[NSQUARES+NSQUARES];
 
 extern fixed_t slowmul(register fixed_t a, register fixed_t b);
 extern fixed_t sqr(register fixed_t a);
@@ -113,6 +113,8 @@ void prep_squares()
   cprintf("Computing a table of %d squares\n", NSQUARES);
   for(i = 0; i != NSQUARES; i++)
     squares[i] = slowmul(i, i);
+  for(i = 0; i != NSQUARES; i++)
+    squares[NSQUARES+i] = 0x0800; // overflow
 }
 
 
@@ -202,7 +204,7 @@ int main()
       go(-640, -360,  3); // global
       go(-196, -296,  1); // zoom1
       go(-512, -120,  1); // zoom2
-      go(-640, -720,  8); // wide
+      go(-640, -720,  9); // wide
       go(-200,    0,  3); // zoom1
       go(   0, -120,  3); // zoom2
     }  
