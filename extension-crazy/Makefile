@@ -1,9 +1,9 @@
 SHELL=/bin/sh
 TARGETS=all broom clean
-GIGAROM=../gigatron-rom
+GIGAROM=${shell realpath -s ../../gigatron-rom}
 GLCC=glcc
 
-SUBDIRS=rtl glcc progs
+SUBDIRS=rtl rom progs
 
 ${TARGETS}:
 	for n in ${SUBDIRS}; do make -C $$n GIGAROM=${GIGAROM} GLCC=${GLCC} $@ ; done

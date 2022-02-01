@@ -1,10 +1,11 @@
 SHELL=/bin/sh
 TARGETS=all broom clean
-GIGAROM=../gigatron-rom
+GIGAROM=../../../gigatron-rom
 GLCC=glcc
 
 SUBDIRS=memtest pwmtest zpbanktest reset512\
-        libcon_b libcon_n libcon_h mscp mandelbrot
+        libcon_b libcon_n libcon_h mscp\
+	mandelbrot music64k
 
 ${TARGETS}:
 	for n in ${SUBDIRS}; do make -C $$n GIGAROM=${GIGAROM} GLCC=${GLCC} $@ ; done

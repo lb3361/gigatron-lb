@@ -7661,7 +7661,7 @@ sysEx#30:     1498 610b  xora [$0b]       6129    xora([videoModeC])            
                                           6159
                                           6160  disableListing()
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Pictures/packedPictures.rgb |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Pictures/packedPictures.rgb |
                                           ;+-----------------------------------+
 packedPictures:
               1500 00ff  ld   $ff
@@ -16516,9 +16516,9 @@ packedPictures:
               3afd 1404  ld   $04,y       ;| Trampoline for page $3a00 lookups |
               3afe e068  jmp  y,$68       ;|                                   |
               3aff c218  st   [$18]       ;+-----------------------------------+
-                                          ;End of ../../../gigatron-rom/Apps/Pictures/packedPictures.rgb, size 9728
+                                          ;End of /home/quartus/gigatron/gigatron-rom/Apps/Pictures/packedPictures.rgb, size 9728
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Snake/Snake_v3.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Snake/Snake_v3.gcl |
                                           ;+-----------------------------------+
               3b00 dc00  st   $00,[y,x++] ;'\x00'
               3b01 dc00  st   $00,[y,x++] ;'\x00'
@@ -18367,7 +18367,7 @@ Snake:        3b0e 0002  ld   $02         ;| RAM segment address (high byte firs
               4234 0050  ld   $50         ;0ee9 'Wait'
               4235 0090  ld   $90         ;0eeb BRA
               4236 00d3  ld   $d3
-              4237 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Snake/Snake_v3.gcl, size 1834
+              4237 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Snake/Snake_v3.gcl, size 1834
                                           ;+-----------------------------------+
                                           ;| SYS_Racer_v1.py                   |
                                           ;+-----------------------------------+
@@ -18424,7 +18424,7 @@ SYS_RacerUpdateVideoY_40:
               4267 e0cb  jmp  y,$cb
               4268 00ec  ld   $ec         ;End of SYS_Racer_v1.py, size 49
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Racer/Horizon-256x16.rgb |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Racer/Horizon-256x16.rgb |
                                           ;+-----------------------------------+
               4269 dc53  st   $53,[y,x++] ;'S'
               426a dc6e  st   $6e,[y,x++] ;'n'
@@ -21515,9 +21515,9 @@ zippedRacerHorizon:
               4eaf 00c3  ld   $c3
               4eb0 00eb  ld   $eb
               4eb1 001a  ld   $1a
-              4eb2 0004  ld   $04         ;End of ../../../gigatron-rom/Apps/Racer/Horizon-256x16.rgb, size 3132
+              4eb2 0004  ld   $04         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Racer/Horizon-256x16.rgb, size 3132
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Racer/Racer_v2.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Racer/Racer_v2.gcl |
                                           ;+-----------------------------------+
               4eb3 dc7a  st   $7a,[y,x++] ;'z'
               4eb4 dc69  st   $69,[y,x++] ;'i'
@@ -23405,9 +23405,9 @@ Racer:        4ec1 0002  ld   $02         ;| RAM segment address (high byte firs
               560e 0099  ld   $99         ;0ff0 'PrintBestTime'
               560f 0090  ld   $90         ;0ff2 BRA
               5610 00a0  ld   $a0
-              5611 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Racer/Racer_v2.gcl, size 1873
+              5611 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Racer/Racer_v2.gcl, size 1873
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Mandelbrot/Mandelbrot_v1.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Mandelbrot/Mandelbrot_v1.gcl |
                                           ;+-----------------------------------+
               5612 dc52  st   $52,[y,x++] ;'R'
               5613 dc61  st   $61,[y,x++] ;'a'
@@ -24677,7 +24677,7 @@ Mandelbrot:   5620 0002  ld   $02         ;| RAM segment address (high byte firs
               5b03 005c  ld   $5c         ;06fa 'CalcSet'
               5b04 0090  ld   $90         ;06fc BRA
               5b05 009c  ld   $9c
-              5b06 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Mandelbrot/Mandelbrot_v1.gcl, size 1255
+              5b06 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Mandelbrot/Mandelbrot_v1.gcl, size 1255
                                           ;+-----------------------------------+
                                           ;| SYS_Loader_vX.py                  |
                                           ;+-----------------------------------+
@@ -24789,7 +24789,7 @@ SYS_LoaderPayloadCopy_34:
 .sysCc#30:    5b6c e0cb  jmp  y,$cb
               5b6d 00ef  ld   $ef         ;End of SYS_Loader_vX.py, size 103
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Pictures/Pictures_v3.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Pictures/Pictures_v3.gcl |
                                           ;+-----------------------------------+
               5b6e dc4d  st   $4d,[y,x++] ;'M'
               5b6f dc61  st   $61,[y,x++] ;'a'
@@ -25036,9 +25036,9 @@ Pictures:     5b7c 0002  ld   $02         ;| RAM segment address (high byte firs
               5c60 003c  ld   $3c         ;02db 'Transfer'
               5c61 0090  ld   $90         ;02dd BRA
               5c62 00d0  ld   $d0
-              5c63 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Pictures/Pictures_v3.gcl, size 232
+              5c63 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Pictures/Pictures_v3.gcl, size 232
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Loader/Loader_v4.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Loader/Loader_v4.gcl |
                                           ;+-----------------------------------+
               5c64 dc50  st   $50,[y,x++] ;'P'
               5c65 dc69  st   $69,[y,x++] ;'i'
@@ -25331,9 +25331,9 @@ Loader:       5c72 0002  ld   $02         ;| RAM segment address (high byte firs
               5d84 00ee  ld   $ee
               5d85 0090  ld   $90         ;5a7f BRA
               5d86 000a  ld   $0a
-              5d87 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Loader/Loader_v4.gcl, size 278
+              5d87 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Loader/Loader_v4.gcl, size 278
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Credits/Credits_v3.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Credits/Credits_v3.gcl |
                                           ;+-----------------------------------+
               5d88 dc4c  st   $4c,[y,x++] ;'L'
               5d89 dc6f  st   $6f,[y,x++] ;'o'
@@ -25941,9 +25941,9 @@ Credits:      5d96 0002  ld   $02         ;| RAM segment address (high byte firs
               5fe3 0057  ld   $57
               5fe4 0090  ld   $90         ;047f BRA
               5fe5 0053  ld   $53
-              5fe6 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Credits/Credits_v3.gcl, size 593
+              5fe6 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Credits/Credits_v3.gcl, size 593
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Tetronis/Tetronis_v2.gt1 |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Tetronis/Tetronis_v2.gt1 |
                                           ;+-----------------------------------+
               5fe7 dc43  st   $43,[y,x++] ;'C'
               5fe8 dc72  st   $72,[y,x++] ;'r'
@@ -35986,9 +35986,9 @@ Tetronis:     5ff5 0000  ld   $00
               8728 003b  ld   $3b
               8729 0031  ld   $31
               872a 0000  ld   $00
-              872b 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Tetronis/Tetronis_v2.gt1, size 10039
+              872b 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Tetronis/Tetronis_v2.gt1, size 10039
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Bricks/Bricks_v2.gt1 |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Bricks/Bricks_v2.gt1 |
                                           ;+-----------------------------------+
               872c dc54  st   $54,[y,x++] ;'T'
               872d dc65  st   $65,[y,x++] ;'e'
@@ -37594,9 +37594,9 @@ Bricks:       873a 0000  ld   $00
               8d7c 0063  ld   $63
               8d7d 00ff  ld   $ff
               8d7e 0000  ld   $00
-              8d7f 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Bricks/Bricks_v2.gt1, size 1606
+              8d7f 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Bricks/Bricks_v2.gt1, size 1606
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/TinyBASIC/TinyBASIC_v5.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/TinyBASIC/TinyBASIC_v5.gcl |
                                           ;+-----------------------------------+
               8d80 dc42  st   $42,[y,x++] ;'B'
               8d81 dc72  st   $72,[y,x++] ;'r'
@@ -40812,9 +40812,9 @@ TinyBASIC:    8d8e 0002  ld   $02         ;| RAM segment address (high byte firs
               9a0b 0045  ld   $45         ;1ba3 'E'
               9a0c 0057  ld   $57         ;1ba4 'W'
               9a0d 0000  ld   $00         ;1ba5 0
-              9a0e 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/TinyBASIC/TinyBASIC_v5.gcl, size 3201
+              9a0e 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/TinyBASIC/TinyBASIC_v5.gcl, size 3201
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/TicTac/LoadTicTac_v1.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/TicTac/LoadTicTac_v1.gcl |
                                           ;+-----------------------------------+
               9a0f dc54  st   $54,[y,x++] ;'T'
               9a10 dc69  st   $69,[y,x++] ;'i'
@@ -40864,9 +40864,9 @@ TicTac:       9a1d 0002  ld   $02         ;| RAM segment address (high byte firs
               9a3c 0024  ld   $24         ;ffa8 '_sysArgs0'
               9a3d 00b4  ld   $b4         ;ffaa SYS
               9a3e 00e2  ld   $e2
-              9a3f 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/TicTac/LoadTicTac_v1.gcl, size 35
+              9a3f 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/TicTac/LoadTicTac_v1.gcl, size 35
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/TicTac/TicTac_v2.gtb |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/TicTac/TicTac_v2.gtb |
                                           ;+-----------------------------------+
 TicTacGtb:    9a40 001b  ld   $1b
               9a41 00c0  ld   $c0
@@ -42879,9 +42879,9 @@ TicTacGtb:    9a40 001b  ld   $1b
               a218 00e0  ld   $e0
               a219 0045  ld   $45
               a21a 0000  ld   $00
-              a21b 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/TicTac/TicTac_v2.gtb, size 2012
+              a21b 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/TicTac/TicTac_v2.gtb, size 2012
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/WozMon/WozMon_v2.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/WozMon/WozMon_v2.gcl |
                                           ;+-----------------------------------+
               a21c dc54  st   $54,[y,x++] ;'T'
               a21d dc69  st   $69,[y,x++] ;'i'
@@ -43499,9 +43499,9 @@ WozMon:       a22a 0002  ld   $02         ;| RAM segment address (high byte firs
               a481 0048  ld   $48         ;046e 'ProcessBuffer'
               a482 0090  ld   $90         ;0470 BRA
               a483 00fe  ld   $fe
-              a484 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/WozMon/WozMon_v2.gcl, size 603
+              a484 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/WozMon/WozMon_v2.gcl, size 603
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Apple-1/Apple-1_v2.gt1 |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Apple-1/Apple-1_v2.gt1 |
                                           ;+-----------------------------------+
               a485 dc57  st   $57,[y,x++] ;'W'
               a486 dc6f  st   $6f,[y,x++] ;'o'
@@ -51013,9 +51013,9 @@ Apple1:       a493 0002  ld   $02
               c21b 00db  ld   $db
               c21c 005e  ld   $5e
               c21d 0000  ld   $00
-              c21e 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Apple-1/Apple-1_v2.gt1, size 7564
+              c21e 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Apple-1/Apple-1_v2.gt1, size 7564
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/MSBASIC/MSBASIC_v1.gt1 |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/MSBASIC/MSBASIC_v1.gt1 |
                                           ;+-----------------------------------+
               c21f dc41  st   $41,[y,x++] ;'A'
               c220 dc70  st   $70,[y,x++] ;'p'
@@ -60765,9 +60765,9 @@ MSBASIC:      c22d 0002  ld   $02
               e837 0044  ld   $44
               e838 0000  ld   $00
               e839 0000  ld   $00
-              e83a 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/MSBASIC/MSBASIC_v1.gt1, size 9742
+              e83a 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/MSBASIC/MSBASIC_v1.gt1, size 9742
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/Horizon/Horizon_dev_c.gt1 |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/Horizon/Horizon_dev_c.gt1 |
                                           ;+-----------------------------------+
               e83b dc4d  st   $4d,[y,x++] ;'M'
               e83c dc53  st   $53,[y,x++] ;'S'
@@ -61616,9 +61616,9 @@ Egg:          e849 0002  ld   $02
               eb89 0063  ld   $63
               eb8a 00ff  ld   $ff
               eb8b 0000  ld   $00
-              eb8c 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/Horizon/Horizon_dev_c.gt1, size 836
+              eb8c 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/Horizon/Horizon_dev_c.gt1, size 836
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/CardBoot/CardBoot.gt1 |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/CardBoot/CardBoot.gt1 |
                                           ;+-----------------------------------+
               eb8d dc45  st   $45,[y,x++] ;'E'
               eb8e dc67  st   $67,[y,x++] ;'g'
@@ -64545,9 +64545,9 @@ Boot:         eb9b 0002  ld   $02
               f701 00b4  ld   $b4
               f702 0080  ld   $80
               f703 0000  ld   $00
-              f704 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/CardBoot/CardBoot.gt1, size 2922
+              f704 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/CardBoot/CardBoot.gt1, size 2922
                                           ;+-----------------------------------+
-                                          ;| ../../../gigatron-rom/Apps/MainMenu/MainMenu_v5.gcl |
+                                          ;| /home/quartus/gigatron/gigatron-rom/Apps/MainMenu/MainMenu_v5.gcl |
                                           ;+-----------------------------------+
               f705 dc42  st   $42,[y,x++] ;'B'
               f706 dc6f  st   $6f,[y,x++] ;'o'
@@ -65372,7 +65372,7 @@ Main:         f713 0002  ld   $02         ;| RAM segment address (high byte firs
               fa39 0021  ld   $21
               fa3a 00b4  ld   $b4         ;05b5 SYS
               fa3b 00e2  ld   $e2
-              fa3c 0000  ld   $00         ;End of ../../../gigatron-rom/Apps/MainMenu/MainMenu_v5.gcl, size 810
+              fa3c 0000  ld   $00         ;End of /home/quartus/gigatron/gigatron-rom/Apps/MainMenu/MainMenu_v5.gcl, size 810
                                           ;+-----------------------------------+
                                           ;| ../progs/reset512/Reset.gcl       |
                                           ;+-----------------------------------+

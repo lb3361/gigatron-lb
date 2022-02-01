@@ -8,10 +8,11 @@
 DEV=dev.rom
 
 # This should point into the gigatron-rom app directory
-APPS=../../../gigatron-rom/Apps
+GIGAROM=../../../gigatron-rom
+APPS=${GIGAROM}/Apps
 RESET=../progs/reset512/Reset.gcl
 
-dev: $(DEV)
+all: $(DEV)
 
 # Allow application-specific SYS extensions to live in Apps/
 export PYTHONPATH:=${APPS}/Loader:${APPS}/Racer
