@@ -10,12 +10,12 @@ typedef signed int fixed_t;
 typedef void (*action_t)(void);
 
 
-/* ugly page zero globals */
+/* ugly page zero globals. */
 
 #define x    (*(fixed_t*)0x48)
 #define y    (*(fixed_t*)0x4a)
 #define ctrl (*(unsigned int*)0x4c)
-#define bank (*(char*)0x4d)
+#define bank (*(char*)0x4d)  
 #define addr (*(char**)0x4e)
 #define addrL (*(char*)0x4e)
 #define addrH (*(char*)0x4f)
@@ -27,6 +27,13 @@ typedef void (*action_t)(void);
 
 void move_pen(fixed_t dx, fixed_t dy)
 {
+  /* Note that 'bank' is the high byte of variable `ctrl`.
+   * It is initialized to value 0xE8 by routine `worm()`,
+   * is modified below to track in which bank the
+   * current pixel lives, and is used  when `do_pixel()` 
+   * or `do_grayout()` call `SYS_ExpanderControl()`.
+   */
+  
   if (dx > 0) {
     bank ^= 0x20;
     if (bank & 0x20)

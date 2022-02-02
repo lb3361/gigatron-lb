@@ -3,8 +3,10 @@
 def scope():
 
     def code_slowmul():
-        # Fixed point 4+8 multiply
         nohop()
+        # Fixed point multiply for number in 4+8 format:
+        # 4 bits for the integral part and 8 bits
+        # for the fractional part.
         label('slowmul')
         LDWI('SYS_LSRW1_48');STW('sysFn')
         # vars: A:R8, B:R9, C:R10, bits:R11
@@ -30,7 +32,15 @@ def scope():
 
     def code_mul2():
         nohop()
-        # Fixed point 3+8 square
+        
+        # Fixed point square using table.
+        # Numbers have 3 bits in the integral part
+        # and 8 bits in the fractional part.
+        # Overflows are handled by making the table
+        # larger and filling it with 1000.0000000
+        # which is incorrect but guarantees that the
+        # Mandelbrot iteration stop.
+        
         label('sqr')  # A:R8
         LDWI('squares');STW(R12)
         LDW(R8);BGE('.s1')
@@ -39,7 +49,9 @@ def scope():
         LSLW();ADDW(R12);DEEK()
         RET()
 
-        # Fixed point 3+8 multiply
+        # Fixed point multiplication (3+8 fixed point).
+        # Returns 2*a*b = a^2 + b^2 - (a-b)^2
+
         label('mul2') # A:R8 B:R9 C:R10 sign:R11 squares R12
         LDWI('squares');STW(R12)
         LDI(0);ST(R11)
@@ -80,6 +92,10 @@ def scope():
     
     def code_calcpixel():
         nohop();
+
+        # Perform Mandelbrot iterations
+        # closely following Marcel's code.
+        
         label('calc_pixel')
         PUSH();
         LDI(0);STW(x);STW(y);STW(xx);STW(yy);ST(i)
@@ -102,6 +118,12 @@ def scope():
 
     def code_checkcalc():
         nohop()
+
+        # Following Marcel's code again, this routine
+        # first tests whether we are in the
+        # main and secondary bubble. If yes, returns zero.
+        # Otherwise calls calcPixel.
+
         label('check_calc')
         PUSH()
         LD(lastPix);BNE('.calc')
@@ -114,6 +136,7 @@ def scope():
         STW(R8);ADDW(x0);SUBI(64);STW(R9);CALLI('mul2');LSLW() # *4
         SUBW(yy);BLE('.no')
         label('.calc')
+        # must calc
         CALLI('calc_pixel')
         ST(lastPix)
         POP();RET()
