@@ -67,8 +67,9 @@ loop:   LD      0x13
     addrB = samplesAddr
     samplesAddr = samplesAddr XOR &h80
 
-    gosub get("BUTTON_STATE")
-    set BUTTON_STATE, 255
+    bs = get("BUTTON_STATE")
+    gosub bs 
+    set BUTTON_STATE, bs OR &hEF
     if idle = 0
         idle = 1
         play mididv, track - 1
