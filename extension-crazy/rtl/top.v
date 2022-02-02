@@ -1,4 +1,8 @@
 
+`define WRITE_WITH_NROE_AFTER_NRWE 1
+`define PWMBITS 8
+`undef  DISABLE_VIDEO_SNOOP
+
 
 module top(input            CLK,
            input            CLKx2,
@@ -26,18 +30,18 @@ module top(input            CLK,
            output reg       PWM
            );
    
-   reg         SCLK;            // ctrlBits: SCLK
-   reg         nZPBANK;         // ctrlBits: /ZPBANK
-   reg [1:0]   BANK;            // ctrlBits: BANK
-   reg [3:0]   NBANK;           // extended bank register
-   reg         NBANKP;          // override normal banking scheme
-   reg [5:0]   PWMD;            // pwm threshold
-   reg [3:0]   VBANK;           // video bank
-   reg [15:0]  VADDR;           // video snoop address
-   reg [3:0]   ZREG;            // extended ops: Z register
-   reg         FARADDR;         // extended ops: far addressing
-   
+   reg                      SCLK;    // ctrlBits: SCLK
+   reg                      nZPBANK; // ctrlBits: /ZPBANK
+   reg [1:0]                BANK;    // ctrlBits: BANK
+   reg [3:0]                NBANK;   // extended bank register
+   reg                      NBANKP;  // override normal banking scheme
+   reg [3:0]                VBANK;   // video bank
+   reg [15:0]               VADDR;   // video snoop address
+   reg [3:0]                ZREG;    // extended ops: Z register
+   reg                      FARADDR; // extended ops: far addressing
+   reg [`PWMBITS-1:0]       PWMD;    // pwm threshold
 
+   
    /* ================ clocks
     *
     *                              110000000000111111000000000011111100
@@ -127,7 +131,6 @@ module top(input            CLK,
      else
        nRWE <= 1'b1;
 
-`define WRITE_WITH_NROE_AFTER_NRWE 1
 `ifdef WRITE_WITH_NROE_NRWE_TOGETHER
    always @(negedge CLKx4, posedge nAE)
      if (nAE)
@@ -186,20 +189,27 @@ module top(input            CLK,
      else if (nBE && !nAE)
        OUTD[5:0] <= outnxt[5:0];
 `endif
+
    
    /* ======== Bit reversed PWM 
     * Reversed bit PWM moves noise into higher frequencies
     * that are more easily filtered.
     */
    
-   reg [5:0] pwmcnt;
+   reg [`PWMBITS-1:0]  pwmcnt;
+   wire [`PWMBITS-1:0] rpwmcnt;
+   genvar k;
+   generate for (k=0; k<`PWMBITS; k=k+1)
+     begin : rpwmcnt_loop
+        assign rpwmcnt[k] = pwmcnt[`PWMBITS-1-k];
+     end
+   endgenerate
    always @(posedge CLK)
-     pwmcnt <= pwmcnt + 6'h01;
-   wire [5:0] rpwmcnt = { pwmcnt[0], pwmcnt[1], pwmcnt[2], 
-                          pwmcnt[3], pwmcnt[4], pwmcnt[5] };
-   always @(posedge CLK)
-     PWM <= (rpwmcnt < PWMD);
-
+     begin
+        pwmcnt <= pwmcnt + 6'h01;
+        PWM <= (rpwmcnt < PWMD);
+     end
+   
    
    /* ================ Ctrl codes */
    
@@ -231,7 +241,7 @@ module top(input            CLK,
                           end
                         4'hd : 
                           begin // dev13: set PWM threshold
-                             PWMD[5:0] <= GAH[15:10];
+                             PWMD <= GAH[15:16-`PWMBITS];
                           end
                       endcase
                    end
