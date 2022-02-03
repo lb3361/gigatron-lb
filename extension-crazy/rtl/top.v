@@ -1,5 +1,5 @@
 
-`define WRITE_WITH_NROE_AFTER_NRWE 1
+`define WRITE_WITH_NROE_AFTER_NRWE
 `define PWMBITS 8
 `undef  DISABLE_VIDEO_SNOOP
 
@@ -248,16 +248,20 @@ module top(input            CLK,
                  4'b0001:       // new opcodes
                    begin
                       case (RAL[6:4])
-                        3'b000: // nop(), farprefix()
+                        3'b000: // nop()/far()
                           begin //  -- ctrl(0x01)/ctrl(0x81)
                           end
-                        3'b001: // ld(AC, Z)/farprefix+ld(AC,Z)
+                        3'b001: // ld(AC,Z)/far(AC,Z)
                           begin // -- ctrl(0x11)/ctrl(0x91)
                              ZREG <= ALU[2:0];
                           end
-                        3'b010: // ld(Y, Z)/farprefix+ld(Y,Z)
+                        3'b010: // ld(Y,Z)/far(Y,Z)
                           begin // -- ctrl(0x21)/ctrl(0xa1)
                              ZREG <= GAH[10:8];
+                          end
+                        4'b011: // ld(V,Z)/far(V,Z)
+                          begin // -- ctrl(0x31)/ctrl(0xb1)
+                             ZREG <= { VBANK[3:2], VBANK[!ALU[7]] };
                           end
                       endcase // case (RAL[6:4])
                       if (RAL[7])
