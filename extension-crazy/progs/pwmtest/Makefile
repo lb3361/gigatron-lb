@@ -1,10 +1,13 @@
 SHELL=/bin/sh
-GLCC=glcc
+CC=glcc
+CFLAGS=-rom=v5a
+LDFLAGS=--mapdir=../glcc -map=512k,noromcheck
+MAP512K=../glcc/map512k
 
 all: pwmtest.gt1
 
 pwmtest.gt1: pwmtest.c
-	${GLCC} -map=32k -rom=v5a pwmtest.c -o pwmtest.gt1
+	${CC} ${LDFLAGS} ${CFLAGS} pwmtest.c -o pwmtest.gt1
 
 broom: FORCE
 

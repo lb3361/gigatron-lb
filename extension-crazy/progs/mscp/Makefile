@@ -1,22 +1,18 @@
-
+SHELL=/bin/sh
 CC=glcc
-DEFS=-DAVOID_SCANF
-CFLAGS=-rom=v5a
-LDFLAGS=-map=64k,./mscp.ovl
-LIBCON_B=../libcon_b/libcon_b.a
-LIBCON_N=../libcon_n/libcon_n.a
-LIBCON_H=../libcon_h/libcon_h.a
+CFLAGS=-rom=v5a -DAVOID_SCANF
+LDFLAGS=--mapdir=../glcc
 
-all: mscp.gt1 mscp_n.gt1 mscp_h.gt1
+all: mscp.gt1 mscp_n.gt1 mscp_h.gt1 
 
-mscp.gt1: mscp.o ${LIBCON_B}
-	${CC} ${CFLAGS} ${LDFLAGS} mscp.o ${LIBCON_B} -o $@
+mscp.gt1: mscp.o ../glcc/map512k/libcon_b.a
+	${CC} ${LDFLAGS} ${CFLAGS} -map=512k mscp.o -o $@
 
-mscp_n.gt1: mscp.o ${LIBCON_N}
-	${CC} ${CFLAGS} ${LDFLAGS} mscp.o ${LIBCON_N} -o $@
+mscp_n.gt1: mscp.o ../glcc/map512k/libcon_n.a
+	${CC} ${LDFLAGS} ${CFLAGS} -map=512k,nr mscp.o -o $@
 
-mscp_h.gt1: mscp.o ${LIBCON_H}
-	${CC} ${CFLAGS} ${LDFLAGS} mscp.o ${LIBCON_H} -o $@
+mscp_h.gt1: mscp.o ../glcc/map512k/libcon_h.a
+	${CC} ${LDFLAGS} ${CFLAGS} -map=512k,hr mscp.o -o $@
 
 %.o: %.c
 	${CC} ${CFLAGS} ${DEFS} -c $<
@@ -24,7 +20,7 @@ mscp_h.gt1: mscp.o ${LIBCON_H}
 broom: FORCE
 
 clean: FORCE
-	-rm mscp.o mscp.gt1
+	-rm *.o *.gt1
 
 FORCE:
 

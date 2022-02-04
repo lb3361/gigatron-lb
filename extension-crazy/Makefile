@@ -6,6 +6,7 @@ GLCC=glcc
 SUBDIRS=rtl rom progs
 
 ${TARGETS}:
-	for n in ${SUBDIRS}; do make -C $$n GIGAROM=${GIGAROM} GLCC=${GLCC} $@ ; done
+	for n in ${SUBDIRS}; do \
+	  make -C $$n GIGAROM=${GIGAROM} GLCC=${GLCC} $@ || exit 1; done
 
 .PHONY: all broom clean
