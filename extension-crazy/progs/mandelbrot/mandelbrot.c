@@ -22,7 +22,6 @@ typedef void (*action_t)(void);
 #define lastPix (*(char*)0x50)
 
 
-
 /* walking around the screen */
 
 void move_pen(fixed_t dx, fixed_t dy)
@@ -46,12 +45,12 @@ void move_pen(fixed_t dx, fixed_t dy)
   if (dy > 0) {
     addrH++;
     if (! addrH) {
-      addrH = 0x88;
+      addrH = 0x80;
       bank |= 0x10;
     }
   } else if (dy < 0) {
     addrH--;
-    if (addrH == 0x87) {
+    if (addrH == 0x7f) {
       addrH = 0xFF;
       bank &= 0xEF;
     }

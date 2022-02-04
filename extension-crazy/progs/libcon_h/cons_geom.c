@@ -18,6 +18,7 @@ const struct console_info_s {
                       80,  88,  96,  104, 112, 120, 128, 136, 144, 152,
                       160, 168, 176, 184, 192, 200, 208, 216, 224, 232  } };
 
+
 void _console_reset(int fgbg)
 {
 	int i;
@@ -30,14 +31,19 @@ void _console_reset(int fgbg)
         // Clear screen
 	if (fgbg >= 0)
           {
-            _console_clear((char*)0x800u, fgbg, 120);
-            _console_clear((char*)0x8800u, fgbg, 120);
+            _console_clear((char*)0x0800u, fgbg, 120);
+            _console_clear((char*)0x8000u, fgbg, 120);
           }
 
         // Reset video table (one entry for two lines)
-	for (i=0x08; i != 0x80; i += 2)   // page 14 & 12
-          *table++ = i;
-	for (i=0x88; i != 0x100; i += 2)  // page 15 & 13
+
+        //// Linear addresses
+        //// - Even pixels of row Y at location 0x70800 + 0xYY00 + [0..159]
+        //// - Odd pixels of row Y at  location 0x60800 + 0xYY00 + [0..159]
+        //// Bank information
+        //// - Banks 14 and 15 for even pixels
+        //// - Banks 12 and 13 for odd pixels
+	for (i=0x08; i != 0xf8; i += 2)
           *table++ = i;
 }
 

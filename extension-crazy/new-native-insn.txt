@@ -2,10 +2,14 @@
 Simple opcodes:
 
 ENCODING           OPCODE     DESCRIPTION         
+C101/ctrl(0x01)   --           no operation
+C1d2/ctrl(0xd2)   ld(d,Z)      load immediate d into register Z
 C111/ctrl(0x11)   ld(AC,Z)     copy AC into register Z
 C121/ctrl(0x21)   ld(Y,Z)      copy Y into register Z
-C1d2/ctrl(0xd2)   ld(d,Z)      load immediate d into register Z
-C101/ctrl(0x01)   nop()        no operation
+C121/ctrl(0x31)   ld(V,Z)      copy three upper bits of the current video bank into Z,
+                               using AC<7> to decide whether targeting even or odd pixels.
+
+
 
 Prefix opcodes:
 
@@ -23,9 +27,10 @@ Prefix opcodes:
                [Y,X++]     -->  [Z,Y,X++]      (store only)
 
 ENCODING          OPCODE          DESCRIPTION         
-C181/ctrl(0x01)   far()            prefix for next insn
-C191/ctrl(0x11)   far+ld(AC,Z)     copy AC into register Z + prefix
-C1a1/ctrl(0x21)   far+ld(Y,Z)      copy Y into register Z + prefix
-C1d3/ctrl(0xd2)   far+ld(d,Z)      load immediate d into register Z + prefix
+C181/ctrl(0x81)   far()            prefix for next insn
+C1d3/ctrl(0xd2)   far(d,Z)         same as ld(d,Z) + prefix
+C191/ctrl(0x91)   far(AC,Z)        same as ld(AC,Z) + prefix
+C1a1/ctrl(0xa1)   far(Y,Z)         same as ld(Y,Z) + prefix
+C1b1/ctrl(0xb1)   far(V,Z)         same as ld(V,Z) + prefix
 
 

@@ -441,7 +441,7 @@ def code1():
 	LDW(R7);STW(R9);
 	LDI(120);STW(R10);
 	CALLI('_console_clear');
-	_LDI(0x8800);STW(R8);
+	_LDI(0x8000);STW(R8);
 	LDW(R7);STW(R9);
 	LDI(120);STW(R10);
 	CALLI('_console_clear');
@@ -453,15 +453,7 @@ def code1():
 	LDW(R6);DOKE(R22);
 	label('.7');
 	LDI(2);ADDW(R6);STW(R6);
-	LDW(R6);XORI(128);_BNE('.6');
-	LDI(136);STW(R6);
-	label('.10');
-	LDW(R5);STW(R22);
-	LDI(2);ADDW(R22);STW(R5);
-	LDW(R6);DOKE(R22);
-	label('.11');
-	LDI(2);ADDW(R6);STW(R6);
-	_LDI(256);XORW(R6);_BNE('.10');
+	LDW(R6);XORI(248);_BNE('.6');
 	label('.3');
 	_EPILOGUE(14,8,0xe0);
 # ======== (epilog)
@@ -831,7 +823,7 @@ def code1():
 	LDW(R7);STW(R9);
 	LDI(120);STW(R10);
 	CALLI('_console_clear');
-	_LDI(0x8800);STW(R8);
+	_LDI(0x8000);STW(R8);
 	LDW(R7);STW(R9);
 	LDI(120);STW(R10);
 	CALLI('_console_clear');
@@ -843,15 +835,7 @@ def code1():
 	LDW(R6);DOKE(R22);
 	label('.7');
 	LDI(2);ADDW(R6);STW(R6);
-	LDW(R6);XORI(128);_BNE('.6');
-	MOVQW(136,R6)
-	label('.10');
-	LDW(R5);STW(R22);
-	LDI(2);ADDW(R22);STW(R5);
-	LDW(R6);DOKE(R22);
-	label('.11');
-	LDI(2);ADDW(R6);STW(R6);
-	_LDI(256);XORW(R6);_BNE('.10');
+	LDW(R6);XORI(248);_BNE('.6');
 	label('.3');
 	_EPILOGUE(14,8,0xe0);
 # ======== (epilog)
