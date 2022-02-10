@@ -12,14 +12,13 @@ typedef void (*action_t)(void);
 
 /* ugly page zero globals. */
 
-#define x    (*(fixed_t*)0x48)
-#define y    (*(fixed_t*)0x4a)
-#define ctrl (*(unsigned int*)0x4c)
-#define bank (*(char*)0x4d)  
-#define addr (*(char**)0x4e)
-#define addrL (*(char*)0x4e)
-#define addrH (*(char*)0x4f)
-#define lastPix (*(char*)0x50)
+#define x    (*(fixed_t*)0x30)
+#define y    (*(fixed_t*)0x32)
+#define ctrl (*(unsigned int*)0x34)
+#define bank (*(char*)0x35)  
+#define addr (*(char**)0x36)
+#define addrL (*(char*)0x36)
+#define addrH (*(char*)0x37)
 
 
 /* walking around the screen */

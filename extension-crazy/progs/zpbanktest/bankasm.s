@@ -11,12 +11,12 @@ def scope():
     
     ctrlBits = 0x1f8
 
-    addr  = 0x60
-    ctrl0 = 0x62
-    flag  = 0x63
-    ctrl1 = 0x64
-    sav0 =  0x66
-    sav1 =  0x67
+    addr  = 0x30
+    ctrl0 = 0x32
+    flag  = 0x33
+    ctrl1 = 0x34
+    sav0 =  0x36
+    sav1 =  0x37
 
     def code0():
         nohop()

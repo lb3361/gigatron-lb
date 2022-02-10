@@ -3,7 +3,7 @@ GLCC=glcc
 
 all: zpbanktest.gt1
 
-zpbanktest.gt1: zpbanktest.c
+zpbanktest.gt1: zpbanktest.c bankasm.s
 	${GLCC} -map=32k -rom=v5a zpbanktest.c bankasm.s -o $@
 
 broom: FORCE

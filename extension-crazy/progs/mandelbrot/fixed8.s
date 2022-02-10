@@ -79,16 +79,14 @@ def scope():
                  ('IMPORT', 'squares'),
                  ('CODE',  'mul2', code_mul2) ] )
 
-
-    
-    x0 = 0x48 # from mandelbrot.c
-    y0 = 0x4a # from mandelbrot.c
-    lastPix = 0x50
-    i = 0x51
-    x = 0x52
-    y = 0x54
-    xx = 0x56
-    yy = 0x58
+    x0      = 0x30 # from mandelbrot.c
+    y0      = 0x32 # from mandelbrot.c
+    lastPix = 0xc0 # avoiding regbanks, new 0x40-0x7f or old 0x80-0xbf.
+    i       = 0xc1
+    x       = 0xc2
+    y       = 0xc4
+    xx      = 0xc6
+    yy      = 0xc8
     
     def code_calcpixel():
         nohop();
