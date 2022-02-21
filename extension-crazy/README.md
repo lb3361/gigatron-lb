@@ -47,8 +47,13 @@ The board layout places all the SMT components out-of-sight on the
 back side of the board. The visible side contains two connectors for
 SPI devices using the SD Card breakout pinout, a JTAG connector to
 program the CPLD, an expansion connector, and a good old 74HCT377 near
-the OUT register which is there for nostalgia and also because it was
-in my parts box.
+the OUT register because the VGA resistors are matched to that specific chip.
+
+The v8d version of this board no longer relies on a SD card breakout but 
+features a SD card socket. Since the CPLD already works in 3.3v, there
+is no need for level translators. This changes gives more than enough 
+space on the board to implement the analog part of the 8 bit audio output
+and provide a new audio connector.
 
 ![Layout](images/layout.png)
 
@@ -56,7 +61,7 @@ in my parts box.
 
 ![Back view](images/back.jpg)
 
-Building this board will be discussed in directory [fab](./fab).
+Building such boards is discussed in directory [fab](./fab).
 
 
 ## 3. Usage
@@ -196,18 +201,22 @@ enabled when bit 0 of location 0x0b is set (ex videoModeC location).
 
 The center pin of the PWM header (or the XIN3 pin of the extension
 header on earlier versions boards) outputs an average voltage in range
-0.0 to 3.3V that depends linearly on the six upper bits of the last
+0.0 to 3.3V that depends linearly on the upper byte of the last
 extended control code for device 13.  In other words,
 ```
-  SYS_ExpanderControl( (x<<10) | 0XD0 );
+  SYS_ExpanderControl( (x<<8) | 0XD0 );
 ```
-sets an average voltage of x * 3.3 / 64 volts. This is achieved with
+sets an average voltage of x * 3.3 / 255 volts. This is achieved with
 ``bit-reversed`` pulse modulation scheme whose noise goes into
 frequencies above 50kHZ.
 
 When the Gigatron sound output is active, the patched ROM forwards
-the high 6 bits of the sound sample to this pulse modulation output.
-To change this into a reasonable audio signal, one needs a high pass
-filter cutting frequencies below a couple Hz, and a low pass filter
-cutting frequencies above seven or eight kHZ.
+all 8 bits of the sound sample to this pulse modulation output.
+The v8d board then applies a high pass filter to remove the DC component
+and an active low pass filters that cuts frequencies above about 4KHz,
+which is needed because the Gigatron only updates the samples at about 8kHz.
 
+
+## 3.5. New native opcodes
+
+This is still a very experimental development. See https://forum.gigatron.io/viewtopic.php?p=2874#p2874.
