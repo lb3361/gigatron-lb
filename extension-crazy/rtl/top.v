@@ -215,7 +215,7 @@ module top(input            CLK,
    
    wire nCTRL = nAE || nGOE || nGWE;
 
-   assign nACTRL =   nCTRL || RAL[3:2] != 2'b00;
+   assign nACTRL =   nCTRL || RAL[3:0] != 4'b0000;
    assign nADEV[0] = nAE   || RAL[7:4] == 4'b0000;
    assign nADEV[1] = nAE   || RAL[7:4] == 4'b0001;
 
