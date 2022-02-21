@@ -248,23 +248,23 @@ module top(input            CLK,
                  4'b0001:       // new opcodes
                    begin
                       case (RAL[6:4])
-                        3'b000: // nop()/far()
+                        3'b100: // nop()/far()
                           begin //  -- ctrl(0x01)/ctrl(0x81)
                           end
-                        3'b001: // ld(AC,Z)/far(AC,Z)
+                        3'b101: // ld(AC,Z)/far(AC,Z)
                           begin // -- ctrl(0x11)/ctrl(0x91)
                              ZREG <= ALU[2:0];
                           end
-                        3'b010: // ld(Y,Z)/far(Y,Z)
+                        3'b110: // ld(Y,Z)/far(Y,Z)
                           begin // -- ctrl(0x21)/ctrl(0xa1)
                              ZREG <= GAH[10:8];
                           end
-                        4'b011: // ld(V,Z)/far(V,Z)
+                        4'b111: // ld(V,Z)/far(V,Z)
                           begin // -- ctrl(0x31)/ctrl(0xb1)
                              ZREG <= { VBANK[3:2], VBANK[!ALU[7]] };
                           end
                       endcase // case (RAL[6:4])
-                      if (RAL[7])
+                      if (RAL[7] && RAL[6])
                         begin
                            // 
                            // changes addressing mode of next opcode

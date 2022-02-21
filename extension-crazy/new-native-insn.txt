@@ -2,11 +2,11 @@
 Simple opcodes:
 
 ENCODING           OPCODE     DESCRIPTION         
-C101/ctrl(0x01)   --           no operation
+C141/ctrl(0x41)   --           no operation
 C1d2/ctrl(0xd2)   ld(d,Z)      load immediate d into register Z
-C111/ctrl(0x11)   ld(AC,Z)     copy AC into register Z
-C121/ctrl(0x21)   ld(Y,Z)      copy Y into register Z
-C121/ctrl(0x31)   ld(V,Z)      copy three upper bits of the current video bank into Z,
+C151/ctrl(0x51)   ld(AC,Z)     copy AC into register Z
+C161/ctrl(0x61)   ld(Y,Z)      copy Y into register Z
+C171/ctrl(0x71)   ld(V,Z)      copy three upper bits of the current video bank into Z,
                                using AC<7> to decide whether targeting even or odd pixels.
 
 
@@ -27,10 +27,16 @@ Prefix opcodes:
                [Y,X++]     -->  [Z,Y,X++]      (store only)
 
 ENCODING          OPCODE          DESCRIPTION         
-C181/ctrl(0x81)   far()            prefix for next insn
+C1c1/ctrl(0xc1)   far()            prefix for next insn
 C1d3/ctrl(0xd2)   far(d,Z)         same as ld(d,Z) + prefix
-C191/ctrl(0x91)   far(AC,Z)        same as ld(AC,Z) + prefix
-C1a1/ctrl(0xa1)   far(Y,Z)         same as ld(Y,Z) + prefix
-C1b1/ctrl(0xb1)   far(V,Z)         same as ld(V,Z) + prefix
+C1d1/ctrl(0xd1)   far(AC,Z)        same as ld(AC,Z) + prefix
+C1e1/ctrl(0xe1)   far(Y,Z)         same as ld(Y,Z) + prefix
+C1f1/ctrl(0xf1)   far(V,Z)         same as ld(V,Z) + prefix
 
+
+Reserved:
+
+All instructions of the form ctrl(b) with b ~= 0b?0??0001
+
+c101/ctrl(0x01)   inp()            prefix for i/o inputs (maybe)             
 
