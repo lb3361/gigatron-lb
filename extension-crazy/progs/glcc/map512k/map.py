@@ -27,7 +27,7 @@ segments = [ (0x00fa, 0x0200, 0x0100, 0x0500, 0),
              (0x0200, 0x8000, None,   None,   0),
              (0x7AC0, 0x8240, None,   None,   0) ]
 
-initsp = 0xfffe
+initsp = 0xfffc
 libcon = "con_b"
 check512krom = True
 
