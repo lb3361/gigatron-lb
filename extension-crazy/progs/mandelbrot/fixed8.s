@@ -81,12 +81,12 @@ def scope():
 
     x0      = 0x30 # from mandelbrot.c
     y0      = 0x32 # from mandelbrot.c
-    lastPix = 0xc0 # avoiding regbanks, new 0x40-0x7f or old 0x80-0xbf.
-    i       = 0xc1
-    x       = 0xc2
-    y       = 0xc4
-    xx      = 0xc6
-    yy      = 0xc8
+    lastPix = 0x38 # from mandelbrot.c
+    x       = R16
+    y       = R17
+    xx      = R18
+    yy      = R19
+    i       = R20
     
     def code_calcpixel():
         nohop();

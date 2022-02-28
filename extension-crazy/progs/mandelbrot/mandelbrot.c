@@ -10,15 +10,16 @@ typedef signed int fixed_t;
 typedef void (*action_t)(void);
 
 
-/* ugly page zero globals. */
+/* page zero global (regbase dependent) */
 
-#define x    (*(fixed_t*)0x30)
-#define y    (*(fixed_t*)0x32)
-#define ctrl (*(unsigned int*)0x34)
-#define bank (*(char*)0x35)  
-#define addr (*(char**)0x36)
-#define addrL (*(char*)0x36)
-#define addrH (*(char*)0x37)
+#define x0      (*(fixed_t*)0x30)
+#define y0      (*(fixed_t*)0x32)
+#define ctrl    (*(unsigned int*)0x34)
+#define bank    (*(char*)0x35)
+#define addr    (*(char**)0x36)
+#define addrL   (*(char*)0x36)
+#define addrH   (*(char*)0x37)
+#define lastPix (*(char*)0x38)
 
 
 /* walking around the screen */
@@ -56,11 +57,11 @@ void move_pen(fixed_t dx, fixed_t dy)
   }
 }
 
-void worm(register fixed_t x0, register fixed_t y0, fixed_t step, action_t act)
+void worm(register fixed_t x, register fixed_t y, fixed_t step, action_t act)
 {
   int s;
-  x = x0;
-  y = y0;
+  x0 = x;
+  y0 = y;
   addr = (char*)0x8800;
   ctrl = 0xE8F0u;
   for (s = 0; s != SCREENH / 2; s++)
@@ -80,15 +81,15 @@ void worm(register fixed_t x0, register fixed_t y0, fixed_t step, action_t act)
             n = ((dx) ? SCREENW : SCREENH);
             n = n - s - s - 1;
             if (dx > 0) {
-              x += dx;
-              y += dx;
+              x0 += dx;
+              y0 += dx;
               move_pen(dx, dx);
               break;
             }
           }
           // step
-          x += dx;
-          y += dy;
+          x0 += dx;
+          y0 += dy;
           move_pen(dx, dy);
         }
     }
@@ -180,7 +181,7 @@ void do_grayout()
   level = levels[*addr & 63];
   *addr = 0;
   if (level) {
-    level = bayer[(y & 1) + (y & 1) + (x & 1)] + level;
+    level = bayer[(y0 & 1) + (y0 & 1) + (x0 & 1)] + level;
     while ((level = level - 3) > 0)
       *addr += 21;
   }
@@ -191,9 +192,9 @@ void do_grayout()
 
 /* main */
 
-void go(int x0, int y0, int step)
+void go(int x, int y, int step)
 {
-  worm(x0, y0, step, do_pixel);
+  worm(x, y, step, do_pixel);
   worm(0, 0, 1, do_grayout);
 }
 
