@@ -695,7 +695,8 @@ def defined(s):
     return _defined[s]
   return None
 import ast
-for (i,arg) in enumerate(sys.argv):
+for i in reversed(range(len(sys.argv))):
+  arg = sys.argv[i]
   if arg.startswith("-D"):
     arg, val = arg[2:], 1
     if '=' in arg:

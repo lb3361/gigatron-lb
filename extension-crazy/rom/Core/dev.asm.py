@@ -109,11 +109,11 @@
 #  DONE Discoverable ROM contents #46
 #  DONE Vertical blank interrupt #125
 #  DONE TinyBASIC: Support hexadecimal numbers $....
-#  XXX  Expander: Auto-detect banking, 64K and 128K -> needs FIX
+#  DONE Expander: Auto-detect banking, 64K and 128K (multiple tests)
 #  DONE Cardboot: Boot from *.GT1 file if SDC/MMC detected
-#  XXX  CardBoot: Strip non-essentials
-#  XXX  CardBoot: Fix card type detection
-#  XXX  CardBoot: Read full sector
+#  DONE CardBoot: Strip non-essentials
+#  DONE CardBoot: Fix card type detection
+#  DONE CardBoot: Read full sector
 #  DONE Apple-1: Memory mapped PIA emulation using interrupt (D010-D013)
 #  DONE Apple-1: Include A1 Integer BASIC
 #  DONE Apple-1: Suppress lower case
@@ -121,14 +121,14 @@
 #  DONE Apple-1: Include mini-assembler
 #  DONE Apple-1: Intercept cassette interface = menu
 #  XXX  Reduce the Pictures application ROM footprint #120
-#  XXX  Mandelbrot: add more color schemes, eg. with permutations of RGB
+#  DONE Mandelbrot: Faster Mandelbrot using qwertyface's square trick
 #  XXX  Main: Better startup chime, eg. sequence the 4 notes and then decay
 #  XXX  Main: Some startup logo as intro, eg. gigatron letters from the box
 #  XXX  Racer: Control speed with up/down (better for TypeC controllers)
 #  XXX  Racer: Make noise when crashing
 #  XXX  Loader: make noise while loading (only channel 1 is safe to use)
 #  XXX  Faster SYS_Exec_88, with start address (GT1)?
-#  XXX  Let SYS_Exec_88 clear channelMask when loading into live channels
+#  DONE Let SYS_Exec_88 clear channelMask when loading into live channels
 #  XXX  Investigate: Babelfish sometimes freezes during power-on?
 #
 #  Ideas for ROM v6+
@@ -3182,7 +3182,16 @@ xora(videoYline0)               #17 First line of vertical blank
 label('SYS_ExpanderControl_v4_40')
 ld(hi('sys_ExpanderControl'),Y) #15
 jmp(Y,'sys_ExpanderControl')    #16
-ld(hi(ctrlBits),Y)              #17
+ld(0b00001100)                  #17
+#    ^^^^^^^^
+#    |||||||`-- SCLK
+#    ||||||`--- Not connected
+#    |||||`---- /SS0
+#    ||||`----- /SS1
+#    |||`------ /SS2 or /CPOL
+#    ||`------- /SS3 or /ZPBANK
+#    |`-------- B0
+#    `--------- B1
 
 #-----------------------------------------------------------------------
 # Extension SYS_Run6502_v4_80
@@ -3960,7 +3969,7 @@ align(0x100)
 
 label('sys_ExpanderControl')
 if not WITH_512K_BOARD:
-  ld(0b00001100)                      #18 bits 2 and 3
+  ld(hi(ctrlBits),Y)                  #18
   anda([vAC])                         #19 check for special ctrl code space
   beq('sysEx#22')                     #20
   ld([vAC])                           #21 load low byte of ctrl code in delay slot
@@ -3984,7 +3993,7 @@ if not WITH_512K_BOARD:
   jmp(Y,'REENTER')                    #32
   ld(-36/2)                           #33
 else:
-  ld(0b00001100)                      #18 bits 2 and 3
+  ld(hi(ctrlBits),Y)                  #18
   anda([vAC])                         #19 check for special ctrl code space
   beq('sysEx#22')                     #20
   ld([vAC])                           #21 
