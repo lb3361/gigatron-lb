@@ -301,7 +301,7 @@ module top(input            CLK,
                            NBANK <= 4'b0;
                            NBANKP <= 1'b0;
                            VBANK <= 4'b0;
-                           PWMD  <= 6'h00;
+                           PWMD  <= 8'h00;
                         end
                    end
                endcase // casez (RAL[3:0])

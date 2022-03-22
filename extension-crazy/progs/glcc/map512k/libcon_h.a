@@ -175,11 +175,11 @@ def code0():
 # ======== ('CODE', 'console_exitm_msgfunc', code1)
 def code1():
 	label('console_exitm_msgfunc');
-	_PROLOGUE(14,6,0xf0); # save=R4-7
+	_PROLOGUE(16,6,0xf0); # save=R4-7
 	LDW(R8);STW(R7);
 	LDW(R9);STW(R6);
 	LDW(R6);_BEQ('.4');
-	_BMOV('.6','console_state',8,2);
+	_MOVM('.6','console_state',8,2);
 	_LDI(v('console_state')+4);STW(R22);
 	_LDI('console_info');DEEK();DOKE(R22);
 	LDW(R6);STW(R8);
@@ -201,16 +201,16 @@ def code1():
 	label('.10');
 	_BRA('.9');
 	label('.3');
-	_EPILOGUE(14,6,0xf0);
+	_EPILOGUE(16,6,0xf0);
 # ======== ('CODE', '_console_setup', code2)
 def code2():
 	label('_console_setup');
-	_PROLOGUE(2,2,0x0); # save=None
+	_PROLOGUE(4,2,0x0); # save=None
 	_LDI('_exitm_msgfunc');STW(R22);
 	_LDI('console_exitm_msgfunc');DOKE(R22);
 	CALLI('console_clear_screen');
 	label('.12');
-	_EPILOGUE(2,2,0x0);
+	_EPILOGUE(4,2,0x0);
 # ======== (epilog)
 code=[
 	('DATA', '.6', code0, 8, 2),
@@ -275,7 +275,7 @@ def code2():
 # ======== ('CODE', 'console_clear_to_eol', code3)
 def code3():
 	label('console_clear_to_eol');
-	_PROLOGUE(10,8,0x80); # save=R7
+	_PROLOGUE(12,8,0x80); # save=R7
 	CALLI('cons_addr');
 	STW(R7);
 	_BEQ('.14');
@@ -285,7 +285,7 @@ def code3():
 	CALLI('_console_clear');
 	label('.14');
 	label('.13');
-	_EPILOGUE(10,8,0x80);
+	_EPILOGUE(12,8,0x80);
 # ======== ('CODE', 'scroll', code4)
 def code4():
 	label('scroll');
@@ -319,7 +319,7 @@ def code4():
 # ======== ('CODE', 'console_print', code5)
 def code5():
 	label('console_print');
-	_PROLOGUE(26,10,0xff); # save=R0-7
+	_PROLOGUE(28,10,0xff); # save=R0-7
 	LDW(R8);STW(R7);
 	LDW(R9);STW(R6);
 	LDI(0);STW(R5);
@@ -372,7 +372,7 @@ def code5():
 	label('.44');
 	LDW(R5);
 	label('.28');
-	_EPILOGUE(26,10,0xff,saveAC=True);
+	_EPILOGUE(28,10,0xff,saveAC=True);
 # ======== ('DATA', '__glink_magic_init', code6, 4, 2)
 def code6():
 	align(2);
@@ -430,7 +430,7 @@ def code0():
 # ======== ('CODE', '_console_reset', code1)
 def code1():
 	label('_console_reset');
-	_PROLOGUE(14,8,0xe0); # save=R5-7
+	_PROLOGUE(16,8,0xe0); # save=R5-7
 	LDW(R8);STW(R7);
 	_LDI(0x100);STW(R5);
 	_LDI(3808);STW(R8);
@@ -455,7 +455,7 @@ def code1():
 	LDI(2);ADDW(R6);STW(R6);
 	LDW(R6);XORI(248);_BNE('.6');
 	label('.3');
-	_EPILOGUE(14,8,0xe0);
+	_EPILOGUE(16,8,0xe0);
 # ======== (epilog)
 code=[
 	('EXPORT', 'console_info'),
@@ -566,17 +566,17 @@ def code0():
 # ======== ('CODE', 'console_exitm_msgfunc', code1)
 def code1():
 	label('console_exitm_msgfunc');
-	_PROLOGUE(14,6,0xf0); # save=R4-7
+	_PROLOGUE(16,6,0xf0); # save=R4-7
 	LDW(R8);STW(R7);
 	LDW(R9);STW(R6);
 	LDW(R6);_BEQ('.4');
-	_BMOV('.6','console_state',8,2);
+	_MOVM('.6','console_state',8,2);
 	_LDI('console_info');DEEK();STW2(v('console_state')+4);
 	LDW(R6);STW(R8);
 	_LDI(v('console_info')+2);DEEKA(R9);
 	CALLI('console_print');
 	label('.4');
-	MOVQ(0,R5)
+	MOVQB(0,R5)
 	_LDI(0x100);PEEK();ORI(128);_SHLI(8);STW(R4);
 	_LDI(0xe1f0);STW(R8);
 	CALLI('SYS_ExpanderControl');
@@ -585,20 +585,20 @@ def code1():
 	_BRA('.10');
 	label('.9');
 	LD(R5);ADDI(1);STW(R22);
-	ST(R5);
+	MOVB(vAC,R5)
 	LD(R7);ADDW(R4);POKEA(R22);
 	label('.10');
 	_BRA('.9');
 	label('.3');
-	_EPILOGUE(14,6,0xf0);
+	_EPILOGUE(16,6,0xf0);
 # ======== ('CODE', '_console_setup', code2)
 def code2():
 	label('_console_setup');
-	_PROLOGUE(2,2,0x0); # save=None
+	_PROLOGUE(4,2,0x0); # save=None
 	_LDI('_exitm_msgfunc');DOKEI('console_exitm_msgfunc');
 	CALLI('console_clear_screen');
 	label('.12');
-	_EPILOGUE(2,2,0x0);
+	_EPILOGUE(4,2,0x0);
 # ======== (epilog)
 code=[
 	('DATA', '.6', code0, 8, 2),
@@ -660,7 +660,7 @@ def code2():
 # ======== ('CODE', 'console_clear_to_eol', code3)
 def code3():
 	label('console_clear_to_eol');
-	_PROLOGUE(10,8,0x80); # save=R7
+	_PROLOGUE(12,8,0x80); # save=R7
 	CALLI('cons_addr');
 	STW(R7);
 	_BEQ('.14');
@@ -670,7 +670,7 @@ def code3():
 	CALLI('_console_clear');
 	label('.14');
 	label('.13');
-	_EPILOGUE(10,8,0x80);
+	_EPILOGUE(12,8,0x80);
 # ======== ('CODE', 'scroll', code4)
 def code4():
 	label('scroll');
@@ -682,7 +682,7 @@ def code4():
 	LDI(1);ADDW(R19);
 	STW(R19);
 	XORW(R8);_BNE('.21');
-	LD(R9);ST(R17);
+	MOVB(R9,R17)
 	_BRA('.22');
 	label('.21');
 	_LDI(v('console_info')+4);ADDW(R19);PEEK();ADDWI(0x100);PEEKA(R17);
@@ -692,7 +692,7 @@ def code4():
 	LDW(R17);POKE(R16);
 	label('.25');
 	INCW(R18);
-	LDI(2);ADDW(R16);STW(R16);
+	ADDVI(2,R16);
 	LD(R17);ADDI(2);STW(R17);
 	LDW(R18);XORI(4);_BNE('.24');
 	label('.18');
@@ -702,7 +702,7 @@ def code4():
 # ======== ('CODE', 'console_print', code5)
 def code5():
 	label('console_print');
-	_PROLOGUE(26,10,0xff); # save=R0-7
+	_PROLOGUE(28,10,0xff); # save=R0-7
 	LDW(R8);STW(R7);
 	LDW(R9);STW(R6);
 	MOVQW(0,R5)
@@ -722,7 +722,7 @@ def code5():
 	_LDI(v('console_info')+4);PEEK();ADDWI(0x100);PEEK();STW(R0);
 	LDW(R0);_SHLI(8);STW(R8);
 	_LDI('console_state');DEEKA(R9);
-	LDI(8);STW(R10);
+	MOVQW(8,R10)
 	CALLI('_console_clear');
 	LDW(R2);STW(R8);
 	LD(R0);STW(R9);
@@ -743,7 +743,7 @@ def code5():
 	STW(R2);
 	_BEQ('.42');
 	DEEKV(R4);ADDW(R2);DOKE(R4);
-	LDW(R5);ADDW(R2);STW(R5);
+	ADDVW(R2,R5);
 	_BRA('.43');
 	label('.42');
 	INCW(R5);
@@ -754,7 +754,7 @@ def code5():
 	label('.44');
 	LDW(R5);
 	label('.28');
-	_EPILOGUE(26,10,0xff,saveAC=True);
+	_EPILOGUE(28,10,0xff,saveAC=True);
 # ======== ('DATA', '__glink_magic_init', code6, 4, 2)
 def code6():
 	align(2);
@@ -812,7 +812,7 @@ def code0():
 # ======== ('CODE', '_console_reset', code1)
 def code1():
 	label('_console_reset');
-	_PROLOGUE(14,8,0xe0); # save=R5-7
+	_PROLOGUE(16,8,0xe0); # save=R5-7
 	LDW(R8);STW(R7);
 	_LDI(0x100);STW(R5);
 	_LDI(3808);STW(R8);
@@ -831,13 +831,13 @@ def code1():
 	MOVQW(8,R6)
 	label('.6');
 	LDW(R5);STW(R22);
-	LDI(2);ADDW(R22);STW(R5);
+	ADDVI(2,R5);
 	LDW(R6);DOKE(R22);
 	label('.7');
-	LDI(2);ADDW(R6);STW(R6);
+	ADDVI(2,R6);
 	LDW(R6);XORI(248);_BNE('.6');
 	label('.3');
-	_EPILOGUE(14,8,0xe0);
+	_EPILOGUE(16,8,0xe0);
 # ======== (epilog)
 code=[
 	('EXPORT', 'console_info'),
@@ -865,7 +865,7 @@ def code0():
 	_LDI(v('console_info')+4);ADDW(R7);PEEK();ADDWI(0x100);PEEK();DOKE(R22);
 	_SP(-2+12);DEEK();_SHLI(8);STW(R8);
 	_LDI('console_state');DEEKA(R9);
-	LDI(8);STW(R10);
+	MOVQW(8,R10)
 	CALLI('_console_clear');
 	label('.4');
 	label('.3');
@@ -891,12 +891,12 @@ def code1():
 	LDW(R19);ADDW(R10);STW(R18);
 	_BRA('.20');
 	label('.19');
-	LDW(R18);ADDW(R16);STW(R18);
+	ADDVW(R16,R18);
 	label('.20');
 	LDW(R18);_CMPWS(R8);_BLT('.19');
 	_BRA('.23');
 	label('.22');
-	LDW(R18);SUBW(R16);STW(R18);
+	SUBVW(R16,R18);
 	label('.23');
 	LDW(R18);_CMPWS(R9);_BGE('.22');
 	_SP(-30+32);ADDW(R18);PEEK();STW(R18);
@@ -906,8 +906,8 @@ def code1():
 	LD(R18);POKE(R15);
 	label('.27');
 	INCW(R17);
-	LDI(2);ADDW(R15);STW(R15);
-	LDI(2);ADDW(R18);STW(R18);
+	ADDVI(2,R15);
+	ADDVI(2,R18);
 	LDW(R17);XORI(4);_BNE('.26');
 	label('.16');
 	INCW(R19);

@@ -164,11 +164,11 @@ def code0():
 # ======== ('CODE', 'console_exitm_msgfunc', code1)
 def code1():
 	label('console_exitm_msgfunc');
-	_PROLOGUE(14,6,0xf0); # save=R4-7
+	_PROLOGUE(16,6,0xf0); # save=R4-7
 	LDW(R8);STW(R7);
 	LDW(R9);STW(R6);
 	LDW(R6);_BEQ('.4');
-	_BMOV('.6','console_state',8,2);
+	_MOVM('.6','console_state',8,2);
 	_LDI(v('console_state')+4);STW(R22);
 	_LDI('console_info');DEEK();DOKE(R22);
 	LDW(R6);STW(R8);
@@ -190,7 +190,7 @@ def code1():
 	label('.10');
 	_BRA('.9');
 	label('.3');
-	_EPILOGUE(14,6,0xf0);
+	_EPILOGUE(16,6,0xf0);
 # ======== ('CODE', '_console_setup', code2)
 def code2():
 	label('_console_setup');
@@ -234,17 +234,17 @@ def code0():
 # ======== ('CODE', 'console_exitm_msgfunc', code1)
 def code1():
 	label('console_exitm_msgfunc');
-	_PROLOGUE(14,6,0xf0); # save=R4-7
+	_PROLOGUE(16,6,0xf0); # save=R4-7
 	LDW(R8);STW(R7);
 	LDW(R9);STW(R6);
 	LDW(R6);_BEQ('.4');
-	_BMOV('.6','console_state',8,2);
+	_MOVM('.6','console_state',8,2);
 	_LDI('console_info');DEEK();STW2(v('console_state')+4);
 	LDW(R6);STW(R8);
 	_LDI(v('console_info')+2);DEEKA(R9);
 	CALLI('console_print');
 	label('.4');
-	MOVQ(0,R5)
+	MOVQB(0,R5)
 	_LDI(0x100);PEEK();ORI(128);_SHLI(8);STW(R4);
 	_LDI(0xe1f0);STW(R8);
 	CALLI('SYS_ExpanderControl');
@@ -253,12 +253,12 @@ def code1():
 	_BRA('.10');
 	label('.9');
 	LD(R5);ADDI(1);STW(R22);
-	ST(R5);
+	MOVB(vAC,R5)
 	LD(R7);ADDW(R4);POKEA(R22);
 	label('.10');
 	_BRA('.9');
 	label('.3');
-	_EPILOGUE(14,6,0xf0);
+	_EPILOGUE(16,6,0xf0);
 # ======== ('CODE', '_console_setup', code2)
 def code2():
 	label('_console_setup');
