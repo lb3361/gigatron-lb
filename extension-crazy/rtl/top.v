@@ -37,7 +37,7 @@ module top(input            CLK,
    reg                      NBANKP;  // override normal banking scheme
    reg [3:0]                VBANK;   // video bank
    reg [15:0]               VADDR;   // video snoop address
-   reg [3:0]                ZREG;    // extended ops: Z register
+   reg [2:0]                ZREG;    // extended ops: Z register
    reg                      FARADDR; // extended ops: far addressing
    reg [`PWMBITS-1:0]       PWMD;    // pwm threshold
 
@@ -219,7 +219,7 @@ module top(input            CLK,
    assign nADEV[0] = nAE   || RAL[7:4] == 4'b0000;
    assign nADEV[1] = nAE   || RAL[7:4] == 4'b0001;
 
-   reg v_faraddr = 0;
+   reg  v_faraddr;
    always @(posedge CLKx4)
      if (!nAE && nBE)
        begin
