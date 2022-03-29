@@ -3,8 +3,7 @@ TARGETS=all broom clean
 GIGAROM=${abspath ../../../gigatron-rom}
 GLCC=glcc
 
-SUBDIRS=glcc\
-        memtest pwmtest zpbanktest reset512\
+SUBDIRS=memtest pwmtest zpbanktest reset512\
         mscp mandelbrot music64k
 
 ${TARGETS}:

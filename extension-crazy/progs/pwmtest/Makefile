@@ -1,8 +1,7 @@
 SHELL=/bin/sh
 CC=glcc
 CFLAGS=-rom=v5a
-LDFLAGS=--mapdir=../glcc -map=512k,noromcheck
-MAP512K=../glcc/map512k
+LDFLAGS=-map=512k,noromcheck
 
 all: pwmtest.gt1
 
