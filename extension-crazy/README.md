@@ -100,25 +100,24 @@ The flags define two modes of operation:
   selecting bank 0 with the normal banking bits actually maps bank
   NBANK in the address range [0x8000-0xffff].
 
-  This mode provides a means to use the additional memory that masquerades
-  as bank 0 using code that is only aware of the normal banking
-  bits. Such code can temporarily map a different bank then restore
-  the new bank using only the normal control codes. Zero page banking
-  also works as usual, essentially swapping address ranges [0x80-0xff]
-  and [0x8080-0x80ff].
+  This mode is convenient to access a high bank in a manner that
+  will not confuse code that is unaware of the existence of the 512k board.
+  Such code can still temporarily map a different bank and then 
+  restore the high bank masquerading as bank 0 using only 
+  the normal control codes. Zero page banking also works as usual, 
+  essentially swapping address ranges [0x80-0xff] and [0x8080-0x80ff].
 
 * When flag NBANKP is set, bank NBANK is mapped in [0x8000-0xffff]
   regardless of the normal control bits. Meanwhile the low
   addresses [0x0000-0x7fff] shows bank 0 as usual. If zero page
   banking is enabled, showing the bank specified by
-  the normal banking bits in [0x80-0xff].
-
-  This mode provides a quick way to temporarily map any bank, do
-  something, and almost immediately restore the previous state by
-  resetting the extended banking bits to their previous value.
+  the normal banking bits in [0x80-0xff]. This mode provides a quick 
+  way to temporarily map any bank, do something, and almost immediately 
+  restore the previous state by resetting the extended 
+  banking bits to their previous value.
 
 The function `SYS_ExpanderControl` implemented by the patched ROM
-recognizes extended banking codes and saves them into the six
+recognizes these extended banking codes and saves them into the six
 high bits of memory location 0xb (ex `videoModeC`).
 
 Both modes are exercised by the [memory test program](progs/memtest).
@@ -127,7 +126,7 @@ Both modes are exercised by the [memory test program](progs/memtest).
 ## 3.2. Video snooping
 
 During each Gigatron cycle, the board has time to perform a read or write cycle
-to serve the Gigatron and two additional read cycles. These read cycles
+to serve the Gigatron and two additional read cycles. These extra read cycles
 are used to feed pixels to the video output in a manner that is compatible
 with the Gigatron operation.
 
@@ -217,4 +216,5 @@ which is needed because the Gigatron only updates the samples at about 8kHz.
 
 ## 3.5. New native opcodes
 
-This is still a very experimental development. See https://forum.gigatron.io/viewtopic.php?p=2874#p2874.
+This is still a very experimental development. 
+See https://forum.gigatron.io/viewtopic.php?p=2874#p2874.
