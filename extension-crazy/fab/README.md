@@ -4,8 +4,8 @@
 
 ## Building the boards
 
-Assembling surface mount component is challenging for a hobbyist like
-me. The most practical and economical approach at this point is to 
+Assembling surface mount component is challenging for most of us.
+The most practical and economical approach at this point is to 
 contact Hans61 on the forum because he now has mastered his reflow oven.
 I only have good things to say about HansPCB ;-)
 
