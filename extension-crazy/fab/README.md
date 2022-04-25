@@ -3,20 +3,24 @@
 
 # Fabrication
 
-WARNING: This project is in a very experimental state. The working boards are prototypes that are all a little bit different. The files found in this directory corrrespond to what we would like to be out next version. Therefore, although we are confident that these work, nobody has tested them yet...
 
 # Building the boards
 
 Assembling surface mount component is challenging for a hobbyist like
-me. The approach that worked best was to rely on the JLCPCB SMT
+me. The most practical and economical approach at this point is to 
+contact Hans61 on the forum because he now has mastered his reflow oven.
+I only have good things to say about HansPCB ;-)
+
+The early versions of the board were build by relying on JLCPCB SMT
 assembly service as much as possible. Alas, in these times of chip
 shortage, JLCPCB does not always have the necessary chips in
-stock. Therefore we use their services for as much as possible, and we
+stock or sells them for unreasonable prices. Therefore I often had
 finish the board with hand soldering.  Hand-soldering the 8 pins PLL
 chip is quite easy with the "lots of flux" method. Hand-soldering the
-4 pins SRAM is difficult but possible. Hand-soldering the CPLD is well
+44 pins SRAM is difficult but possible. Hand-soldering the CPLD is well
 beyond my skills, which is annoying because its availability on JLCPCB
 is spotty and they tend to offer it with a significant price markup.
+
 Some boards have a solder jumper to determine whether to power the PLL
 chip with +5v or +3.3v. For reasons still unknown, it seems that +5v
 works more reliably.
@@ -58,3 +62,18 @@ Gigatron: power up the Gigatron, issue the programming command which
 crashes the Gigatron but programs the chip, and power-cycle to reset
 the Gigatron. I have done that dozens of times without damage.
 
+# Programming the patched ROM
+
+The patched dev rom is available in the 
+[rom directory of this repository](https://github.com/lb3361/gigatron-lb/tree/main/extension-crazy/rom).
+The easiest way is to use a [TL866ii plus](https://www.amazon.com/s?k=tl866ii+plus+programmer) programmer,
+either with its proprietary software or with the open source 
+[minipro](https://gitlab.com/DavidGriffith/minipro) software. 
+For instance, to program a a Microchip AT27C1024 one-time-programmable rom, type:
+```
+	minipro -p 'AT27C1024@DIP40' -w dev.rom -y -s
+```
+Other parts are the AMD 27C1024 and the ST Microelectronics M27C1024 EPROMs than 
+can be found on ebay or amazon. You might need an UV EPROM eraser as second hand
+chips rarely come clean. I do not have direct experience, but anything
+faster then 120ns should work.
