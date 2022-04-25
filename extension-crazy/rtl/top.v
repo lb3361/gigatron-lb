@@ -308,6 +308,15 @@ module top(input            CLK,
             end // if (! nCTRL)
           FARADDR <= v_faraddr;
        end // if (!nAE && nBE)
+
+initial
+  begin
+     NBANK = 4'b0;
+     NBANKP = 1'b0;
+     VBANK = 4'b0;
+     PWMD  = 8'h00;
+  end
+
    
 endmodule
 
