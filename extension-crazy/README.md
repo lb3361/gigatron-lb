@@ -69,9 +69,7 @@ Building such boards is discussed in directory [fab](./fab).
 This describes the current CPLD programming.
 
 This board is backward compatible with the latest version "dual drive"
-of the [GAL based extension board](../extension-retro) using
-the simplified version of zero page banking, i.e., setting
-`/ZPBANK` to zero maps bank 3 at addresses [0x0080-0x00ff].
+of the [GAL based extension board](../extension-retro).
 The following text only describes the features that are specific to
 this board.  Many of these features can be used with the regular
 Gigatron ROM.  However things get better when one uses the patched ROM
@@ -94,7 +92,7 @@ ctrl code](https://forum.gigatron.io/viewtopic.php?f=4&t=331) with
 device address 0xF. Register NBANK is read from the top four bits of
 the code, flags NBANKP from the following bit:
 ```
-  SYS_ExpanderControl( (NBANK<<12) | (NBANKP<<11) | 0xF0 );
+  SYS_ExpanderControl( ((NBANK&7)<<12) | ((NBANKP&1)<<11) | 0xF0 );
 ```
 The flags define two modes of operation:
 
