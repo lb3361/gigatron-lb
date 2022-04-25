@@ -1,10 +1,8 @@
 
 # Fabrication
 
-# Fabrication
 
-
-# Building the boards
+## Building the boards
 
 Assembling surface mount component is challenging for a hobbyist like
 me. The most practical and economical approach at this point is to 
@@ -14,7 +12,7 @@ I only have good things to say about HansPCB ;-)
 The early versions of the board were build by relying on JLCPCB SMT
 assembly service as much as possible. Alas, in these times of chip
 shortage, JLCPCB does not always have the necessary chips in
-stock or sells them for unreasonable prices. Therefore I often had
+stock or sells them for unreasonable prices. Therefore we usually had
 finish the board with hand soldering.  Hand-soldering the 8 pins PLL
 chip is quite easy with the "lots of flux" method. Hand-soldering the
 44 pins SRAM is difficult but possible. Hand-soldering the CPLD is well
@@ -34,7 +32,7 @@ do it? do they do it?, etc).  When the half-assembled boards arrive,
 one has to hand-solder the missing parts, the 74HCT377 dip chip, the
 connectors, and the leds.
 
-# Programming the CPLD
+## Programming the CPLD
 
 Before programming the CPLD, it is wise to test that the board does
 not have shorts. This is best achieved by measuring the resistance
@@ -62,7 +60,7 @@ Gigatron: power up the Gigatron, issue the programming command which
 crashes the Gigatron but programs the chip, and power-cycle to reset
 the Gigatron. I have done that dozens of times without damage.
 
-# Programming the patched ROM
+## Programming the patched ROM
 
 The patched dev rom is available in the 
 [rom directory of this repository](https://github.com/lb3361/gigatron-lb/tree/main/extension-crazy/rom).
@@ -77,3 +75,21 @@ Other parts are the AMD 27C1024 and the ST Microelectronics M27C1024 EPROMs than
 can be found on ebay or amazon. You might need an UV EPROM eraser as second hand
 chips rarely come clean. I do not have direct experience, but anything
 faster then 120ns should work.
+
+
+## Installing
+
+Make sure to connect the A15 point on the motherboard to the A15 point on the expansion board.
+Hans61's preferred approach consists of installing a single pin female header on the motherboard
+and a single pin male vertical make header on the expansion board. In principle they should align
+just right. Another approach is to use horizontal male headers on both the main board and the expansion
+board and connect them using a short female-female breadboard wire.
+
+Make sure that the expansion board fits tightly in both the SRAM socket and the Output register socket.
+A loose fit leads to bad contact and lots of problems. 
+
+First try the board using the normal ROM. It should be able to run all usual Gigatron programs
+but without speedup. Then you can try installing the patched ROM which gives the video snooping 
+speedup and the 8 bits audio.
+
+
