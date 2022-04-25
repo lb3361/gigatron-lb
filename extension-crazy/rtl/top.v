@@ -4,30 +4,30 @@
 `undef  DISABLE_VIDEO_SNOOP
 
 
-module top(input            CLK,
-           input            CLKx2,
-           input            CLKx4,
-           input            nGOE,
-           output reg [7:0] OUTD, 
-           input [7:0]      ALU,
-           input            nOL,
-           inout [7:0]      RAL,
-           output [18:8]    RAH,
-           output reg       nROE,
-           output reg       nRWE,
-           inout [7:0]      RD,
-           output reg       nAE,
-           inout [7:0]      GBUS,
-           input [15:8]     GAH,
-           input            nGWE,
-           output           nACTRL,
-           output [1:0]     nADEV,
-           input [4:3]      XIN,
-           input [2:0]      MISO,
-           output reg       MOSI,
-           output reg       SCK,
-           output reg [1:0] nSS,
-           output reg       PWM
+module top(input            CLK,     // 6.25MHz clock 
+           input            CLKx2,   // 12.5MHz clock from PLL
+           input            CLKx4,   // 25MHz clock from PLL
+           input            nGOE,    // OE signal from SRAM socket
+           output reg [7:0] OUTD,    // Video output, latched by 74HCT377 on CLKx2 rising
+           input [7:0]      ALU,     // ALU output from OutputReg socket
+           input            nOL,     // OL signal from OutputReg socket
+           inout [7:0]      RAL,     // Low address from 74LVC244 and 512k ram
+           output [18:8]    RAH,     // 512k ram high address bits
+           output reg       nROE,    // 512k ram output enable
+           output reg       nRWE,    // 512k ram write enable
+           inout [7:0]      RD,      // 512k ram data lines
+           output reg       nAE,     // Active low enable for 74LVC244
+           inout [7:0]      GBUS,    // Gigatron data bus from SRAM socket
+           input [15:8]     GAH,     // Gigatron high address bits
+           input            nGWE,    // WE signal from SRAM socket
+           output           nACTRL,  // Aux device control for expansion header
+           output [1:0]     nADEV,   // Aux device select for expansion header
+           input [4:3]      XIN,     // From expansion header
+           input [2:0]      MISO,    // MISO from SPI0, SPI1, expansion header
+           output reg       MOSI,    // Common MOSI line
+           output reg       SCK,     // SPI clock
+           output reg [1:0] nSS,     // SPI select for SPI0 and SPI1
+           output reg       PWM      // pulse densite modulation for audio
            );
    
    reg                      SCLK;    // ctrlBits: SCLK

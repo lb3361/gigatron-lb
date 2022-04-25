@@ -29,11 +29,11 @@ Gigatron clock and generates two additional clocks at 2x and 4x the
 frequency with aligned phases. These fast clocks can be used to drive
 the SRAM at a faster rate than the Gigatron CPU.
 
-The last chip is a 74HCT244 buffer that sits between the 8 low bits
+The last chip is a 74LVC244 buffer that sits between the 8 low bits
 `A0..7` of the Gigatron address bus and the `RA0..7` wires that
 connect the CPLD to the 8 low bits of the SRAM address bus. When the
-74HCT244 outputs are active, the Gigatron `A0..7` go into both the
-SRAM address bus and the CPLD ports `RA0..7`. When the 74HCT244
+74LVC244 outputs are active, the Gigatron `A0..7` go into both the
+SRAM address bus and the CPLD ports `RA0..7`. When the 74LVC244
 outputs are tri-stated, the CPLD has exclusive control of the SRAM
 address bus. Of course one has to be careful to prevent bus contention
 on these address lines.  This was useful to save CPLD I/O pins and

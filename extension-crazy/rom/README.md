@@ -6,8 +6,9 @@ implement audio and video.
 
 The patches in file `Core/dev.asm.py` are selected when the
 Python variable `WITH_512K_BOARD` is set to `True`.
-Additional changes have been made to `Core/Reset.gcl`
-to detect the presence of the expansion board.
+Additional changes to the reset program `../progs/reset512/Reset.gcl`
+detect the presence of the expansion board.
+
 
 # 1. Compiling
 
