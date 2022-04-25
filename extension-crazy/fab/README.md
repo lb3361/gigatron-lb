@@ -83,7 +83,7 @@ Make sure to connect the A15 point on the motherboard to the A15 point on the ex
 Hans61's preferred approach consists of installing a single pin female header on the motherboard
 and a single pin male vertical make header on the expansion board. In principle they should align
 just right. Another approach is to use horizontal male headers on both the main board and the expansion
-board and connect them using a short female-female breadboard wire.
+board and connect them using a short jumper wire.
 
 Make sure that the expansion board fits tightly in both the SRAM socket and the Output register socket.
 A loose fit leads to bad contact and lots of problems. 
