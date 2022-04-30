@@ -177,13 +177,14 @@ module top(input            CLK,     // 6.25MHz clock
      if (! nOL)
        OUTD <= ALU;
 `else
+   reg [1:0] sync;
    reg [5:0] outnxt;
    always @(posedge CLK)
      if (! nOL)
-       OUTD[7:6] <= ALU[7:6];
+       sync <= ALU[7:6];
    always @(negedge CLKx4)
      if (nBE && nAE)
-       OUTD[5:0] <= (snoop) ? RD[5:0] : 6'h00;
+       OUTD <= { sync[1:0], (snoop) ? RD[5:0] : 6'h00 };
      else if (!nBE && nAE)
        outnxt[5:0] <= (snoop) ? RD[5:0] : 6'h00;
      else if (nBE && !nAE)
