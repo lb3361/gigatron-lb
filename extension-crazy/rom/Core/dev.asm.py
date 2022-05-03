@@ -862,23 +862,9 @@ ld(hi('REENTER'),Y)             #15 slot 0xdd
 jmp(Y,'REENTER')                #16
 ld(-20/2)                       #17
 
-#-----------------------------------------------------------------------
-# Extension SYS_OsCall_DEVROM_80
-#-----------------------------------------------------------------------
-
-# SYS function for calling OS routines in bank2
-#
-#  vAC: routine number
-#  sysArgs0-7: routine arguments
-#
-# Checks the presence of GTOS and call its entry point.
-# Returns 0x8080 when check fail.
-
-label('SYS_OsCall_DEVROM_80')
-ld(hi('sys_OsCall'),Y)          #15 slot 0xe0
-jmp(Y,'sys_OsCall')             #16
-ld(hi(ctrlBits),Y)              #17
-
+ld(hi('REENTER'),Y)             #15 slot 0xe0
+jmp(Y,'REENTER')                #16
+ld(-20/2)                       #17
 
 #-----------------------------------------------------------------------
 # Extension SYS_ScanMemoryExt_DEVROM_50
@@ -895,7 +881,7 @@ ld(hi(ctrlBits),Y)              #17
 # vACH                    Bit 6 and 7 contain the bank number
 
 label('SYS_ScanMemoryExt_DEVROM_50')
-ld(hi('sys_ScanMemoryExt'),Y)   #15 slot 0xe6
+ld(hi('sys_ScanMemoryExt'),Y)   #15 slot 0xe3
 jmp(Y,'sys_ScanMemoryExt')      #16
 ld([vAC+1])                     #17
 
@@ -1586,7 +1572,6 @@ else:
   ld([xout])                      #26 Gets copied to XOUT
   bra([nextVideo])                #27
   ld(syncBits,OUT)                #28 End horizontal pulse
-
 
   # Back porch A: first of 4 repeated scan lines
   # - Fetch next Yi and store it for retrieval in the next scan lines
@@ -3968,13 +3953,13 @@ ld(-62/2)                       #59
 align(0x100)
 
 label('sys_ExpanderControl')
+ld(hi(ctrlBits),Y)                  #18
+anda([vAC])                         #19 check for special ctrl code space
+beq('sysEx#22')                     #20
+ld([vAC])                           #21 load low byte of ctrl code in delay slot
+anda(0xfc)                          #22 sanitize normal ctrl code
+st([Y,ctrlBits])                    #23 store in ctrlBits
 if not WITH_512K_BOARD:
-  ld(hi(ctrlBits),Y)                  #18
-  anda([vAC])                         #19 check for special ctrl code space
-  beq('sysEx#22')                     #20
-  ld([vAC])                           #21 load low byte of ctrl code in delay slot
-  anda(0xfc)                          #22 sanitize normal ctrl code
-  st([Y,ctrlBits])                    #23 store in ctrlBits
   st([vTmp])                          #24 store in vTmp
   bra('sysEx#27')                     #25 jump to issuing normal ctrl code
   ld([vAC+1],Y)                       #26 load high byte of ctrl code in delay slot
@@ -3993,12 +3978,6 @@ if not WITH_512K_BOARD:
   jmp(Y,'REENTER')                    #32
   ld(-36/2)                           #33
 else:
-  ld(hi(ctrlBits),Y)                  #18
-  anda([vAC])                         #19 check for special ctrl code space
-  beq('sysEx#22')                     #20
-  ld([vAC])                           #21 
-  anda(0xfc)                          #22 sanitize normal ctrl code
-  st([Y,ctrlBits])                    #23 store in ctrlBits
   ld(AC,X)                            #24
   ld([vAC+1],Y)                       #25
   ctrl(Y,X)                           #26 issue ctrl code
@@ -4016,7 +3995,7 @@ else:
   jmp(Y,'sysEx#30')                   #28 jump to a place with more space
   ld([vAC+1])                         #29
 
-
+  
 #-----------------------------------------------------------------------
 
 label('sys_SpiExchangeBytes')
@@ -5712,7 +5691,7 @@ ld(-44/2)                       #42
 
 #-----------------------------------------------------------------------
 #
-#  $1300 ROM page 19/20: CopyMemory[Ext]/ScanMemory[Ext]/OsCall
+#  $1300 ROM page 19/20: CopyMemory[Ext]/ScanMemory[Ext]
 #
 #-----------------------------------------------------------------------
 
@@ -6044,93 +6023,6 @@ jmp(Y,'NEXTY')                       #43
 ld(-46/2)                            #44
 
 
-
-# SYS_OsCall_DEVROM_80 implementation
-# - check expansion present
-# - check bank 3 contains 'G','T','O','S',addrH,addrL-2,addrH^(addrL-2)
-# - save return address to vLR
-# - jumps to OS stub at [addrH,addrL+2]
-# OS stub must:
-# - PUSH() vLR to the stack
-# - save [vAC] to [sysFn]
-# - save [ctrlBits] to be restored later
-# - set [ctrlBits] to 0x7F
-# - setup page zero workspace (ZPBANK or copy)
-# - call the relevant c routine
-# - restore page zero workspace
-# - set [sysFn] to SYS_OsCall
-# - restore saved value of [ctrlBits]
-# - POP() vLR
-# - LDWI(0x1400);LUP(0)
-
-label('sys_OsCall')
-ld([Y,ctrlBits])                     #18 check ctrlBits!=0
-beq('.sysOsErr')                     #20
-ld(-30/2)                            #21 + 9 = 30
-ld(0x7f)                             #22
-ctrl(X)                              #23 set bank 3
-ld([Y,0])                            #24 check 'GTOS' signature in 0x8000
-xora(0x47)                           #25 'G'
-st([vTmp])                           #26
-ld([Y,1])                            #27
-xora(0x54)                           #28 'T'
-ora([vTmp])                          #29
-st([vTmp])                           #30
-ld([Y,2])                            #31
-xora(0x4f)                           #32 'O'
-ora([vTmp])                          #33
-st([vTmp])                           #34
-ld([Y,3])                            #35
-xora(0x53)                           #36 'S'
-ora([vTmp])                          #37
-bne('.sysOsErrCtrl')                 #38
-ld(-54/2)                            #39 + 15 = 54
-ld([vPC])                            #40
-adda(2)                              #41
-st([vLR])                            #42 save return address
-ld([vPC+1])                          #43
-st([vLR+1])                          #44
-ld([Y,4])                            #45 check OS entry XOR
-xora([Y,5])                          #46
-xora([Y,6])                          #47
-bne('.sysOsErrCtrl')                 #48
-ld(-64/2)                            #49 + 15 = 64
-ld([Y,4])                            #50
-st([vPC])                            #51
-ld([Y,5])                            #52
-st([vPC+1])                          #53
-ld(hi('NEXTY'),Y)                    #54
-jmp(Y,'NEXTY')                       #55
-ld(-58/2)                            #56
-
-label('.sysOsErrCtrl')
-st([vTmp])                          #T-14 vAC must contain (-T/2)
-ld(hi(ctrlBits),Y)                  #T-13 reset bank
-ld([Y, ctrlBits])                   #T-12
-anda(0xfc, X)                       #T-11
-ctrl(X)                             #T-10
-ld([vTmp])                          #T-9
-label('.sysOsErr')
-st([vTmp])                          #T-8 vAC must contain (-T/2)
-ld(0x80)                            #T-7
-st([vAC])                           #T-6
-st([vAC+1])                         #T-5
-ld(hi('NEXTY'),Y)                   #T-4
-jmp(Y,'NEXTY')                      #T-3
-ld([vTmp])                          #T-2
-
-label('.sysOsReturn#16')
-ctrl(X)                            #16
-ld([vLR])                          #17
-suba(2)                            #18
-st([vPC])                          #19
-ld([vLR+1])                        #20
-st([vPC+1])                        #21
-ld(hi('NEXTY'),Y)                  #22
-jmp(Y,'NEXTY')                     #23
-ld(-26/2)                          #24
-
-
 # Continuation of SYS_ExpanderControl
 # dealing with extended banking codes
 if WITH_512K_BOARD:
@@ -6142,20 +6034,6 @@ if WITH_512K_BOARD:
   ld(hi('NEXTY'),Y)                   #34
   jmp(Y,'NEXTY')                      #35
   ld(-38/2)                           #36
-
-
-# vOsReturn entry point
-fillers(until=251)
-assert(pc()&255 == 251)  # The landing offset 251 for LUP trampoline is fixed
-assert(pc()>>8 == 0x14)  # LUP address for sysOsReturn
-ld(hi(ctrlBits),Y)                 #13  (251)
-ld([Y,ctrlBits])                   #14  (252)
-bra('.sysOsReturn#16')
-anda(0xfc, X)                      #15  (253)
-
-
-
-  
 
 
 #-----------------------------------------------------------------------
