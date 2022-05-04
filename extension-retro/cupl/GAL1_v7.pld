@@ -60,7 +60,7 @@ PIN 23  =  !STDCTRL;
 
 /* CLOCKS */
 
-STDCTRL = OE & WE & !A3 & !A2;
+STDCTRL = OE & WE & (A3 # A2);
 AUXCTRL = OE & WE & !A3 & !A2 & !A1 & !A0;
 
 /* SPI STATE */
