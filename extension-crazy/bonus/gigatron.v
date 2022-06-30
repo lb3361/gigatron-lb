@@ -44,7 +44,7 @@ module gigatron(input             clk,
      else
        begin
           pc[7:0] <= (pl) ? gbus : nextpc[7:0];
-          pc[15:8] <= (ph) ? y : nextpc[15:8];
+          pc[15:8] <= (ph) ? y : (pl) ? pc[15:8] : nextpc[15:8];
        end   
 
    /* Program rom */
