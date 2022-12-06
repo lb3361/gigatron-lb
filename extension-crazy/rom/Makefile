@@ -39,7 +39,7 @@ dev.rom: Core/* ${APPS}/*/* ${RESET} Makefile interface.json
 		WozMon=${APPS}/WozMon/WozMon_v2.gcl\
 		Apple1=${APPS}/Apple-1/Apple-1.gt1\
 		MSBASIC=${APPS}/MSBASIC/MSBASIC_v1.gt1\
-		Loader=${APPS}/Loader/Loader_v4.gcl\
+		Loader=${APPS}/Loader/Loader.gcl\
 		Credits=${APPS}/Credits/Credits_v3.gcl\
 		Egg=${APPS}/Horizon/Horizon_dev_c.gt1\
 		Boot=${APPS}/CardBoot/CardBoot.gt1\
