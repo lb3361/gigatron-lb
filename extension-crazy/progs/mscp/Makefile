@@ -1,27 +1,60 @@
-SHELL=/bin/sh
-CC=glcc
-CFLAGS=-rom=v5a -DAVOID_SCANF
-LDFLAGS=
+ROM=dev7
+GLCC=glcc
+PYTHON=python3
+OBJS=mscp.o core.o
+ASMS=onload.s
 
-all: mscp.gt1 mscp_n.gt1 mscp_h.gt1 
+PGMS=mscp.gt1 mscp_b.gt1 mscp_n.gt1 mscp_h.gt1
 
-mscp.gt1: mscp.o
-	${CC} ${LDFLAGS} ${CFLAGS} -map=512k mscp.o -o $@
+all: ${PGMS}
 
-mscp_n.gt1: mscp.o
-	${CC} ${LDFLAGS} ${CFLAGS} -map=512k,nr mscp.o -o $@
+mscp.gt1: ${OBJS} ${ASMS} mscp.ovl
+	${GLCC} -rom=${ROM} -map=128k,./mscp.ovl ${OBJS} ${ASMS} -o $@
+	${PYTHON} addbook.py $@ book.bin
 
-mscp_h.gt1: mscp.o
-	${CC} ${LDFLAGS} ${CFLAGS} -map=512k,hr mscp.o -o $@
+mscp_b.gt1: ${OBJS} ${ASMS} mscp.ovl
+	${GLCC} -rom=${ROM} -map=512k,./mscp.ovl ${OBJS} ${ASMS} -o $@
+	${PYTHON} addbook.py $@ book.bin
 
-%.o: %.c
-	${CC} ${CFLAGS} ${DEFS} -c $<
+mscp_n.gt1: ${OBJS} ${ASMS} mscp.ovl
+	${GLCC} -rom=${ROM} -map=512k,nr,./mscp.ovl ${OBJS} ${ASMS} -o $@
+	${PYTHON} addbook.py $@ book.bin
 
-broom: FORCE
+mscp_h.gt1: ${OBJS} ${ASMS} mscp.ovl
+	${GLCC} -rom=${ROM} -map=512k,hr,./mscp.ovl ${OBJS} ${ASMS} -o $@
+	${PYTHON} addbook.py $@ book.bin
 
-clean: FORCE
-	-rm *.o *.gt1
+mscp.o: mscp.c core.h
+	${GLCC} -rom=${ROM} -c $<
 
-FORCE:
+core.o: core.c core.h
+	${GLCC} -rom=${ROM} -c $<
 
-.PHONY: FORCE
+dumpbook: mscp.c
+	${CC} -DSAVE_BOOK_BIN=1 -DSUBTRACTIVE_RND=1 mscp.c -o dumpbook
+
+book.bin: dumpbook book.txt mscp.c Makefile
+	./dumpbook
+
+clean:
+	-rm ${OBJS} *.gt1 *.prf *.frg prof.txt dumpbook mscp
+
+
+# Profiling support
+
+GTSIM=gtsim -rom ../../../gigatron-rom/dev128k7.rom -vmode 1975
+GTPROF=gtprof
+CFILES=${OBJS:.o=.c}
+
+prof.txt: mscp-sim.prf
+	${GTPROF} mscp-sim.prf mscp-sim.frg | sort -nr > $@
+
+mscp-sim.gt1: ${CFILES} ${ASMS} mscp.ovl
+	${GLCC} -rom=${ROM} -map=sim,allout,./mscp.ovl \
+	    -DREPEATABLE_RND=1 ${CFILES} ${ASMS} -o $@ --frags > mscp-sim.frg
+	${PYTHON} addbook.py $@ book.bin
+
+mscp-sim.prf: mscp-sim.gt1 prof.in
+	${GTSIM} -prof $@ mscp-sim.gt1 < prof.in
+
+
