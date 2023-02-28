@@ -2,7 +2,7 @@ SHELL=/bin/sh
 NAME=Music64k_ROMv5a
 GIGAROM=${abspath ../../../../gigatron-rom}
 GIGAROMR=${shell realpath --relative-to=. "${GIGAROM}"}
-GTBASIC=${GIGAROM}/Contrib/at67/tools/gtbasic/gtbasic
+GTBASIC=${GIGAROM}/Contrib/at67-bsd/tools/gtbasic/gtbasic
 
 all: ${NAME}.gt1
 

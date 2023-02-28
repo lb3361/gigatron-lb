@@ -3,7 +3,7 @@ TARGETS=all broom clean
 GIGAROM=${shell realpath -s ../../gigatron-rom}
 GLCC=glcc
 
-SUBDIRS=rtl rom progs
+SUBDIRS=rtl progs
 
 ${TARGETS}:
 	for n in ${SUBDIRS}; do \
