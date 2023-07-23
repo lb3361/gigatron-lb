@@ -12,14 +12,15 @@ typedef void (*action_t)(void);
 
 /* page zero global (regbase dependent) */
 
-#define x0      (*(fixed_t*)0x30)
-#define y0      (*(fixed_t*)0x32)
-#define ctrl    (*(unsigned int*)0x34)
-#define bank    (*(char*)0x35)
-#define addr    (*(char**)0x36)
-#define addrL   (*(char*)0x36)
-#define addrH   (*(char*)0x37)
-#define lastPix (*(char*)0x38)
+fixed_t      __near x0;
+fixed_t      __near y0;
+unsigned int __near ctrl;
+char*        __near addr;
+char         __near lastPix;
+
+#define bank  (((__near char*)&ctrl)[1])
+#define addrL (((__near char*)&addr)[0])
+#define addrH (((__near char*)&addr)[1])
 
 
 /* walking around the screen */
@@ -36,20 +37,20 @@ void move_pen(fixed_t dx, fixed_t dy)
   if (dx > 0) {
     bank ^= 0x20;
     if (bank & 0x20)
-      addrL++;
+      addrL += 1;
   } else if (dx < 0) {
     bank ^= 0x20;
     if (! (bank & 0x20))
-      addrL--;
+      addrL -= 1;
   }
   if (dy > 0) {
-    addrH++;
+    addrH += 1;
     if (! addrH) {
       addrH = 0x80;
       bank |= 0x10;
     }
   } else if (dy < 0) {
-    addrH--;
+    addrH -= 1;
     if (addrH == 0x7f) {
       addrH = 0xFF;
       bank &= 0xEF;
