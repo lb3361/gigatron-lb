@@ -3,7 +3,7 @@
 
 # Gigatron RAM and IO expansion (v7, "dual drive")
 
-This is the latest version of the GAL-based 128KB RAM and IO extension for the Gigatron. This board is compatible enopugh with [Marcel's design](https://forum.gigatron.io/viewtopic.php?f=4&t=64&start=50#p804) to require no change to the Gigatron software. It provides the usual features of GAL-based expansion boards.
+This is the latest version of the GAL-based 128KB RAM and IO extension for the Gigatron. This board is compatible enough with [Marcel's design](https://forum.gigatron.io/viewtopic.php?f=4&t=64&start=50#p804) to require no change to the Gigatron software. It provides the usual features of GAL-based expansion boards.
 * Zero page banking provides means to select a different memory bank for the zero page range 0x80-0xff.
 * SPI clock polarity control allows for implementing [SPI modes](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface#Clock_polarity_and_phase) (CPOL, CPHA). Modes 0 and 2 are supported with the existing firmware. Modes 1 and 3 can be implemented with a new native routine.
 
