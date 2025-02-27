@@ -122,6 +122,8 @@ high bits of memory location 0xb (ex `videoModeC`).
 
 Both modes are exercised by the [memory test program](progs/memtest).
 
+*Warning: I am thinking of simplifying this (2025)*
+
 
 ## 3.2. Video snooping
 
