@@ -1,36 +1,30 @@
-# MSCP
 
-Marcel's Simple Chess Program is a simple but surprisingly capable
-chess program written in C by Marcel van Kervinck. The compiled
-version of MSCP requires about 56KB to run. This is problematic
-because the video buffer takes nearly 20KB of the 64KB Gigatron
-address space. Using memory banking from C is difficult. However,
-thanks to the crazy expansion board, we can displace the video buffer
-into a different memory bank, freeing the full address space.
+# Marcel's Simple Chess Program
 
-* The first version of this program, `mscp.gt1` achieves this using the
-  [libcon_b](../libcon_b) library which overrides the low-level
-  primitives of the GLCC console library and displace the video buffer
-  into bank 14. 
+MSCP, Marcel's Simple Chess Program by Marcel van Kervinck, is a
+small, simple, yet complete open source chess engine released under
+the GNU GPL. This version has been adapted to work on the Gigatron
+which is another brainchild of Marcel.
 
-* The second version of this program `mscp_n.gt1` uses a different 
-  library named [libcon_n](../libcon_n) which not only displaces the
-  video buffer but enables double horizontal resolution to display
-  up to 52 characters per line. 
-  
-* The third version `mscp_h.gt1` uses library [libcon_h](../libcon_h)
-  which doubles both the horizontal and vertical video resolution,
-  yielding 320x240 pixels able to display 30 lines of 52 characters.
-
-Both `mscp.gt1` and `mscp_n.gt1` can work with the normal ROM v5a.
-This wastes time because we could run the vCPU instead of sending
-pixels to the screen. However `mscp_h.gt1` only runs with 
-the patched ROM.
+https://www.chessprogramming.org/MSCP
 
 
-I was happy to get Marcel's chess program running on a real Gigatron.
-However, to play against the Gigatron, one has to be willing to wait 
-a couple minutes between each ply...
+## Changes
 
+The main change relocates the `union core` structure containing the
+compiled opening book and the transposition table into bank 3 of the
+128k gigatron. To that effect, the file `mscp.ovl` ensures that all
+objects defined in file `core.c` are placed below 0x7fff and therefore
+remain accessible when the banks are switched.  The random generator
+has been changed to a subtractive generator that avoids costly long
+multiplications.
 
+The opening book is appended to the gt1 at addresses 0xc000 and up.
+An onload function defined by `mscp.ovl` is called just after loading
+the augmented gt1 file. This function retrieves the book size from
+address `0xbffe` and copies the book data into bank3.
 
+A second onload function defined by `map128k` then copies excess code
+and data from bank1 to bank2, initializes the framebuffer in bank1,
+and switches to bank2. This is how `map128k` provides a contiguous
+62KB of memory.
