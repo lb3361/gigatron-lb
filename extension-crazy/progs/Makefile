@@ -3,8 +3,8 @@ TARGETS=all broom clean
 GIGAROM=${abspath ../../../gigatron-rom}
 GLCC=glcc
 
-SUBDIRS=memtest pwmtest zpbanktest reset512\
-        mscp mandelbrot music64k
+SUBDIRS=memtest pwmtest zpbanktest mscp mandelbrot reset512
+# SUBDIRS += music64k (realpath --relative-to does not work on macos)
 
 ${TARGETS}:
 	for n in ${SUBDIRS}; do \
