@@ -37,8 +37,6 @@ module top(input            CLK,     // 6.25MHz clock
    reg                      NBANKP;  // override normal banking scheme
    reg [3:0]                VBANK;   // video bank
    reg [15:0]               VADDR;   // video snoop address
-   reg [2:0]                ZREG;    // extended ops: Z register
-   reg                      FARADDR; // extended ops: far addressing
    reg [`PWMBITS-1:0]       PWMD;    // pwm threshold
 
    
@@ -77,9 +75,7 @@ module top(input            CLK,     // 6.25MHz clock
    wire bankenable  = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
    reg [3:0] gbank;
    always @*
-     if (FARADDR)
-       gbank = { ZREG, GAH[15] };
-     else if (NBANKP && GAH[15])
+     if (NBANKP && GAH[15])
        gbank = NBANK;           // nbank bank overrides ctrlbits bank
      else if (!bankenable)
        gbank = 4'b0000;         // no banking
@@ -220,11 +216,9 @@ module top(input            CLK,     // 6.25MHz clock
    assign nADEV[0] = nAE   || RAL[7:4] == 4'b0000;
    assign nADEV[1] = nAE   || RAL[7:4] == 4'b0001;
 
-   reg  v_faraddr;
    always @(posedge CLKx4)
      if (!nAE && nBE)
        begin
-          v_faraddr = 1'b0;
           if (! nCTRL)
             begin
                casez (RAL[3:0])
@@ -246,49 +240,6 @@ module top(input            CLK,     // 6.25MHz clock
                           end
                       endcase
                    end
-                 4'b0001:       // new opcodes
-                   begin
-                      case (RAL[6:4])
-                        3'b100: // nop()/far()
-                          begin //  -- ctrl(0x01)/ctrl(0x81)
-                          end
-                        3'b101: // ld(AC,Z)/far(AC,Z)
-                          begin // -- ctrl(0x11)/ctrl(0x91)
-                             ZREG <= ALU[2:0];
-                          end
-                        3'b110: // ld(Y,Z)/far(Y,Z)
-                          begin // -- ctrl(0x21)/ctrl(0xa1)
-                             ZREG <= GAH[10:8];
-                          end
-                        4'b111: // ld(V,Z)/far(V,Z)
-                          begin // -- ctrl(0x31)/ctrl(0xb1)
-                             ZREG <= { VBANK[3:2], VBANK[!ALU[7]] };
-                          end
-                      endcase // case (RAL[6:4])
-                      if (RAL[7] && RAL[6])
-                        begin
-                           // 
-                           // changes addressing mode of next opcode
-                           //  [d],AC      -->  [Z,0,d],AC
-                           //  [X],AC      -->  [Z,0,X],AC
-                           //  [Y,d],AC    -->  [Z,Y,d],AC
-                           //  [Y,X],AC    -->  [Z,Y,X],AC
-                           //  [d],X       -->  [Z,0,d],X
-                           //  [d],Y       -->  [Z,0,d],Y
-                           //  [d],OUT     -->  [Z,0,d],OUT
-                           //  [Y,X++],OUT -->  [Z,Y,X++],OUT
-                           v_faraddr = 1'b1;
-                        end // if (RAL[7])
-                   end
-                 4'b0010:       // ld(imm,Z)
-                   begin        // -- ctrl((imm<<4)|0x2)
-                      ZREG <= RAL[6:4];
-                   end
-                 4'b0011:       // farprefix+ld(imm,Z)
-                   begin        // -- ctrl((imm<<4)|0x3)
-                      ZREG <= RAL[6:4];
-                      v_faraddr = 1'b1;
-                   end
                  default:       // normal ctrl codes
                    begin
                       MOSI <= GAH[15];
@@ -307,7 +258,6 @@ module top(input            CLK,     // 6.25MHz clock
                    end
                endcase // casez (RAL[3:0])
             end // if (! nCTRL)
-          FARADDR <= v_faraddr;
        end // if (!nAE && nBE)
 
 initial
