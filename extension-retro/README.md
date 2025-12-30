@@ -1,3 +1,6 @@
+# Warning: $`\text{\color{red} consider Hans61's simple board instead!}`$
+
+This ram-and-io expansion board for the Gigatron is not a bad design, but its advanced features are not that useful, and it is much harder to build than Hans61's recreation of the original ram-and-io expansion board designed by Marcel. See [this forum link](https://forum.gigatron.io/viewtopic.php?p=3694&hilit=hans61+recreated#p3694) and [this github link](https://github.com/hans61/Gigatron-TTL/tree/main/Expansion128k). I recommend the dual-driver version of Hans61's board.
 
 
 
