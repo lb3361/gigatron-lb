@@ -1,5 +1,12 @@
 # Custom ROM 
 
+This is obsolete. The recommended ROM is now `dev512k7.rom`
+which can be found in https://github.com/lb3361/gigatron-rom.
+
+
+# Custom ROM (OLD TEXT)
+
+
 This version of the v5a development ROM contains a modified version of
 the main loop that takes advantage of the new expansion board to
 implement audio and video.
