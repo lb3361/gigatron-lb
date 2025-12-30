@@ -4,7 +4,7 @@
 `undef  DISABLE_VIDEO_SNOOP
 
 
-module top(input            CLK,     // 6.25MHz clock 
+module top(input            CLK,     // 6.25MHz clock
            input            CLKx2,   // 12.5MHz clock from PLL
            input            CLKx4,   // 25MHz clock from PLL
            input            nGOE,    // OE signal from SRAM socket
@@ -29,17 +29,15 @@ module top(input            CLK,     // 6.25MHz clock
            output reg [1:0] nSS,     // SPI select for SPI0 and SPI1
            output reg       PWM      // pulse densite modulation for audio
            );
-   
+
    reg                      SCLK;    // ctrlBits: SCLK
-   reg                      nZPBANK; // ctrlBits: /ZPBANK
-   reg [1:0]                BANK;    // ctrlBits: BANK
-   reg [3:0]                NBANK;   // extended bank register
-   reg                      NBANKP;  // override normal banking scheme
+   reg [3:0]                BANK;    // ctrlBits: BANK
+   reg [3:0]                BANK0;   // bank zero override (set with ctrl code X0F0)
    reg [3:0]                VBANK;   // video bank
    reg [15:0]               VADDR;   // video snoop address
    reg [`PWMBITS-1:0]       PWMD;    // pwm threshold
 
-   
+
    /* ================ clocks
     *
     *                              110000000000111111000000000011111100
@@ -56,11 +54,11 @@ module top(input            CLK,     // 6.25MHz clock
     *                              ____         _______         _______
     *  /BE                             \_______/       \_______/       \
     *                               _______         _______         ____
-    *  /AE                         /       \_______/       \_______/    
+    *  /AE                         /       \_______/       \_______/
     *
     *  Cycle                       --VVV-vvvGGGGGGGG-VVV-vvvGGGGGGGG-VVV
     */
-   
+
    reg nBE;
    always @(negedge CLKx4)
      begin
@@ -68,35 +66,32 @@ module top(input            CLK,     // 6.25MHz clock
           nBE <= !CLK;
         nAE <= nBE;
      end
-   
+
    /* ================ Gigatron bank selection */
 
-   (* KEEP = "TRUE" *) wire gahz = GAH[14:8] == 7'h00;
-   wire bankenable  = GAH[15] ^ (!nZPBANK && RAL[7] && gahz);
-   reg [3:0] gbank;
-   always @*
-     if (NBANKP && GAH[15])
-       gbank = NBANK;           // nbank bank overrides ctrlbits bank
-     else if (!bankenable)
-       gbank = 4'b0000;         // no banking
-     else if (BANK == 2'b00)
-       gbank = NBANK;           // nbank applies when bank is 00
-     else
-       gbank = { 2'b00, BANK }; // normal banking
-   
-   
+   wire [3:0] sbank = (BANK==4'b0000) ? BANK0 : BANK;
+   wire [3:0] abank = (GAH[15]) ? sbank : 4'b0000;
+
    /* ================ Gigatron data bus */
-   
-   reg [7:0] gbusout;
-   wire misox = (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) | (MISO[2] & nSS[0] & nSS[1]);
-   wire portx = SCLK && !GAH[15] && gahz && RAL[7:0] == 8'h00;
+
+   wire misox = SCLK & ((MISO[0] & !nSS[0]) |
+                        (MISO[1] & !nSS[1]) |
+                        (MISO[2] & nSS[0] & nSS[1]) );
+
+   reg [7:0] gbusout; // transparent latch
    always @*
-     if (! nAE) // transparent latch
-       gbusout = (portx) ? { BANK[1:0], XIN[4:3], 3'b000, misox } : RD[7:0];
+     if (! nAE)
+       case({GAH[15:8],RAL[7:0]})
+         16'h0000 : gbusout = { 4'b0000, {4{misox}} };
+         16'h0080 : gbusout = 8'h01;
+         16'h01f8 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], MOSI, 1'b0 };
+         default  : gbusout = RD[7:0];
+       endcase
+
    assign GBUS = (nGOE) ? 8'hZZ : gbusout;
-   
-   
-   /* ================ SRAM interface 
+
+
+   /* ================ SRAM interface
     *
     * This is tricky because we must ensure
     * that no conflict arises when we commute the 74lvc244.
@@ -104,13 +99,13 @@ module top(input            CLK,     // 6.25MHz clock
     * both the xc95144 and the 74lvc244 have the same
     * idea of what should be on RAL.
     */
-   
+
    reg [18:0] ra;
-   assign RAH = (nAE) ? ra[18:8] : { gbank, GAH[14:8] };
+   assign RAH = (nAE) ? ra[18:8] : { abank, GAH[14:8] };
    assign RAL = (nAE) ? ra[7:0] : 8'hZZ;
    always @(posedge CLKx4)
      if (nAE)
-       ra <= { VBANK[3:2], VBANK[nBE], VADDR[15:0] };
+       ra <= { VBANK[3:2], VBANK[{1'b0,nBE}], VADDR[15:0] };
      else
        ra <= { RAH, RAL };
 
@@ -143,12 +138,12 @@ module top(input            CLK,     // 6.25MHz clock
 `endif
    assign RD = (nROE) ? GBUS : 8'hZZ;
 
-   
-   
-   /* ================ Scanline detection */ 
-   
+
+
+   /* ================ Scanline detection */
+
    reg        snoop;
-   wire       snoopchg = !nGOE && !(gahz && !GAH[15]);
+   wire       snoopchg = !nGOE && (GAH[15:8] != 8'h00);
    wire [7:0] nvaddr = VADDR[7:0] + 8'h01;
    always @(negedge CLKx2)
      if (! nAE)
@@ -164,8 +159,8 @@ module top(input            CLK,     // 6.25MHz clock
             // Otherwise increment address to next pixel
             VADDR[7:0] <= nvaddr;
        end
-   
-   
+
+
    /* ================ Output register */
 
 `ifdef DISABLE_VIDEO_SNOOP
@@ -187,12 +182,12 @@ module top(input            CLK,     // 6.25MHz clock
        OUTD[5:0] <= outnxt[5:0];
 `endif
 
-   
-   /* ======== Bit reversed PWM 
+
+   /* ======== Bit reversed PWM
     * Reversed bit PWM moves noise into higher frequencies
     * that are more easily filtered.
     */
-   
+
    reg [`PWMBITS-1:0]  pwmcnt;
    wire [`PWMBITS-1:0] rpwmcnt;
    genvar k;
@@ -203,13 +198,13 @@ module top(input            CLK,     // 6.25MHz clock
    endgenerate
    always @(posedge CLK)
      begin
-        pwmcnt <= pwmcnt + 6'h01;
+        pwmcnt <= pwmcnt + `PWMBITS'h01;
         PWM <= (rpwmcnt < PWMD);
      end
-   
-   
+
+
    /* ================ Ctrl codes */
-   
+
    wire nCTRL = nAE || nGOE || nGWE;
 
    assign nACTRL =   nCTRL || RAL[3:0] != 4'b0000;
@@ -225,34 +220,44 @@ module top(input            CLK,     // 6.25MHz clock
                  4'b0000:       // extended ctrl codes
                    begin
                       case (RAL[7:4])
-                        4'hf : 
-                          begin // dev15: set new bank register
-                             NBANK <= GAH[15:12];
-                             NBANKP <= GAH[11];
+                        4'hf :
+                          begin // dev15: set bank
+                             if (!GAH[11])
+                               begin
+                                  BANK0 <= GAH[15:12]; // set bank0 override
+                               end
+                             else
+                               begin
+                                  BANK <= GAH[15:12];  // set bank
+                                  BANK0 <= 4'b0000;    // reset bank0 override
+                               end
                           end
-                        4'he : 
+                        4'he :
                           begin // dev14: set video bank
                              VBANK[3:0] <= GAH[11:8];
                           end
-                        4'hd : 
+                        4'hd :
                           begin // dev13: set PWM threshold
                              PWMD <= GAH[15:16-`PWMBITS];
+                          end
+                        default :
+                          begin
                           end
                       endcase
                    end
                  default:       // normal ctrl codes
                    begin
                       MOSI <= GAH[15];
-                      BANK <= RAL[7:6];
-                      nZPBANK <= RAL[5];
+                      BANK[1:0] <= RAL[7:6];
+                      BANK[3:2] <= ~RAL[5:4];
                       nSS <= RAL[3:2];
                       SCLK <= RAL[0];
-                      SCK <= RAL[0] ^~ RAL[4];
+                      SCK <= RAL[0];
                       if (RAL[1:0] == 2'b11)
-                        begin   // reset
-                           NBANK <= 4'b0;
-                           NBANKP <= 1'b0;
-                           VBANK <= 4'b0;
+                        begin   // reset all registers
+                           BANK <= 4'b0000;
+                           BANK0 <= 4'b0000;
+                           VBANK <= 4'b0000;
                            PWMD  <= 8'h00;
                         end
                    end
@@ -262,13 +267,13 @@ module top(input            CLK,     // 6.25MHz clock
 
 initial
   begin
-     NBANK = 4'b0;
-     NBANKP = 1'b0;
+     BANK = 4'b0;
+     BANK0 = 4'b0;
      VBANK = 4'b0;
      PWMD  = 8'h00;
   end
 
-   
+
 endmodule
 
 
