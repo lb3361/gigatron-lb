@@ -12,7 +12,7 @@ ${TARGET}: ${OBJS} ${ASMS} Makefile
 	${CC} ${LDFLAGS} ${CFLAGS} ${OBJS} ${ASMS} -o $@
 
 %.o: %.c
-	${CC} -c ${CFLAGS} -rom=v5a $< -o $@
+	${CC} -c ${CFLAGS} $< -o $@
 
 broom: FORCE
 
