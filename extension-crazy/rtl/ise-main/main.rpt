@@ -1,0 +1,1670 @@
+ 
+cpldfit:  version P.20131013                        Xilinx Inc.
+                                  Fitter Report
+Design Name: top                                 Date:  1- 4-2026,  6:16PM
+Device Used: XC95144XL-10-TQ100
+Fitting Status: Successful
+
+*************************  Mapped Resource Summary  **************************
+
+Macrocells     Product Terms    Function Block   Registers      Pins           
+Used/Tot       Used/Tot         Inps Used/Tot    Used/Tot       Used/Tot       
+139/144 ( 97%) 369 /720  ( 51%) 264/432 ( 61%)   97 /144 ( 67%) 75 /81  ( 93%)
+
+** Function Block Resources **
+
+Function    Mcells      FB Inps     Pterms      IO          
+Block       Used/Tot    Used/Tot    Used/Tot    Used/Tot    
+FB1          18/18*      23/54       47/90       6/11
+FB2          18/18*      34/54       38/90       9/10
+FB3          18/18*      37/54       60/90      10/10*
+FB4          18/18*      37/54       33/90      10/10*
+FB5          17/18       25/54       27/90      10/10*
+FB6          18/18*      38/54       68/90      10/10*
+FB7          14/18       35/54       62/90      10/10*
+FB8          18/18*      35/54       34/90      10/10*
+             -----       -----       -----      -----    
+            139/144     264/432     369/720     75/81 
+
+* - Resource is exhausted
+
+** Global Control Resources **
+
+Signal 'CLK' mapped onto global clock net GCK1.
+Signal 'CLKx2' mapped onto global clock net GCK2.
+Signal 'CLKx4' mapped onto global clock net GCK3.
+Signal 'nAE' mapped onto global output enable net GTS1.
+Signal 'nGOE' mapped onto global output enable net GTS2.
+Signal 'nROE' mapped onto global output enable net GTS4.
+Global set/reset net(s) unused.
+
+** Pin Resources **
+
+Signal Type    Required     Mapped  |  Pin Type            Used    Total 
+------------------------------------|------------------------------------
+Input         :   17          17    |  I/O              :    67      73
+Output        :   28          28    |  GCK/IO           :     3       3
+Bidirectional :   24          24    |  GTS/IO           :     4       4
+GCK           :    3           3    |  GSR/IO           :     1       1
+GTS           :    3           3    |
+GSR           :    0           0    |
+                 ----        ----
+        Total     75          75
+
+** Power Data **
+
+There are 139 macrocells in high performance mode (MCHP).
+There are 0 macrocells in low power mode (MCLP).
+End of Mapped Resource Summary
+**************************  Errors and Warnings  ***************************
+
+WARNING:Cpld - Unable to retrieve the path to the iSE Project Repository. Will
+   use the default filename of 'top.ise'.
+WARNING:Cpld:1007 - Removing unused input(s) 'ALU<0>'.  The input(s) are unused
+   after optimization. Please verify functionality via simulation.
+WARNING:Cpld:1007 - Removing unused input(s) 'ALU<1>'.  The input(s) are unused
+   after optimization. Please verify functionality via simulation.
+WARNING:Cpld:1007 - Removing unused input(s) 'ALU<2>'.  The input(s) are unused
+   after optimization. Please verify functionality via simulation.
+WARNING:Cpld:1007 - Removing unused input(s) 'ALU<3>'.  The input(s) are unused
+   after optimization. Please verify functionality via simulation.
+WARNING:Cpld:1007 - Removing unused input(s) 'ALU<4>'.  The input(s) are unused
+   after optimization. Please verify functionality via simulation.
+WARNING:Cpld:1007 - Removing unused input(s) 'ALU<5>'.  The input(s) are unused
+   after optimization. Please verify functionality via simulation.
+*************************  Summary of Mapped Logic  ************************
+
+** 54 Outputs **
+
+Signal                                                        Total Total Loc     Pin  Pin     Pin     Pwr  Slew Reg Init
+Name                                                          Pts   Inps          No.  Type    Use     Mode Rate State
+OUTD<2>                                                       4     5     FB1_3   12   I/O     O       STD  FAST RESET
+OUTD<5>                                                       4     5     FB1_8   15   I/O     O       STD  FAST RESET
+OUTD<1>                                                       4     5     FB1_9   16   I/O     O       STD  FAST RESET
+OUTD<0>                                                       4     5     FB1_12  18   I/O     O       STD  FAST RESET
+OUTD<4>                                                       4     5     FB1_14  19   I/O     O       STD  FAST RESET
+nROE                                                          3     3     FB2_6   2    GTS/I/O GTS/O   STD  FAST RESET
+nAE                                                           1     1     FB2_8   3    GTS/I/O GTS/O   STD  FAST RESET
+OUTD<7>                                                       2     3     FB2_12  7    I/O     O       STD  FAST RESET
+OUTD<6>                                                       2     3     FB2_15  9    I/O     O       STD  FAST RESET
+OUTD<3>                                                       4     5     FB2_17  10   I/O     O       STD  FAST RESET
+nSS<0>                                                        4     9     FB3_5   24   I/O     O       STD  FAST RESET
+nSS<1>                                                        4     9     FB3_6   25   I/O     O       STD  FAST RESET
+MOSI                                                          7     10    FB3_11  29   I/O     O       STD  FAST RESET
+SCK                                                           2     5     FB3_12  30   I/O     O       STD  FAST RESET
+GBUS<3>                                                       2     2     FB3_15  33   I/O     I/O     STD  FAST RESET
+GBUS<4>                                                       2     2     FB3_17  34   I/O     I/O     STD  FAST RESET
+RD<0>                                                         1     1     FB4_2   87   I/O     I/O     STD  FAST 
+RD<1>                                                         1     1     FB4_5   89   I/O     I/O     STD  FAST 
+RD<2>                                                         1     1     FB4_6   90   I/O     I/O     STD  FAST 
+RD<3>                                                         1     1     FB4_8   91   I/O     I/O     STD  FAST 
+nRWE                                                          3     4     FB4_9   92   I/O     O       STD  FAST RESET
+RAL<5>                                                        2     3     FB4_11  93   I/O     I/O     STD  FAST RESET
+RAL<6>                                                        2     3     FB4_12  94   I/O     I/O     STD  FAST RESET
+RAL<7>                                                        2     3     FB4_14  95   I/O     I/O     STD  FAST RESET
+RAH<8>                                                        2     3     FB4_15  96   I/O     O       STD  FAST 
+RAH<9>                                                        2     3     FB4_17  97   I/O     O       STD  FAST 
+GBUS<2>                                                       2     2     FB5_2   35   I/O     I/O     STD  FAST RESET
+GBUS<5>                                                       2     2     FB5_5   36   I/O     I/O     STD  FAST RESET
+GBUS<1>                                                       2     2     FB5_6   37   I/O     I/O     STD  FAST RESET
+GBUS<6>                                                       2     2     FB5_8   39   I/O     I/O     STD  FAST RESET
+GBUS<0>                                                       2     2     FB5_9   40   I/O     I/O     STD  FAST RESET
+GBUS<7>                                                       2     2     FB5_11  41   I/O     I/O     STD  FAST RESET
+RAH<14>                                                       2     3     FB6_2   74   I/O     O       STD  FAST 
+RAH<13>                                                       2     3     FB6_5   76   I/O     O       STD  FAST 
+RAH<12>                                                       2     3     FB6_6   77   I/O     O       STD  FAST 
+RAH<11>                                                       2     3     FB6_8   78   I/O     O       STD  FAST 
+RAH<10>                                                       2     3     FB6_9   79   I/O     O       STD  FAST 
+RAL<0>                                                        2     3     FB6_11  80   I/O     I/O     STD  FAST RESET
+RAL<1>                                                        2     3     FB6_12  81   I/O     I/O     STD  FAST RESET
+RAL<2>                                                        2     3     FB6_14  82   I/O     I/O     STD  FAST RESET
+
+Signal                                                        Total Total Loc     Pin  Pin     Pin     Pwr  Slew Reg Init
+Name                                                          Pts   Inps          No.  Type    Use     Mode Rate State
+RAL<3>                                                        2     3     FB6_15  85   I/O     I/O     STD  FAST RESET
+RAL<4>                                                        2     3     FB6_17  86   I/O     I/O     STD  FAST RESET
+PWM                                                           8     7     FB7_11  56   I/O     O       STD  FAST RESET
+nADEV<1>                                                      2     5     FB7_14  59   I/O     O       STD  FAST 
+nADEV<0>                                                      2     5     FB7_15  60   I/O     O       STD  FAST 
+nACTRL                                                        1     7     FB7_17  61   I/O     O       STD  FAST 
+RAH<18>                                                       2     3     FB8_6   65   I/O     O       STD  FAST 
+RAH<17>                                                       2     3     FB8_8   66   I/O     O       STD  FAST 
+RAH<16>                                                       2     3     FB8_9   67   I/O     O       STD  FAST 
+RAH<15>                                                       2     3     FB8_11  68   I/O     O       STD  FAST 
+RD<7>                                                         1     1     FB8_12  70   I/O     I/O     STD  FAST 
+RD<6>                                                         1     1     FB8_14  71   I/O     I/O     STD  FAST 
+RD<5>                                                         1     1     FB8_15  72   I/O     I/O     STD  FAST 
+RD<4>                                                         1     1     FB8_17  73   I/O     I/O     STD  FAST 
+
+** 85 Buried Nodes **
+
+Signal                                                        Total Total Loc     Pwr  Reg Init
+Name                                                          Pts   Inps          Mode State
+ra<10>                                                        2     3     FB1_1   STD  RESET
+outnxt<5>                                                     2     4     FB1_2   STD  RESET
+outnxt<4>                                                     2     4     FB1_4   STD  RESET
+outnxt<3>                                                     2     4     FB1_5   STD  RESET
+outnxt<2>                                                     2     4     FB1_6   STD  RESET
+outnxt<1>                                                     2     4     FB1_7   STD  RESET
+outnxt<0>                                                     2     4     FB1_10  STD  RESET
+VADDR<8>                                                      2     4     FB1_11  STD  RESET
+VADDR<14>                                                     2     4     FB1_13  STD  RESET
+VADDR<13>                                                     2     4     FB1_15  STD  RESET
+VADDR<12>                                                     2     4     FB1_16  STD  RESET
+VADDR<10>                                                     2     4     FB1_17  STD  RESET
+snoop                                                         3     5     FB1_18  STD  RESET
+gah15to9                                                      1     7     FB2_1   STD  
+sync<0>                                                       2     2     FB2_2   STD  RESET
+ra<9>                                                         2     3     FB2_3   STD  RESET
+ra<18>                                                        2     3     FB2_4   STD  RESET
+ra<17>                                                        2     3     FB2_5   STD  RESET
+ra<15>                                                        2     3     FB2_7   STD  RESET
+ra<14>                                                        2     3     FB2_9   STD  RESET
+ra<13>                                                        2     3     FB2_10  STD  RESET
+ra<12>                                                        2     3     FB2_11  STD  RESET
+ra<11>                                                        2     3     FB2_13  STD  RESET
+nBE                                                           2     2     FB2_14  STD  RESET
+VADDR<15>                                                     2     4     FB2_16  STD  RESET
+VADDR<0>                                                      3     4     FB2_18  STD  RESET
+VADDR<9>                                                      2     4     FB3_1   STD  RESET
+VADDR<11>                                                     2     4     FB3_2   STD  RESET
+PWMD<7>                                                       2     7     FB3_3   STD  RESET
+PWMD<6>                                                       2     7     FB3_4   STD  RESET
+ra<16>                                                        3     5     FB3_7   STD  RESET
+VADDR<7>                                                      4     11    FB3_8   STD  RESET
+VADDR<6>                                                      4     10    FB3_9   STD  RESET
+VADDR<5>                                                      4     9     FB3_10  STD  RESET
+VADDR<4>                                                      4     8     FB3_13  STD  RESET
+VADDR<3>                                                      4     7     FB3_14  STD  RESET
+VADDR<2>                                                      4     6     FB3_16  STD  RESET
+VADDR<1>                                                      4     5     FB3_18  STD  RESET
+VBANK<1>                                                      2     15    FB4_1   STD  RESET
+PWMD_not0001/PWMD_not0001_D2                                  2     12    FB4_3   STD  
+
+Signal                                                        Total Total Loc     Pwr  Reg Init
+Name                                                          Pts   Inps          Mode State
+BANK0_not0001/BANK0_not0001_D2                                2     12    FB4_4   STD  
+BANK0<3>                                                      2     8     FB4_7   STD  RESET
+BANK0<2>                                                      2     8     FB4_10  STD  RESET
+BANK0<1>                                                      2     8     FB4_13  STD  RESET
+BANK0<0>                                                      2     8     FB4_16  STD  RESET
+$OpTx$FX_DC$135                                               2     12    FB4_18  STD  
+pwmcnt<4>                                                     1     4     FB5_3   STD  RESET
+pwmcnt<3>                                                     1     3     FB5_4   STD  RESET
+pwmcnt<2>                                                     1     2     FB5_7   STD  RESET
+pwmcnt<1>                                                     1     1     FB5_10  STD  RESET
+pwmcnt<0>                                                     0     0     FB5_12  STD  RESET
+gbusout<1>                                                    1     2     FB5_13  STD  
+$OpTx$FX_DC$134                                               1     2     FB5_14  STD  
+sync<1>                                                       2     2     FB5_15  STD  RESET
+gbusout<7>                                                    2     3     FB5_16  STD  
+gbusout<6>                                                    2     3     FB5_17  STD  
+misox                                                         3     5     FB5_18  STD  
+VBANK<3>                                                      2     15    FB6_1   STD  RESET
+VBANK<2>                                                      2     15    FB6_3   STD  RESET
+VBANK<0>                                                      2     15    FB6_4   STD  RESET
+$OpTx$FX_DC$606                                               2     12    FB6_7   STD  
+BANK<3>                                                       10    15    FB6_10  STD  RESET
+BANK<2>                                                       10    15    FB6_13  STD  RESET
+BANK<1>                                                       10    15    FB6_16  STD  RESET
+BANK<0>                                                       10    15    FB6_18  STD  RESET
+Mcompar_PWM_cmp_lt0000_ALB34/Mcompar_PWM_cmp_lt0000_ALB34_D2  34    16    FB7_2   STD  
+pwmcnt<7>                                                     1     7     FB7_5   STD  RESET
+pwmcnt<6>                                                     1     6     FB7_6   STD  RESET
+pwmcnt<5>                                                     1     5     FB7_7   STD  RESET
+PWMD<5>                                                       2     7     FB7_8   STD  RESET
+PWMD<4>                                                       2     7     FB7_9   STD  RESET
+PWMD<3>                                                       2     7     FB7_10  STD  RESET
+PWMD<2>                                                       2     7     FB7_12  STD  RESET
+PWMD<1>                                                       2     7     FB7_13  STD  RESET
+PWMD<0>                                                       2     7     FB7_16  STD  RESET
+ra<8>                                                         2     3     FB8_1   STD  RESET
+gbusout<3>                                                    2     4     FB8_2   STD  
+gbusout<2>                                                    2     4     FB8_3   STD  
+gbusout<0>                                                    2     4     FB8_4   STD  
+abank<3>                                                      2     6     FB8_5   STD  
+
+Signal                                                        Total Total Loc     Pwr  Reg Init
+Name                                                          Pts   Inps          Mode State
+abank<2>                                                      2     6     FB8_7   STD  
+abank<1>                                                      2     6     FB8_10  STD  
+abank<0>                                                      2     6     FB8_13  STD  
+gbusout<5>                                                    3     5     FB8_16  STD  
+gbusout<4>                                                    3     5     FB8_18  STD  
+
+** 21 Inputs **
+
+Signal                                                        Loc     Pin  Pin     Pin     
+Name                                                                  No.  Type    Use     
+CLK                                                           FB1_17  22   GCK/I/O GCK/I
+nOL                                                           FB2_2   99   GSR/I/O I
+ALU<7>                                                        FB2_5   1    GTS/I/O I
+nGOE                                                          FB2_9   4    GTS/I/O GTS/I
+ALU<6>                                                        FB2_14  8    I/O     I
+CLKx2                                                         FB3_2   23   GCK/I/O GCK/I
+CLKx4                                                         FB3_8   27   GCK/I/O GCK
+MISO<0>                                                       FB3_9   28   I/O     I
+MISO<1>                                                       FB3_14  32   I/O     I
+GAH<10>                                                       FB5_12  42   I/O     I
+GAH<11>                                                       FB5_14  43   I/O     I
+GAH<15>                                                       FB5_15  46   I/O     I
+GAH<9>                                                        FB5_17  49   I/O     I
+GAH<8>                                                        FB7_2   50   I/O     I
+GAH<13>                                                       FB7_5   52   I/O     I
+nGWE                                                          FB7_6   53   I/O     I
+XIN<3>                                                        FB7_8   54   I/O     I
+XIN<4>                                                        FB7_9   55   I/O     I
+MISO<2>                                                       FB7_12  58   I/O     I
+GAH<12>                                                       FB8_2   63   I/O     I
+GAH<14>                                                       FB8_5   64   I/O     I
+
+Legend:
+Pin No. - ~ - User Assigned
+**************************  Function Block Details  ************************
+Legend:
+Total Pt     - Total product terms used by the macrocell signal
+Imp Pt       - Product terms imported from other macrocells
+Exp Pt       - Product terms exported to other macrocells
+               in direction shown
+Unused Pt    - Unused local product terms remaining in macrocell
+Loc          - Location where logic was mapped in device
+Pin Type/Use - I  - Input             GCK - Global Clock
+               O  - Output            GTS - Global Output Enable
+              (b) - Buried macrocell  GSR - Global Set/Reset
+X            - Signal used as input to the macrocell logic.
+Pin No.      - ~  - User Assigned
+*********************************** FB1  ***********************************
+Number of function block inputs used/remaining:               23/31
+Number of signals used by logic mapping into function block:  23
+Signal              Total   Imp   Exp Unused  Loc     Pin   Pin     Pin
+Name                Pt      Pt    Pt  Pt               #    Type    Use
+ra<10>                2       0     0   3     FB1_1         (b)     (b)
+outnxt<5>             2       0     0   3     FB1_2   11    I/O     (b)
+OUTD<2>               4       0     0   1     FB1_3   12    I/O     O
+outnxt<4>             2       0     0   3     FB1_4         (b)     (b)
+outnxt<3>             2       0     0   3     FB1_5   13    I/O     (b)
+outnxt<2>             2       0     0   3     FB1_6   14    I/O     (b)
+outnxt<1>             2       0     0   3     FB1_7         (b)     (b)
+OUTD<5>               4       0     0   1     FB1_8   15    I/O     O
+OUTD<1>               4       0     0   1     FB1_9   16    I/O     O
+outnxt<0>             2       0     0   3     FB1_10        (b)     (b)
+VADDR<8>              2       0     0   3     FB1_11  17    I/O     (b)
+OUTD<0>               4       0     0   1     FB1_12  18    I/O     O
+VADDR<14>             2       0     0   3     FB1_13        (b)     (b)
+OUTD<4>               4       0     0   1     FB1_14  19    I/O     O
+VADDR<13>             2       0     0   3     FB1_15  20    I/O     (b)
+VADDR<12>             2       0     0   3     FB1_16        (b)     (b)
+VADDR<10>             2       0     0   3     FB1_17  22    GCK/I/O GCK/I
+snoop                 3       0     0   2     FB1_18        (b)     (b)
+
+Signals Used by Logic in Function Block
+  1: GAH<10>            9: RD<2>.PIN         17: nOL 
+  2: GAH<12>           10: RD<1>.PIN         18: outnxt<0> 
+  3: GAH<13>           11: RD<0>.PIN         19: outnxt<1> 
+  4: GAH<14>           12: VADDR<10>         20: outnxt<2> 
+  5: GAH<8>            13: gah15to9          21: outnxt<4> 
+  6: RD<5>.PIN         14: nAE               22: outnxt<5> 
+  7: RD<4>.PIN         15: nBE               23: snoop 
+  8: RD<3>.PIN         16: nGOE             
+
+Signal                        1         2         3         4 FB
+Name                0----+----0----+----0----+----0----+----0 Inputs
+ra<10>               X..........X.X.......................... 3
+outnxt<5>            .....X.......XX.......X................. 4
+OUTD<2>              ........X....XX....X..X................. 5
+outnxt<4>            ......X......XX.......X................. 4
+outnxt<3>            .......X.....XX.......X................. 4
+outnxt<2>            ........X....XX.......X................. 4
+outnxt<1>            .........X...XX.......X................. 4
+OUTD<5>              .....X.......XX......XX................. 5
+OUTD<1>              .........X...XX...X...X................. 5
+outnxt<0>            ..........X..XX.......X................. 4
+VADDR<8>             ....X........X.XX....................... 4
+OUTD<0>              ..........X..XX..X....X................. 5
+VADDR<14>            ...X.........X.XX....................... 4
+OUTD<4>              ......X......XX.....X.X................. 5
+VADDR<13>            ..X..........X.XX....................... 4
+VADDR<12>            .X...........X.XX....................... 4
+VADDR<10>            X............X.XX....................... 4
+snoop                ....X.......XX.XX....................... 5
+                    0----+----1----+----2----+----3----+----4
+                              0         0         0         0
+*********************************** FB2  ***********************************
+Number of function block inputs used/remaining:               34/20
+Number of signals used by logic mapping into function block:  34
+Signal              Total   Imp   Exp Unused  Loc     Pin   Pin     Pin
+Name                Pt      Pt    Pt  Pt               #    Type    Use
+gah15to9              1       0     0   4     FB2_1         (b)     (b)
+sync<0>               2       0     0   3     FB2_2   99    GSR/I/O I
+ra<9>                 2       0     0   3     FB2_3         (b)     (b)
+ra<18>                2       0     0   3     FB2_4         (b)     (b)
+ra<17>                2       0     0   3     FB2_5   1     GTS/I/O I
+nROE                  3       0     0   2     FB2_6   2     GTS/I/O GTS/O
+ra<15>                2       0     0   3     FB2_7         (b)     (b)
+nAE                   1       0     0   4     FB2_8   3     GTS/I/O GTS/O
+ra<14>                2       0     0   3     FB2_9   4     GTS/I/O GTS/I
+ra<13>                2       0     0   3     FB2_10        (b)     (b)
+ra<12>                2       0     0   3     FB2_11  6     I/O     (b)
+OUTD<7>               2       0     0   3     FB2_12  7     I/O     O
+ra<11>                2       0     0   3     FB2_13        (b)     (b)
+nBE                   2       0     0   3     FB2_14  8     I/O     I
+OUTD<6>               2       0     0   3     FB2_15  9     I/O     O
+VADDR<15>             2       0     0   3     FB2_16        (b)     (b)
+OUTD<3>               4       0     0   1     FB2_17  10    I/O     O
+VADDR<0>              3       0     0   2     FB2_18        (b)     (b)
+
+Signals Used by Logic in Function Block
+  1: $OpTx$FX_DC$134   13: RAL<0>.PIN        24: abank<2> 
+  2: ALU<6>            14: VADDR<0>          25: abank<3> 
+  3: CLK               15: VADDR<11>         26: nAE 
+  4: CLKx2             16: VADDR<12>         27: nBE 
+  5: GAH<10>           17: VADDR<13>         28: nGOE 
+  6: GAH<11>           18: VADDR<14>         29: nOL 
+  7: GAH<12>           19: VADDR<15>         30: nRWE 
+  8: GAH<13>           20: VADDR<9>          31: outnxt<3> 
+  9: GAH<14>           21: VBANK<2>          32: snoop 
+ 10: GAH<15>           22: VBANK<3>          33: sync<0> 
+ 11: GAH<9>            23: abank<0>          34: sync<1> 
+ 12: RD<3>.PIN        
+
+Signal                        1         2         3         4 FB
+Name                0----+----0----+----0----+----0----+----0 Inputs
+gah15to9             ....XXXXXXX............................. 7
+sync<0>              .X..........................X........... 2
+ra<9>                ..........X........X.....X.............. 3
+ra<18>               .....................X..XX.............. 3
+ra<17>               ....................X..X.X.............. 3
+nROE                 .........................XX..X.......... 3
+ra<15>               ..................X...X..X.............. 3
+nAE                  ..........................X............. 1
+ra<14>               ........X........X.......X.............. 3
+ra<13>               .......X........X........X.............. 3
+ra<12>               ......X........X.........X.............. 3
+OUTD<7>              .........................XX......X...... 3
+ra<11>               .....X........X..........X.............. 3
+nBE                  ..XX.................................... 2
+OUTD<6>              .........................XX.....X....... 3
+VADDR<15>            .........X...............X.XX........... 4
+OUTD<3>              ...........X.............XX...XX........ 5
+VADDR<0>             X...........XX...........X.............. 4
+                    0----+----1----+----2----+----3----+----4
+                              0         0         0         0
+*********************************** FB3  ***********************************
+Number of function block inputs used/remaining:               37/17
+Number of signals used by logic mapping into function block:  37
+Signal              Total   Imp   Exp Unused  Loc     Pin   Pin     Pin
+Name                Pt      Pt    Pt  Pt               #    Type    Use
+VADDR<9>              2       0     0   3     FB3_1         (b)     (b)
+VADDR<11>             2       0     0   3     FB3_2   23    GCK/I/O GCK/I
+PWMD<7>               2       0     0   3     FB3_3         (b)     (b)
+PWMD<6>               2       0     0   3     FB3_4         (b)     (b)
+nSS<0>                4       0     0   1     FB3_5   24    I/O     O
+nSS<1>                4       0     0   1     FB3_6   25    I/O     O
+ra<16>                3       0     0   2     FB3_7         (b)     (b)
+VADDR<7>              4       0     0   1     FB3_8   27    GCK/I/O GCK
+VADDR<6>              4       0     0   1     FB3_9   28    I/O     I
+VADDR<5>              4       0   \/1   0     FB3_10        (b)     (b)
+MOSI                  7       2<-   0   0     FB3_11  29    I/O     O
+SCK                   2       0   /\1   2     FB3_12  30    I/O     O
+VADDR<4>              4       0     0   1     FB3_13        (b)     (b)
+VADDR<3>              4       0     0   1     FB3_14  32    I/O     I
+GBUS<3>               2       0     0   3     FB3_15  33    I/O     I/O
+VADDR<2>              4       0     0   1     FB3_16        (b)     (b)
+GBUS<4>               2       0     0   3     FB3_17  34    I/O     I/O
+VADDR<1>              4       0     0   1     FB3_18        (b)     (b)
+
+Signals Used by Logic in Function Block
+  1: $OpTx$FX_DC$134   14: RAL<0>.PIN                    26: VBANK<0> 
+  2: GAH<11>           15: PWMD<6>                       27: VBANK<1> 
+  3: GAH<14>           16: PWMD<7>                       28: abank<1> 
+  4: GAH<15>           17: PWMD_not0001/PWMD_not0001_D2  29: gbusout<3> 
+  5: GAH<9>            18: VADDR<0>                      30: gbusout<4> 
+  6: MOSI              19: VADDR<1>                      31: nAE 
+  7: RAL<7>.PIN        20: VADDR<2>                      32: nBE 
+  8: RAL<6>.PIN        21: VADDR<3>                      33: nGOE 
+  9: RAL<5>.PIN        22: VADDR<4>                      34: nGWE 
+ 10: RAL<4>.PIN        23: VADDR<5>                      35: nOL 
+ 11: RAL<3>.PIN        24: VADDR<6>                      36: nSS<0> 
+ 12: RAL<2>.PIN        25: VADDR<7>                      37: nSS<1> 
+ 13: RAL<1>.PIN       
+
+Signal                        1         2         3         4 FB
+Name                0----+----0----+----0----+----0----+----0 Inputs
+VADDR<9>             ....X.........................X.X.X..... 4
+VADDR<11>            .X............................X.X.X..... 4
+PWMD<7>              ...X......XXXX.XX....................... 7
+PWMD<6>              ..X.......XXXXX.X....................... 7
+nSS<0>               ..........XXXX................XXXX.X.... 9
+nSS<1>               ..........XXXX................XXXX..X... 9
+ra<16>               .........................XXX..XX........ 5
+VADDR<7>             X.....X..........XXXXXXXX.....X......... 11
+VADDR<6>             X......X.........XXXXXXX......X......... 10
+VADDR<5>             X.......X........XXXXXX.......X......... 9
+MOSI                 ...X.X....XXXX................XXXX...... 10
+SCK                  .............X................XXXX...... 5
+VADDR<4>             X........X.......XXXXX........X......... 8
+VADDR<3>             X.........X......XXXX.........X......... 7
+GBUS<3>              ............................X.X......... 2
+VADDR<2>             X..........X.....XXX..........X......... 6
+GBUS<4>              .............................XX......... 2
+VADDR<1>             X...........X....XX...........X......... 5
+                    0----+----1----+----2----+----3----+----4
+                              0         0         0         0
+*********************************** FB4  ***********************************
+Number of function block inputs used/remaining:               37/17
+Number of signals used by logic mapping into function block:  37
+Signal              Total   Imp   Exp Unused  Loc     Pin   Pin     Pin
+Name                Pt      Pt    Pt  Pt               #    Type    Use
+VBANK<1>              2       0     0   3     FB4_1         (b)     (b)
+RD<0>                 1       0     0   4     FB4_2   87    I/O     I/O
+PWMD_not0001/PWMD_not0001_D2
+                      2       0     0   3     FB4_3         (b)     (b)
+BANK0_not0001/BANK0_not0001_D2
+                      2       0     0   3     FB4_4         (b)     (b)
+RD<1>                 1       0     0   4     FB4_5   89    I/O     I/O
+RD<2>                 1       0     0   4     FB4_6   90    I/O     I/O
+BANK0<3>              2       0     0   3     FB4_7         (b)     (b)
+RD<3>                 1       0     0   4     FB4_8   91    I/O     I/O
+nRWE                  3       0     0   2     FB4_9   92    I/O     O
+BANK0<2>              2       0     0   3     FB4_10        (b)     (b)
+RAL<5>                2       0     0   3     FB4_11  93    I/O     I/O
+RAL<6>                2       0     0   3     FB4_12  94    I/O     I/O
+BANK0<1>              2       0     0   3     FB4_13        (b)     (b)
+RAL<7>                2       0     0   3     FB4_14  95    I/O     I/O
+RAH<8>                2       0     0   3     FB4_15  96    I/O     O
+BANK0<0>              2       0     0   3     FB4_16        (b)     (b)
+RAH<9>                2       0     0   3     FB4_17  97    I/O     O
+$OpTx$FX_DC$135       2       0     0   3     FB4_18        (b)     (b)
+
+Signals Used by Logic in Function Block
+  1: $OpTx$FX_DC$606                 14: RAL<7>.PIN        26: SCK 
+  2: BANK0<0>                        15: RAL<6>.PIN        27: VADDR<5> 
+  3: BANK0<1>                        16: RAL<5>.PIN        28: VADDR<6> 
+  4: BANK0<2>                        17: RAL<4>.PIN        29: VADDR<7> 
+  5: BANK0<3>                        18: RAL<3>.PIN        30: VBANK<1> 
+  6: BANK0_not0001/BANK0_not0001_D2  19: RAL<2>.PIN        31: gah15to9 
+  7: GAH<11>                         20: RAL<1>.PIN        32: nAE 
+  8: GAH<12>                         21: RAL<0>.PIN        33: nBE 
+  9: GAH<13>                         22: GBUS<0>.PIN       34: nGOE 
+ 10: GAH<14>                         23: GBUS<1>.PIN       35: nGWE 
+ 11: GAH<15>                         24: GBUS<2>.PIN       36: ra<8> 
+ 12: GAH<8>                          25: GBUS<3>.PIN       37: ra<9> 
+ 13: GAH<9>                         
+
+Signal                        1         2         3         4 FB
+Name                0----+----0----+----0----+----0----+----0 Inputs
+VBANK<1>             X....X......XXXX.XXXX........X.XXXX..... 15
+RD<0>                .....................X.................. 1
+PWMD_not0001/PWMD_not0001_D2 
+                     .....X.......XX.XXXXX..........XXXX..... 12
+BANK0_not0001/BANK0_not0001_D2 
+                     .............XXXXXXXX..........XXXX..... 12
+RD<1>                ......................X................. 1
+RD<2>                .......................X................ 1
+BANK0<3>             ....XXX...X......XXXX................... 8
+RD<3>                ........................X............... 1
+nRWE                 ...............................XXXX..... 4
+BANK0<2>             ...X.XX..X.......XXXX................... 8
+RAL<5>               ...............X..........X....X........ 3
+RAL<6>               ..............X............X...X........ 3
+BANK0<1>             ..X..XX.X........XXXX................... 8
+RAL<7>               .............X..............X..X........ 3
+RAH<8>               ...........X...................X...X.... 3
+BANK0<0>             .X...XXX.........XXXX................... 8
+RAH<9>               ............X..................X....X... 3
+$OpTx$FX_DC$135      ...........X.XXXXXXXX....X....XX........ 12
+                    0----+----1----+----2----+----3----+----4
+                              0         0         0         0
+*********************************** FB5  ***********************************
+Number of function block inputs used/remaining:               25/29
+Number of signals used by logic mapping into function block:  25
+Signal              Total   Imp   Exp Unused  Loc     Pin   Pin     Pin
+Name                Pt      Pt    Pt  Pt               #    Type    Use
+(unused)              0       0     0   5     FB5_1         (b)     
+GBUS<2>               2       0     0   3     FB5_2   35    I/O     I/O
+pwmcnt<4>             1       0     0   4     FB5_3         (b)     (b)
+pwmcnt<3>             1       0     0   4     FB5_4         (b)     (b)
+GBUS<5>               2       0     0   3     FB5_5   36    I/O     I/O
+GBUS<1>               2       0     0   3     FB5_6   37    I/O     I/O
+pwmcnt<2>             1       0     0   4     FB5_7         (b)     (b)
+GBUS<6>               2       0     0   3     FB5_8   39    I/O     I/O
+GBUS<0>               2       0     0   3     FB5_9   40    I/O     I/O
+pwmcnt<1>             1       0     0   4     FB5_10        (b)     (b)
+GBUS<7>               2       0     0   3     FB5_11  41    I/O     I/O
+pwmcnt<0>             0       0     0   5     FB5_12  42    I/O     I
+gbusout<1>            1       0     0   4     FB5_13        (b)     (b)
+$OpTx$FX_DC$134       1       0     0   4     FB5_14  43    I/O     I
+sync<1>               2       0     0   3     FB5_15  46    I/O     I
+gbusout<7>            2       0     0   3     FB5_16        (b)     (b)
+gbusout<6>            2       0     0   3     FB5_17  49    I/O     I
+misox                 3       0     0   2     FB5_18        (b)     (b)
+
+Signals Used by Logic in Function Block
+  1: $OpTx$FX_DC$135   10: RD<6>.PIN         18: nGOE 
+  2: ALU<7>            11: gbusout<0>        19: nOL 
+  3: BANK<0>           12: gbusout<1>        20: nSS<0> 
+  4: BANK<1>           13: gbusout<2>        21: nSS<1> 
+  5: MISO<0>           14: gbusout<5>        22: pwmcnt<0> 
+  6: MISO<1>           15: gbusout<6>        23: pwmcnt<1> 
+  7: MISO<2>           16: gbusout<7>        24: pwmcnt<2> 
+  8: RD<1>.PIN         17: nAE               25: pwmcnt<3> 
+  9: RD<7>.PIN        
+
+Signal                        1         2         3         4 FB
+Name                0----+----0----+----0----+----0----+----0 Inputs
+GBUS<2>              ............X...X....................... 2
+pwmcnt<4>            .....................XXXX............... 4
+pwmcnt<3>            .....................XXX................ 3
+GBUS<5>              .............X..X....................... 2
+GBUS<1>              ...........X....X....................... 2
+pwmcnt<2>            .....................XX................. 2
+GBUS<6>              ..............X.X....................... 2
+GBUS<0>              ..........X.....X....................... 2
+pwmcnt<1>            .....................X.................. 1
+GBUS<7>              ...............XX....................... 2
+pwmcnt<0>            ........................................ 0
+gbusout<1>           X......X................................ 2
+$OpTx$FX_DC$134      .................XX..................... 2
+sync<1>              .X................X..................... 2
+gbusout<7>           X..X....X............................... 3
+gbusout<6>           X.X......X.............................. 3
+misox                ....XXX............XX................... 5
+                    0----+----1----+----2----+----3----+----4
+                              0         0         0         0
+*********************************** FB6  ***********************************
+Number of function block inputs used/remaining:               38/16
+Number of signals used by logic mapping into function block:  38
+Signal              Total   Imp   Exp Unused  Loc     Pin   Pin     Pin
+Name                Pt      Pt    Pt  Pt               #    Type    Use
+VBANK<3>              2       2<- /\5   0     FB6_1         (b)     (b)
+RAH<14>               2       0   /\2   1     FB6_2   74    I/O     O
+VBANK<2>              2       0     0   3     FB6_3         (b)     (b)
+VBANK<0>              2       0     0   3     FB6_4         (b)     (b)
+RAH<13>               2       0     0   3     FB6_5   76    I/O     O
+RAH<12>               2       0     0   3     FB6_6   77    I/O     O
+$OpTx$FX_DC$606       2       0     0   3     FB6_7         (b)     (b)
+RAH<11>               2       0     0   3     FB6_8   78    I/O     O
+RAH<10>               2       0   \/3   0     FB6_9   79    I/O     O
+BANK<3>              10       5<-   0   0     FB6_10        (b)     (b)
+RAL<0>                2       0   /\2   1     FB6_11  80    I/O     I/O
+RAL<1>                2       0   \/3   0     FB6_12  81    I/O     I/O
+BANK<2>              10       5<-   0   0     FB6_13        (b)     (b)
+RAL<2>                2       0   /\2   1     FB6_14  82    I/O     I/O
+RAL<3>                2       0   \/3   0     FB6_15  85    I/O     I/O
+BANK<1>              10       5<-   0   0     FB6_16        (b)     (b)
+RAL<4>                2       0   /\2   1     FB6_17  86    I/O     I/O
+BANK<0>              10       5<-   0   0     FB6_18        (b)     (b)
+
+Signals Used by Logic in Function Block
+  1: $OpTx$FX_DC$606                 14: RAL<7>.PIN        27: VBANK<0> 
+  2: BANK0_not0001/BANK0_not0001_D2  15: RAL<6>.PIN        28: VBANK<2> 
+  3: BANK<0>                         16: RAL<5>.PIN        29: VBANK<3> 
+  4: BANK<1>                         17: RAL<4>.PIN        30: nAE 
+  5: BANK<2>                         18: RAL<3>.PIN        31: nBE 
+  6: BANK<3>                         19: RAL<2>.PIN        32: nGOE 
+  7: GAH<10>                         20: RAL<1>.PIN        33: nGWE 
+  8: GAH<11>                         21: RAL<0>.PIN        34: ra<10> 
+  9: GAH<12>                         22: VADDR<0>          35: ra<11> 
+ 10: GAH<13>                         23: VADDR<1>          36: ra<12> 
+ 11: GAH<14>                         24: VADDR<2>          37: ra<13> 
+ 12: GAH<15>                         25: VADDR<3>          38: ra<14> 
+ 13: GAH<8>                          26: VADDR<4>         
+
+Signal                        1         2         3         4 FB
+Name                0----+----0----+----0----+----0----+----0 Inputs
+VBANK<3>             XX.....X.....XXX.XXXX.......XXXXX....... 15
+RAH<14>              ..........X..................X.......X.. 3
+VBANK<2>             XX....X......XXX.XXXX......X.XXXX....... 15
+VBANK<0>             XX..........XXXX.XXXX.....X..XXXX....... 15
+RAH<13>              .........X...................X......X... 3
+RAH<12>              ........X....................X.....X.... 3
+$OpTx$FX_DC$606      .X...........XXX.XXXX........XXXX....... 12
+RAH<11>              .......X.....................X....X..... 3
+RAH<10>              ......X......................X...X...... 3
+BANK<3>              .....X.X...X.XXXXXXXX........XXXX....... 15
+RAL<0>               ....................XX.......X.......... 3
+RAL<1>               ...................X..X......X.......... 3
+BANK<2>              ....X..X..X..XXXXXXXX........XXXX....... 15
+RAL<2>               ..................X....X.....X.......... 3
+RAL<3>               .................X......X....X.......... 3
+BANK<1>              ...X...X.X...XXXXXXXX........XXXX....... 15
+RAL<4>               ................X........X...X.......... 3
+BANK<0>              ..X....XX....XXXXXXXX........XXXX....... 15
+                    0----+----1----+----2----+----3----+----4
+                              0         0         0         0
+*********************************** FB7  ***********************************
+Number of function block inputs used/remaining:               35/19
+Number of signals used by logic mapping into function block:  35
+Signal              Total   Imp   Exp Unused  Loc     Pin   Pin     Pin
+Name                Pt      Pt    Pt  Pt               #    Type    Use
+(unused)              0       0   \/5   0     FB7_1         (b)     (b)
+Mcompar_PWM_cmp_lt0000_ALB34/Mcompar_PWM_cmp_lt0000_ALB34_D2
+                     34      29<-   0   0     FB7_2   50    I/O     I
+(unused)              0       0   /\5   0     FB7_3         (b)     (b)
+(unused)              0       0   /\5   0     FB7_4         (b)     (b)
+pwmcnt<7>             1       0   /\4   0     FB7_5   52    I/O     I
+pwmcnt<6>             1       0     0   4     FB7_6   53    I/O     I
+pwmcnt<5>             1       0     0   4     FB7_7         (b)     (b)
+PWMD<5>               2       0     0   3     FB7_8   54    I/O     I
+PWMD<4>               2       0     0   3     FB7_9   55    I/O     I
+PWMD<3>               2       0   \/2   1     FB7_10        (b)     (b)
+PWM                   8       3<-   0   0     FB7_11  56    I/O     O
+PWMD<2>               2       0   /\1   2     FB7_12  58    I/O     I
+PWMD<1>               2       0     0   3     FB7_13        (b)     (b)
+nADEV<1>              2       0     0   3     FB7_14  59    I/O     O
+nADEV<0>              2       0     0   3     FB7_15  60    I/O     O
+PWMD<0>               2       0   \/1   2     FB7_16        (b)     (b)
+nACTRL                1       1<- \/5   0     FB7_17  61    I/O     O
+(unused)              0       0   \/5   0     FB7_18        (b)     (b)
+
+Signals Used by Logic in Function Block
+  1: GAH<10>                                                       13: RAL<2>.PIN                    25: nAE 
+  2: GAH<11>                                                       14: RAL<1>.PIN                    26: nGOE 
+  3: GAH<12>                                                       15: RAL<0>.PIN                    27: nGWE 
+  4: GAH<13>                                                       16: PWMD<0>                       28: pwmcnt<0> 
+  5: GAH<8>                                                        17: PWMD<1>                       29: pwmcnt<1> 
+  6: GAH<9>                                                        18: PWMD<2>                       30: pwmcnt<2> 
+  7: Mcompar_PWM_cmp_lt0000_ALB34/Mcompar_PWM_cmp_lt0000_ALB34_D2  19: PWMD<3>                       31: pwmcnt<3> 
+  8: RAL<7>.PIN                                                    20: PWMD<4>                       32: pwmcnt<4> 
+  9: RAL<6>.PIN                                                    21: PWMD<5>                       33: pwmcnt<5> 
+ 10: RAL<5>.PIN                                                    22: PWMD<6>                       34: pwmcnt<6> 
+ 11: RAL<4>.PIN                                                    23: PWMD<7>                       35: pwmcnt<7> 
+ 12: RAL<3>.PIN                                                    24: PWMD_not0001/PWMD_not0001_D2 
+
+Signal                        1         2         3         4 FB
+Name                0----+----0----+----0----+----0----+----0 Inputs
+Mcompar_PWM_cmp_lt0000_ALB34/Mcompar_PWM_cmp_lt0000_ALB34_D2 
+                     ...............XXXXXXXX....XXXXXXXX..... 16
+pwmcnt<7>            ...........................XXXXXXX...... 7
+pwmcnt<6>            ...........................XXXXXX....... 6
+pwmcnt<5>            ...........................XXXXX........ 5
+PWMD<5>              ...X.......XXXX.....X..X................ 7
+PWMD<4>              ..X........XXXX....X...X................ 7
+PWMD<3>              .X.........XXXX...X....X................ 7
+PWM                  ......X.............XXX....XXX.......... 7
+PWMD<2>              X..........XXXX..X.....X................ 7
+PWMD<1>              .....X.....XXXX.X......X................ 7
+nADEV<1>             .......XXXX.............X............... 5
+nADEV<0>             .......XXXX.............X............... 5
+PWMD<0>              ....X......XXXXX.......X................ 7
+nACTRL               ...........XXXX.........XXX............. 7
+                    0----+----1----+----2----+----3----+----4
+                              0         0         0         0
+*********************************** FB8  ***********************************
+Number of function block inputs used/remaining:               35/19
+Number of signals used by logic mapping into function block:  35
+Signal              Total   Imp   Exp Unused  Loc     Pin   Pin     Pin
+Name                Pt      Pt    Pt  Pt               #    Type    Use
+ra<8>                 2       0     0   3     FB8_1         (b)     (b)
+gbusout<3>            2       0     0   3     FB8_2   63    I/O     I
+gbusout<2>            2       0     0   3     FB8_3         (b)     (b)
+gbusout<0>            2       0     0   3     FB8_4         (b)     (b)
+abank<3>              2       0     0   3     FB8_5   64    I/O     I
+RAH<18>               2       0     0   3     FB8_6   65    I/O     O
+abank<2>              2       0     0   3     FB8_7         (b)     (b)
+RAH<17>               2       0     0   3     FB8_8   66    I/O     O
+RAH<16>               2       0     0   3     FB8_9   67    I/O     O
+abank<1>              2       0     0   3     FB8_10        (b)     (b)
+RAH<15>               2       0     0   3     FB8_11  68    I/O     O
+RD<7>                 1       0     0   4     FB8_12  70    I/O     I/O
+abank<0>              2       0     0   3     FB8_13        (b)     (b)
+RD<6>                 1       0     0   4     FB8_14  71    I/O     I/O
+RD<5>                 1       0     0   4     FB8_15  72    I/O     I/O
+gbusout<5>            3       0     0   2     FB8_16        (b)     (b)
+RD<4>                 1       0     0   4     FB8_17  73    I/O     I/O
+gbusout<4>            3       0     0   2     FB8_18        (b)     (b)
+
+Signals Used by Logic in Function Block
+  1: $OpTx$FX_DC$135   13: RD<4>.PIN         25: abank<1> 
+  2: BANK0<0>          14: RD<3>.PIN         26: abank<2> 
+  3: BANK0<1>          15: RD<2>.PIN         27: abank<3> 
+  4: BANK0<2>          16: RD<0>.PIN         28: misox 
+  5: BANK0<3>          17: GBUS<4>.PIN       29: nAE 
+  6: BANK<0>           18: GBUS<5>.PIN       30: nSS<0> 
+  7: BANK<1>           19: GBUS<6>.PIN       31: nSS<1> 
+  8: BANK<2>           20: GBUS<7>.PIN       32: ra<15> 
+  9: BANK<3>           21: VADDR<8>          33: ra<16> 
+ 10: GAH<15>           22: XIN<3>            34: ra<17> 
+ 11: GAH<8>            23: XIN<4>            35: ra<18> 
+ 12: RD<5>.PIN         24: abank<0>         
+
+Signal                        1         2         3         4 FB
+Name                0----+----0----+----0----+----0----+----0 Inputs
+ra<8>                ..........X.........X.......X........... 3
+gbusout<3>           X.........X..X................X......... 4
+gbusout<2>           X.........X...X..............X.......... 4
+gbusout<0>           X.........X....X...........X............ 4
+abank<3>             ....XXXXXX.............................. 6
+RAH<18>              ..........................X.X.....X..... 3
+abank<2>             ...X.XXXXX.............................. 6
+RAH<17>              .........................X..X....X...... 3
+RAH<16>              ........................X...X...X....... 3
+abank<1>             ..X..XXXXX.............................. 6
+RAH<15>              .......................X....X..X........ 3
+RD<7>                ...................X.................... 1
+abank<0>             .X...XXXXX.............................. 6
+RD<6>                ..................X..................... 1
+RD<5>                .................X...................... 1
+gbusout<5>           X.......X.XX..........X................. 5
+RD<4>                ................X....................... 1
+gbusout<4>           X......X..X.X........X.................. 5
+                    0----+----1----+----2----+----3----+----4
+                              0         0         0         0
+*******************************  Equations  ********************************
+
+********** Mapped Logic **********
+
+$OpTx$FX_DC$134 = !nGOE & !nOL;    
+
+$OpTx$FX_DC$135 = !gah15to9 & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & RAL<4>.PIN & 
+	RAL<3>.PIN & GAH<8> & SCK & !nAE
+	# !gah15to9 & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<7>.PIN & !RAL<6>.PIN & !RAL<5>.PIN & !RAL<4>.PIN & 
+	!RAL<3>.PIN & !GAH<8> & SCK & !nAE;    
+
+$OpTx$FX_DC$606 = RAL<1>.PIN & BANK0_not0001/BANK0_not0001_D2
+	# !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & !RAL<3>.PIN & !nGWE & 
+	!nGOE & nBE & !nAE & !BANK0_not0001/BANK0_not0001_D2;    
+
+BANK0<0>.D = BANK0<0> & !BANK0_not0001/BANK0_not0001_D2
+	# GAH<12> & !GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & 
+	!RAL<0>.PIN & !RAL<3>.PIN & BANK0_not0001/BANK0_not0001_D2;
+   BANK0<0>.CLK = CLKx4;	// GCK    
+
+BANK0<1>.D = BANK0<1> & !BANK0_not0001/BANK0_not0001_D2
+	# GAH<13> & !GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & 
+	!RAL<0>.PIN & !RAL<3>.PIN & BANK0_not0001/BANK0_not0001_D2;
+   BANK0<1>.CLK = CLKx4;	// GCK    
+
+BANK0<2>.D = BANK0<2> & !BANK0_not0001/BANK0_not0001_D2
+	# GAH<14> & !GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & 
+	!RAL<0>.PIN & !RAL<3>.PIN & BANK0_not0001/BANK0_not0001_D2;
+   BANK0<2>.CLK = CLKx4;	// GCK    
+
+BANK0<3>.D = BANK0<3> & !BANK0_not0001/BANK0_not0001_D2
+	# GAH<15> & !GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & 
+	!RAL<0>.PIN & !RAL<3>.PIN & BANK0_not0001/BANK0_not0001_D2;
+   BANK0<3>.CLK = CLKx4;	// GCK    
+
+BANK0_not0001/BANK0_not0001_D2 = RAL<1>.PIN & RAL<0>.PIN & !nGWE & !nGOE & nBE & 
+	!nAE
+	# !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & RAL<4>.PIN & 
+	!RAL<3>.PIN & !nGWE & !nGOE & nBE & !nAE;    
+
+BANK<0>.T = RAL<2>.PIN & !RAL<6>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<0> & !nAE
+	# RAL<1>.PIN & !RAL<6>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<0> & !nAE
+	# RAL<0>.PIN & !RAL<6>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<0> & !nAE
+	# RAL<6>.PIN & RAL<3>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<0> & !nAE
+	# !RAL<6>.PIN & RAL<3>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<0> & !nAE
+;Imported pterms FB6_1
+	# RAL<2>.PIN & RAL<6>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<0> & !nAE
+	# RAL<1>.PIN & RAL<6>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<0> & !nAE
+	# RAL<0>.PIN & RAL<6>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<0> & !nAE
+	# GAH<12> & GAH<11> & RAL<7>.PIN & RAL<6>.PIN & 
+	RAL<5>.PIN & RAL<4>.PIN & !nGWE & !nGOE & nBE & !BANK<0> & 
+	!nAE
+	# !GAH<12> & GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & 
+	!RAL<0>.PIN & RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & 
+	RAL<4>.PIN & !RAL<3>.PIN & !nGWE & !nGOE & nBE & BANK<0> & 
+	!nAE;
+   BANK<0>.CLK = CLKx4;	// GCK    
+
+BANK<1>.T = RAL<2>.PIN & !RAL<7>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<1> & !nAE
+	# RAL<1>.PIN & !RAL<7>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<1> & !nAE
+	# RAL<0>.PIN & !RAL<7>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<1> & !nAE
+	# RAL<7>.PIN & RAL<3>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<1> & !nAE
+	# !RAL<7>.PIN & RAL<3>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<1> & !nAE
+;Imported pterms FB6_15
+	# RAL<2>.PIN & RAL<7>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<1> & !nAE
+	# RAL<1>.PIN & RAL<7>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<1> & !nAE
+	# RAL<0>.PIN & RAL<7>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<1> & !nAE
+;Imported pterms FB6_17
+	# GAH<13> & GAH<11> & RAL<7>.PIN & RAL<6>.PIN & 
+	RAL<5>.PIN & RAL<4>.PIN & !nGWE & !nGOE & nBE & !BANK<1> & 
+	!nAE
+	# !GAH<13> & GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & 
+	!RAL<0>.PIN & RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & 
+	RAL<4>.PIN & !RAL<3>.PIN & !nGWE & !nGOE & nBE & BANK<1> & 
+	!nAE;
+   BANK<1>.CLK = CLKx4;	// GCK    
+
+BANK<2>.T = RAL<2>.PIN & RAL<4>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<2> & !nAE
+	# RAL<1>.PIN & RAL<4>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<2> & !nAE
+	# RAL<0>.PIN & RAL<4>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<2> & !nAE
+	# RAL<4>.PIN & RAL<3>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<2> & !nAE
+	# !RAL<4>.PIN & RAL<3>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<2> & !nAE
+;Imported pterms FB6_12
+	# RAL<2>.PIN & !RAL<4>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<2> & !nAE
+	# RAL<1>.PIN & !RAL<4>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<2> & !nAE
+	# RAL<0>.PIN & !RAL<4>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<2> & !nAE
+;Imported pterms FB6_14
+	# !GAH<14> & GAH<11> & RAL<7>.PIN & RAL<6>.PIN & 
+	RAL<5>.PIN & RAL<4>.PIN & !nGWE & !nGOE & nBE & BANK<2> & 
+	!nAE
+	# GAH<14> & GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & 
+	!RAL<0>.PIN & RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & 
+	RAL<4>.PIN & !RAL<3>.PIN & !nGWE & !nGOE & nBE & !BANK<2> & 
+	!nAE;
+   BANK<2>.CLK = CLKx4;	// GCK    
+
+BANK<3>.T = RAL<2>.PIN & RAL<5>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<3> & !nAE
+	# RAL<1>.PIN & RAL<5>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<3> & !nAE
+	# RAL<0>.PIN & RAL<5>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<3> & !nAE
+	# RAL<5>.PIN & RAL<3>.PIN & !nGWE & !nGOE & nBE & 
+	BANK<3> & !nAE
+	# !RAL<5>.PIN & RAL<3>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<3> & !nAE
+;Imported pterms FB6_9
+	# RAL<2>.PIN & !RAL<5>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<3> & !nAE
+	# RAL<1>.PIN & !RAL<5>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<3> & !nAE
+	# RAL<0>.PIN & !RAL<5>.PIN & !nGWE & !nGOE & nBE & 
+	!BANK<3> & !nAE
+;Imported pterms FB6_11
+	# !GAH<15> & GAH<11> & RAL<7>.PIN & RAL<6>.PIN & 
+	RAL<5>.PIN & RAL<4>.PIN & !nGWE & !nGOE & nBE & BANK<3> & 
+	!nAE
+	# GAH<15> & GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & 
+	!RAL<0>.PIN & RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & 
+	RAL<4>.PIN & !RAL<3>.PIN & !nGWE & !nGOE & nBE & !BANK<3> & 
+	!nAE;
+   BANK<3>.CLK = CLKx4;	// GCK    
+
+GBUS<0>.D = Gnd;
+   GBUS<0>.CLK = Gnd;
+   GBUS<0>.AP = !nAE & gbusout<0>;
+   GBUS<0>.AR = !nAE & !gbusout<0>;
+   !GBUS<0>.OE = nGOE;	// GTS    
+
+GBUS<1>.D = Gnd;
+   GBUS<1>.CLK = Gnd;
+   GBUS<1>.AP = !nAE & gbusout<1>;
+   GBUS<1>.AR = !nAE & !gbusout<1>;
+   !GBUS<1>.OE = nGOE;	// GTS    
+
+GBUS<2>.D = Gnd;
+   GBUS<2>.CLK = Gnd;
+   GBUS<2>.AP = !nAE & gbusout<2>;
+   GBUS<2>.AR = !nAE & !gbusout<2>;
+   !GBUS<2>.OE = nGOE;	// GTS    
+
+GBUS<3>.D = Gnd;
+   GBUS<3>.CLK = Gnd;
+   GBUS<3>.AP = !nAE & gbusout<3>;
+   GBUS<3>.AR = !nAE & !gbusout<3>;
+   !GBUS<3>.OE = nGOE;	// GTS    
+
+GBUS<4>.D = Gnd;
+   GBUS<4>.CLK = Gnd;
+   GBUS<4>.AP = !nAE & gbusout<4>;
+   GBUS<4>.AR = !nAE & !gbusout<4>;
+   !GBUS<4>.OE = nGOE;	// GTS    
+
+GBUS<5>.D = Gnd;
+   GBUS<5>.CLK = Gnd;
+   GBUS<5>.AP = !nAE & gbusout<5>;
+   GBUS<5>.AR = !nAE & !gbusout<5>;
+   !GBUS<5>.OE = nGOE;	// GTS    
+
+GBUS<6>.D = Gnd;
+   GBUS<6>.CLK = Gnd;
+   GBUS<6>.AP = !nAE & gbusout<6>;
+   GBUS<6>.AR = !nAE & !gbusout<6>;
+   !GBUS<6>.OE = nGOE;	// GTS    
+
+GBUS<7>.D = Gnd;
+   GBUS<7>.CLK = Gnd;
+   GBUS<7>.AP = !nAE & gbusout<7>;
+   GBUS<7>.AR = !nAE & !gbusout<7>;
+   !GBUS<7>.OE = nGOE;	// GTS    
+
+!MOSI.T = nGWE
+	# nGOE
+	# !nBE
+	# nAE
+	# GAH<15> & MOSI
+;Imported pterms FB3_10
+	# !GAH<15> & !MOSI
+;Imported pterms FB3_12
+	# !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN;
+   MOSI.CLK = CLKx4;	// GCK    
+
+Mcompar_PWM_cmp_lt0000_ALB34/Mcompar_PWM_cmp_lt0000_ALB34_D2 = PWMD<4> & !pwmcnt<3>
+	# PWMD<6> & !pwmcnt<1>
+	# PWMD<7> & !pwmcnt<0>
+	# PWMD<5> & !pwmcnt<2>
+	# PWMD<4> & PWMD<3> & !pwmcnt<4>
+;Imported pterms FB7_1
+	# PWMD<3> & !pwmcnt<3> & !pwmcnt<4>
+	# PWMD<4> & PWMD<2> & PWMD<3> & !pwmcnt<5>
+	# PWMD<4> & PWMD<2> & !pwmcnt<4> & !pwmcnt<5>
+	# PWMD<2> & PWMD<3> & !pwmcnt<3> & !pwmcnt<5>
+	# PWMD<2> & !pwmcnt<3> & !pwmcnt<4> & !pwmcnt<5>
+;Imported pterms FB7_18
+	# PWMD<1> & PWMD<2> & !pwmcnt<3> & !pwmcnt<4> & 
+	!pwmcnt<6>
+	# PWMD<1> & PWMD<3> & !pwmcnt<3> & !pwmcnt<5> & 
+	!pwmcnt<6>
+	# PWMD<1> & !pwmcnt<3> & !pwmcnt<4> & !pwmcnt<5> & 
+	!pwmcnt<6>
+	# PWMD<4> & PWMD<1> & PWMD<2> & PWMD<3> & 
+	PWMD<0> & !pwmcnt<7>
+	# PWMD<4> & PWMD<1> & PWMD<2> & PWMD<0> & 
+	!pwmcnt<4> & !pwmcnt<7>
+;Imported pterms FB7_17
+	# PWMD<4> & PWMD<0> & !pwmcnt<4> & !pwmcnt<5> & 
+	!pwmcnt<6> & !pwmcnt<7>
+	# PWMD<1> & PWMD<2> & PWMD<3> & PWMD<0> & 
+	!pwmcnt<3> & !pwmcnt<7>
+	# PWMD<1> & PWMD<2> & PWMD<0> & !pwmcnt<3> & 
+	!pwmcnt<4> & !pwmcnt<7>
+	# PWMD<1> & PWMD<3> & PWMD<0> & !pwmcnt<3> & 
+	!pwmcnt<5> & !pwmcnt<7>
+	# PWMD<1> & PWMD<0> & !pwmcnt<3> & !pwmcnt<4> & 
+	!pwmcnt<5> & !pwmcnt<7>
+;Imported pterms FB7_3
+	# PWMD<4> & PWMD<1> & PWMD<2> & PWMD<3> & 
+	!pwmcnt<6>
+	# PWMD<4> & PWMD<1> & PWMD<2> & !pwmcnt<4> & 
+	!pwmcnt<6>
+	# PWMD<4> & PWMD<1> & PWMD<3> & !pwmcnt<5> & 
+	!pwmcnt<6>
+	# PWMD<4> & PWMD<1> & !pwmcnt<4> & !pwmcnt<5> & 
+	!pwmcnt<6>
+	# PWMD<1> & PWMD<2> & PWMD<3> & !pwmcnt<3> & 
+	!pwmcnt<6>
+;Imported pterms FB7_4
+	# PWMD<4> & PWMD<1> & PWMD<3> & PWMD<0> & 
+	!pwmcnt<5> & !pwmcnt<7>
+	# PWMD<4> & PWMD<1> & PWMD<0> & !pwmcnt<4> & 
+	!pwmcnt<5> & !pwmcnt<7>
+	# PWMD<4> & PWMD<2> & PWMD<3> & PWMD<0> & 
+	!pwmcnt<6> & !pwmcnt<7>
+	# PWMD<4> & PWMD<2> & PWMD<0> & !pwmcnt<4> & 
+	!pwmcnt<6> & !pwmcnt<7>
+	# PWMD<4> & PWMD<3> & PWMD<0> & !pwmcnt<5> & 
+	!pwmcnt<6> & !pwmcnt<7>
+;Imported pterms FB7_5
+	# PWMD<2> & PWMD<3> & PWMD<0> & !pwmcnt<3> & 
+	!pwmcnt<6> & !pwmcnt<7>
+	# PWMD<2> & PWMD<0> & !pwmcnt<3> & !pwmcnt<4> & 
+	!pwmcnt<6> & !pwmcnt<7>
+	# PWMD<3> & PWMD<0> & !pwmcnt<3> & !pwmcnt<5> & 
+	!pwmcnt<6> & !pwmcnt<7>
+	# PWMD<0> & !pwmcnt<3> & !pwmcnt<4> & !pwmcnt<5> & 
+	!pwmcnt<6> & !pwmcnt<7>;    
+
+OUTD<0>.D = !nBE & outnxt<0>
+	# outnxt<0> & !nAE
+	# nBE & snoop & RD<0>.PIN & nAE;
+   !OUTD<0>.CLK = CLKx4;	// GCK
+   OUTD<0>.CE = nBE;    
+
+OUTD<1>.D = !nBE & outnxt<1>
+	# outnxt<1> & !nAE
+	# nBE & snoop & RD<1>.PIN & nAE;
+   !OUTD<1>.CLK = CLKx4;	// GCK
+   OUTD<1>.CE = nBE;    
+
+OUTD<2>.D = !nBE & outnxt<2>
+	# outnxt<2> & !nAE
+	# nBE & snoop & RD<2>.PIN & nAE;
+   !OUTD<2>.CLK = CLKx4;	// GCK
+   OUTD<2>.CE = nBE;    
+
+OUTD<3>.D = !nBE & outnxt<3>
+	# outnxt<3> & !nAE
+	# nBE & snoop & RD<3>.PIN & nAE;
+   !OUTD<3>.CLK = CLKx4;	// GCK
+   OUTD<3>.CE = nBE;    
+
+OUTD<4>.D = !nBE & outnxt<4>
+	# outnxt<4> & !nAE
+	# nBE & snoop & RD<4>.PIN & nAE;
+   !OUTD<4>.CLK = CLKx4;	// GCK
+   OUTD<4>.CE = nBE;    
+
+OUTD<5>.D = !nBE & outnxt<5>
+	# outnxt<5> & !nAE
+	# nBE & snoop & RD<5>.PIN & nAE;
+   !OUTD<5>.CLK = CLKx4;	// GCK
+   OUTD<5>.CE = nBE;    
+
+OUTD<6>.D = sync<0>;
+   !OUTD<6>.CLK = CLKx4;	// GCK
+   OUTD<6>.CE = nBE & nAE;    
+
+OUTD<7>.D = sync<1>;
+   !OUTD<7>.CLK = CLKx4;	// GCK
+   OUTD<7>.CE = nBE & nAE;    
+
+!PWM.D = 
+	!Mcompar_PWM_cmp_lt0000_ALB34/Mcompar_PWM_cmp_lt0000_ALB34_D2
+	# !PWMD<7> & pwmcnt<0>
+	# !PWMD<6> & !PWMD<7> & pwmcnt<1>
+	# !PWMD<6> & pwmcnt<0> & pwmcnt<1>
+	# !PWMD<6> & !PWMD<7> & !PWMD<5> & pwmcnt<2>
+;Imported pterms FB7_10
+	# !PWMD<6> & !PWMD<5> & pwmcnt<0> & pwmcnt<2>
+	# !PWMD<7> & !PWMD<5> & pwmcnt<1> & pwmcnt<2>
+;Imported pterms FB7_12
+	# !PWMD<5> & pwmcnt<0> & pwmcnt<1> & pwmcnt<2>;
+   PWM.CLK = CLK;	// GCK    
+
+PWMD<0>.D = PWMD<0> & !PWMD_not0001/PWMD_not0001_D2
+	# !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN & GAH<8> & PWMD_not0001/PWMD_not0001_D2;
+   PWMD<0>.CLK = CLKx4;	// GCK    
+
+PWMD<1>.D = PWMD<1> & !PWMD_not0001/PWMD_not0001_D2
+	# GAH<9> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN & PWMD_not0001/PWMD_not0001_D2;
+   PWMD<1>.CLK = CLKx4;	// GCK    
+
+PWMD<2>.D = PWMD<2> & !PWMD_not0001/PWMD_not0001_D2
+	# GAH<10> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN & PWMD_not0001/PWMD_not0001_D2;
+   PWMD<2>.CLK = CLKx4;	// GCK    
+
+PWMD<3>.D = PWMD<3> & !PWMD_not0001/PWMD_not0001_D2
+	# GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN & PWMD_not0001/PWMD_not0001_D2;
+   PWMD<3>.CLK = CLKx4;	// GCK    
+
+PWMD<4>.D = PWMD<4> & !PWMD_not0001/PWMD_not0001_D2
+	# GAH<12> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN & PWMD_not0001/PWMD_not0001_D2;
+   PWMD<4>.CLK = CLKx4;	// GCK    
+
+PWMD<5>.D = PWMD<5> & !PWMD_not0001/PWMD_not0001_D2
+	# GAH<13> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN & PWMD_not0001/PWMD_not0001_D2;
+   PWMD<5>.CLK = CLKx4;	// GCK    
+
+PWMD<6>.D = PWMD<6> & !PWMD_not0001/PWMD_not0001_D2
+	# GAH<14> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN & PWMD_not0001/PWMD_not0001_D2;
+   PWMD<6>.CLK = CLKx4;	// GCK    
+
+PWMD<7>.D = PWMD<7> & !PWMD_not0001/PWMD_not0001_D2
+	# GAH<15> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN & PWMD_not0001/PWMD_not0001_D2;
+   PWMD<7>.CLK = CLKx4;	// GCK    
+
+PWMD_not0001/PWMD_not0001_D2 = RAL<1>.PIN & BANK0_not0001/BANK0_not0001_D2
+	# !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	RAL<7>.PIN & RAL<6>.PIN & RAL<4>.PIN & !RAL<3>.PIN & !nGWE & 
+	!nGOE & nBE & !nAE & !BANK0_not0001/BANK0_not0001_D2;    
+
+RAH<8> = GAH<8> & !nAE
+	# nAE & ra<8>;    
+
+RAH<9> = GAH<9> & !nAE
+	# nAE & ra<9>;    
+
+RAH<10> = GAH<10> & !nAE
+	# nAE & ra<10>;    
+
+RAH<11> = GAH<11> & !nAE
+	# nAE & ra<11>;    
+
+RAH<12> = GAH<12> & !nAE
+	# nAE & ra<12>;    
+
+RAH<13> = GAH<13> & !nAE
+	# nAE & ra<13>;    
+
+RAH<14> = GAH<14> & !nAE
+	# nAE & ra<14>;    
+
+RAH<15> = nAE & ra<15>
+	# !nAE & abank<0>;    
+
+RAH<16> = nAE & ra<16>
+	# !nAE & abank<1>;    
+
+RAH<17> = nAE & ra<17>
+	# !nAE & abank<2>;    
+
+RAH<18> = nAE & ra<18>
+	# !nAE & abank<3>;    
+
+RAL<0>.D = RAL<0>.PIN & !nAE
+	# VADDR<0> & nAE;
+   RAL<0>.CLK = CLKx4;	// GCK
+   RAL<0>.OE = nAE;	// GTS    
+
+RAL<1>.D = RAL<1>.PIN & !nAE
+	# VADDR<1> & nAE;
+   RAL<1>.CLK = CLKx4;	// GCK
+   RAL<1>.OE = nAE;	// GTS    
+
+RAL<2>.D = RAL<2>.PIN & !nAE
+	# VADDR<2> & nAE;
+   RAL<2>.CLK = CLKx4;	// GCK
+   RAL<2>.OE = nAE;	// GTS    
+
+RAL<3>.D = RAL<3>.PIN & !nAE
+	# VADDR<3> & nAE;
+   RAL<3>.CLK = CLKx4;	// GCK
+   RAL<3>.OE = nAE;	// GTS    
+
+RAL<4>.D = RAL<4>.PIN & !nAE
+	# VADDR<4> & nAE;
+   RAL<4>.CLK = CLKx4;	// GCK
+   RAL<4>.OE = nAE;	// GTS    
+
+RAL<5>.D = RAL<5>.PIN & !nAE
+	# VADDR<5> & nAE;
+   RAL<5>.CLK = CLKx4;	// GCK
+   RAL<5>.OE = nAE;	// GTS    
+
+RAL<6>.D = RAL<6>.PIN & !nAE
+	# VADDR<6> & nAE;
+   RAL<6>.CLK = CLKx4;	// GCK
+   RAL<6>.OE = nAE;	// GTS    
+
+RAL<7>.D = RAL<7>.PIN & !nAE
+	# VADDR<7> & nAE;
+   RAL<7>.CLK = CLKx4;	// GCK
+   RAL<7>.OE = nAE;	// GTS    
+
+RD<0> = GBUS<0>.PIN;
+   RD<0>.OE = nROE;	// GTS    
+
+RD<1> = GBUS<1>.PIN;
+   RD<1>.OE = nROE;	// GTS    
+
+RD<2> = GBUS<2>.PIN;
+   RD<2>.OE = nROE;	// GTS    
+
+RD<3> = GBUS<3>.PIN;
+   RD<3>.OE = nROE;	// GTS    
+
+RD<4> = GBUS<4>.PIN;
+   RD<4>.OE = nROE;	// GTS    
+
+RD<5> = GBUS<5>.PIN;
+   RD<5>.OE = nROE;	// GTS    
+
+RD<6> = GBUS<6>.PIN;
+   RD<6>.OE = nROE;	// GTS    
+
+RD<7> = GBUS<7>.PIN;
+   RD<7>.OE = nROE;	// GTS    
+
+SCK.D = RAL<0>.PIN;
+   SCK.CLK = CLKx4;	// GCK
+   SCK.CE = !nGWE & !nGOE & nBE & !nAE;    
+
+VADDR<0>.D = RAL<0>.PIN & $OpTx$FX_DC$134
+	# !VADDR<0> & !$OpTx$FX_DC$134;
+   !VADDR<0>.CLK = CLKx2;	// GCK
+   VADDR<0>.CE = !nAE;    
+
+VADDR<1>.D = RAL<1>.PIN & $OpTx$FX_DC$134
+	# VADDR<0> & !VADDR<1> & !$OpTx$FX_DC$134
+	# !VADDR<0> & VADDR<1> & !$OpTx$FX_DC$134;
+   !VADDR<1>.CLK = CLKx2;	// GCK
+   VADDR<1>.CE = !nAE;    
+
+VADDR<2>.T = RAL<2>.PIN & !VADDR<2> & $OpTx$FX_DC$134
+	# !RAL<2>.PIN & VADDR<2> & $OpTx$FX_DC$134
+	# VADDR<0> & VADDR<1> & !$OpTx$FX_DC$134;
+   !VADDR<2>.CLK = CLKx2;	// GCK
+   VADDR<2>.CE = !nAE;    
+
+VADDR<3>.T = RAL<3>.PIN & !VADDR<3> & $OpTx$FX_DC$134
+	# !RAL<3>.PIN & VADDR<3> & $OpTx$FX_DC$134
+	# VADDR<0> & VADDR<1> & VADDR<2> & 
+	!$OpTx$FX_DC$134;
+   !VADDR<3>.CLK = CLKx2;	// GCK
+   VADDR<3>.CE = !nAE;    
+
+VADDR<4>.T = RAL<4>.PIN & !VADDR<4> & $OpTx$FX_DC$134
+	# !RAL<4>.PIN & VADDR<4> & $OpTx$FX_DC$134
+	# VADDR<0> & VADDR<1> & VADDR<2> & VADDR<3> & 
+	!$OpTx$FX_DC$134;
+   !VADDR<4>.CLK = CLKx2;	// GCK
+   VADDR<4>.CE = !nAE;    
+
+VADDR<5>.T = RAL<5>.PIN & !VADDR<5> & $OpTx$FX_DC$134
+	# !RAL<5>.PIN & VADDR<5> & $OpTx$FX_DC$134
+	# VADDR<0> & VADDR<1> & VADDR<2> & VADDR<3> & 
+	VADDR<4> & !$OpTx$FX_DC$134;
+   !VADDR<5>.CLK = CLKx2;	// GCK
+   VADDR<5>.CE = !nAE;    
+
+VADDR<6>.T = RAL<6>.PIN & !VADDR<6> & $OpTx$FX_DC$134
+	# !RAL<6>.PIN & VADDR<6> & $OpTx$FX_DC$134
+	# VADDR<0> & VADDR<1> & VADDR<2> & VADDR<3> & 
+	VADDR<4> & VADDR<5> & !$OpTx$FX_DC$134;
+   !VADDR<6>.CLK = CLKx2;	// GCK
+   VADDR<6>.CE = !nAE;    
+
+VADDR<7>.T = RAL<7>.PIN & !VADDR<7> & $OpTx$FX_DC$134
+	# !RAL<7>.PIN & VADDR<7> & $OpTx$FX_DC$134
+	# VADDR<0> & VADDR<1> & VADDR<2> & VADDR<3> & 
+	VADDR<4> & VADDR<5> & VADDR<6> & !$OpTx$FX_DC$134;
+   !VADDR<7>.CLK = CLKx2;	// GCK
+   VADDR<7>.CE = !nAE;    
+
+VADDR<8>.D = GAH<8>;
+   !VADDR<8>.CLK = CLKx2;	// GCK
+   VADDR<8>.CE = !nGOE & !nOL & !nAE;    
+
+VADDR<9>.D = GAH<9>;
+   !VADDR<9>.CLK = CLKx2;	// GCK
+   VADDR<9>.CE = !nGOE & !nOL & !nAE;    
+
+VADDR<10>.D = GAH<10>;
+   !VADDR<10>.CLK = CLKx2;	// GCK
+   VADDR<10>.CE = !nGOE & !nOL & !nAE;    
+
+VADDR<11>.D = GAH<11>;
+   !VADDR<11>.CLK = CLKx2;	// GCK
+   VADDR<11>.CE = !nGOE & !nOL & !nAE;    
+
+VADDR<12>.D = GAH<12>;
+   !VADDR<12>.CLK = CLKx2;	// GCK
+   VADDR<12>.CE = !nGOE & !nOL & !nAE;    
+
+VADDR<13>.D = GAH<13>;
+   !VADDR<13>.CLK = CLKx2;	// GCK
+   VADDR<13>.CE = !nGOE & !nOL & !nAE;    
+
+VADDR<14>.D = GAH<14>;
+   !VADDR<14>.CLK = CLKx2;	// GCK
+   VADDR<14>.CE = !nGOE & !nOL & !nAE;    
+
+VADDR<15>.D = GAH<15>;
+   !VADDR<15>.CLK = CLKx2;	// GCK
+   VADDR<15>.CE = !nGOE & !nOL & !nAE;    
+
+VBANK<0>.D = VBANK<0> & !$OpTx$FX_DC$606
+	# !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & !RAL<3>.PIN & GAH<8> & 
+	!nGWE & !nGOE & nBE & !nAE & 
+	!BANK0_not0001/BANK0_not0001_D2;
+   VBANK<0>.CLK = CLKx4;	// GCK    
+
+VBANK<1>.D = VBANK<1> & !$OpTx$FX_DC$606
+	# GAH<9> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & !RAL<3>.PIN & !nGWE & 
+	!nGOE & nBE & !nAE & !BANK0_not0001/BANK0_not0001_D2;
+   VBANK<1>.CLK = CLKx4;	// GCK    
+
+VBANK<2>.D = VBANK<2> & !$OpTx$FX_DC$606
+	# GAH<10> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & !RAL<3>.PIN & !nGWE & 
+	!nGOE & nBE & !nAE & !BANK0_not0001/BANK0_not0001_D2;
+   VBANK<2>.CLK = CLKx4;	// GCK    
+
+VBANK<3>.D = ;Imported pterms FB6_2
+	  VBANK<3> & !$OpTx$FX_DC$606
+	# GAH<11> & !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	RAL<7>.PIN & RAL<6>.PIN & RAL<5>.PIN & !RAL<3>.PIN & !nGWE & 
+	!nGOE & nBE & !nAE & !BANK0_not0001/BANK0_not0001_D2;
+   VBANK<3>.CLK = CLKx4;	// GCK    
+
+abank<0> = GAH<15> & BANK<0>
+	# GAH<15> & !BANK<1> & !BANK<2> & !BANK<3> & 
+	BANK0<0>;    
+
+abank<1> = GAH<15> & BANK<1>
+	# GAH<15> & !BANK<0> & !BANK<2> & !BANK<3> & 
+	BANK0<1>;    
+
+abank<2> = GAH<15> & BANK<2>
+	# GAH<15> & !BANK<0> & !BANK<1> & !BANK<3> & 
+	BANK0<2>;    
+
+abank<3> = GAH<15> & BANK<3>
+	# GAH<15> & !BANK<0> & !BANK<1> & !BANK<2> & 
+	BANK0<3>;    
+
+!gah15to9 = !GAH<9> & !GAH<15> & !GAH<14> & !GAH<13> & !GAH<12> & 
+	!GAH<11> & !GAH<10>;    
+
+gbusout<0> = RD<0>.PIN & !$OpTx$FX_DC$135
+	# !GAH<8> & misox & $OpTx$FX_DC$135;    
+
+gbusout<1> = RD<1>.PIN & !$OpTx$FX_DC$135;    
+
+gbusout<2> = RD<2>.PIN & !$OpTx$FX_DC$135
+	# GAH<8> & nSS<0> & $OpTx$FX_DC$135;    
+
+gbusout<3> = RD<3>.PIN & !$OpTx$FX_DC$135
+	# GAH<8> & nSS<1> & $OpTx$FX_DC$135;    
+
+gbusout<4> = RD<4>.PIN & !$OpTx$FX_DC$135
+	# GAH<8> & !BANK<2> & $OpTx$FX_DC$135
+	# !GAH<8> & XIN<3> & $OpTx$FX_DC$135;    
+
+gbusout<5> = RD<5>.PIN & !$OpTx$FX_DC$135
+	# GAH<8> & !BANK<3> & $OpTx$FX_DC$135
+	# !GAH<8> & XIN<4> & $OpTx$FX_DC$135;    
+
+gbusout<6> = BANK<0> & $OpTx$FX_DC$135
+	# RD<6>.PIN & !$OpTx$FX_DC$135;    
+
+gbusout<7> = BANK<1> & $OpTx$FX_DC$135
+	# RD<7>.PIN & !$OpTx$FX_DC$135;    
+
+misox = !nSS<0> & MISO<0>
+	# !nSS<1> & MISO<1>
+	# nSS<0> & nSS<1> & MISO<2>;    
+
+!nACTRL = ;Imported pterms FB7_16
+	  !RAL<2>.PIN & !RAL<1>.PIN & !RAL<0>.PIN & 
+	!RAL<3>.PIN & !nGWE & !nGOE & !nAE;    
+
+nADEV<0> = nAE
+	# !RAL<7>.PIN & !RAL<6>.PIN & !RAL<5>.PIN & 
+	!RAL<4>.PIN;    
+
+nADEV<1> = nAE
+	# !RAL<7>.PIN & !RAL<6>.PIN & !RAL<5>.PIN & 
+	RAL<4>.PIN;    
+
+nAE.D = nBE;
+   !nAE.CLK = CLKx4;	// GCK    
+
+nBE.D = !CLK;
+   !nBE.CLK = CLKx4;	// GCK
+   nBE.CE = CLKx2;    
+
+nROE.D = !nRWE;
+   nROE.CLK = CLKx4;	// GCK
+   nROE.AR = nAE;
+   nROE.CE = nBE;    
+
+!nRWE.D = !nGWE & nGOE;
+   !nRWE.CLK = CLKx4;	// GCK
+   nRWE.AP = nAE;
+   nRWE.CE = !nBE;    
+
+nSS<0>.T = RAL<2>.PIN & !nGWE & !nGOE & !nSS<0> & nBE & !nAE
+	# !RAL<2>.PIN & RAL<1>.PIN & !nGWE & !nGOE & nSS<0> & 
+	nBE & !nAE
+	# !RAL<2>.PIN & RAL<0>.PIN & !nGWE & !nGOE & nSS<0> & 
+	nBE & !nAE
+	# !RAL<2>.PIN & RAL<3>.PIN & !nGWE & !nGOE & nSS<0> & 
+	nBE & !nAE;
+   nSS<0>.CLK = CLKx4;	// GCK    
+
+nSS<1>.T = RAL<3>.PIN & !nGWE & !nGOE & !nSS<1> & nBE & !nAE
+	# RAL<2>.PIN & !RAL<3>.PIN & !nGWE & !nGOE & nSS<1> & 
+	nBE & !nAE
+	# RAL<1>.PIN & !RAL<3>.PIN & !nGWE & !nGOE & nSS<1> & 
+	nBE & !nAE
+	# RAL<0>.PIN & !RAL<3>.PIN & !nGWE & !nGOE & nSS<1> & 
+	nBE & !nAE;
+   nSS<1>.CLK = CLKx4;	// GCK    
+
+outnxt<0>.D = snoop & RD<0>.PIN;
+   !outnxt<0>.CLK = CLKx4;	// GCK
+   outnxt<0>.CE = !nBE & nAE;    
+
+outnxt<1>.D = snoop & RD<1>.PIN;
+   !outnxt<1>.CLK = CLKx4;	// GCK
+   outnxt<1>.CE = !nBE & nAE;    
+
+outnxt<2>.D = snoop & RD<2>.PIN;
+   !outnxt<2>.CLK = CLKx4;	// GCK
+   outnxt<2>.CE = !nBE & nAE;    
+
+outnxt<3>.D = snoop & RD<3>.PIN;
+   !outnxt<3>.CLK = CLKx4;	// GCK
+   outnxt<3>.CE = !nBE & nAE;    
+
+outnxt<4>.D = snoop & RD<4>.PIN;
+   !outnxt<4>.CLK = CLKx4;	// GCK
+   outnxt<4>.CE = !nBE & nAE;    
+
+outnxt<5>.D = snoop & RD<5>.PIN;
+   !outnxt<5>.CLK = CLKx4;	// GCK
+   outnxt<5>.CE = !nBE & nAE;    
+
+pwmcnt<0>.T = Vcc;
+   pwmcnt<0>.CLK = CLK;	// GCK    
+
+pwmcnt<1>.T = pwmcnt<0>;
+   pwmcnt<1>.CLK = CLK;	// GCK    
+
+pwmcnt<2>.T = pwmcnt<0> & pwmcnt<1>;
+   pwmcnt<2>.CLK = CLK;	// GCK    
+
+pwmcnt<3>.T = pwmcnt<0> & pwmcnt<1> & pwmcnt<2>;
+   pwmcnt<3>.CLK = CLK;	// GCK    
+
+pwmcnt<4>.T = pwmcnt<0> & pwmcnt<1> & pwmcnt<3> & pwmcnt<2>;
+   pwmcnt<4>.CLK = CLK;	// GCK    
+
+pwmcnt<5>.T = pwmcnt<0> & pwmcnt<1> & pwmcnt<3> & pwmcnt<2> & 
+	pwmcnt<4>;
+   pwmcnt<5>.CLK = CLK;	// GCK    
+
+pwmcnt<6>.T = pwmcnt<0> & pwmcnt<1> & pwmcnt<3> & pwmcnt<2> & 
+	pwmcnt<4> & pwmcnt<5>;
+   pwmcnt<6>.CLK = CLK;	// GCK    
+
+pwmcnt<7>.T = pwmcnt<0> & pwmcnt<1> & pwmcnt<3> & pwmcnt<2> & 
+	pwmcnt<4> & pwmcnt<5> & pwmcnt<6>;
+   pwmcnt<7>.CLK = CLK;	// GCK    
+
+ra<8>.D = GAH<8> & !nAE
+	# VADDR<8> & nAE;
+   ra<8>.CLK = CLKx4;	// GCK    
+
+ra<9>.D = GAH<9> & !nAE
+	# VADDR<9> & nAE;
+   ra<9>.CLK = CLKx4;	// GCK    
+
+ra<10>.D = GAH<10> & !nAE
+	# VADDR<10> & nAE;
+   ra<10>.CLK = CLKx4;	// GCK    
+
+ra<11>.D = GAH<11> & !nAE
+	# VADDR<11> & nAE;
+   ra<11>.CLK = CLKx4;	// GCK    
+
+ra<12>.D = GAH<12> & !nAE
+	# VADDR<12> & nAE;
+   ra<12>.CLK = CLKx4;	// GCK    
+
+ra<13>.D = GAH<13> & !nAE
+	# VADDR<13> & nAE;
+   ra<13>.CLK = CLKx4;	// GCK    
+
+ra<14>.D = GAH<14> & !nAE
+	# VADDR<14> & nAE;
+   ra<14>.CLK = CLKx4;	// GCK    
+
+ra<15>.D = VADDR<15> & nAE
+	# !nAE & abank<0>;
+   ra<15>.CLK = CLKx4;	// GCK    
+
+ra<16>.D = !nAE & abank<1>
+	# nBE & VBANK<1> & nAE
+	# !nBE & VBANK<0> & nAE;
+   ra<16>.CLK = CLKx4;	// GCK    
+
+ra<17>.D = VBANK<2> & nAE
+	# !nAE & abank<2>;
+   ra<17>.CLK = CLKx4;	// GCK    
+
+ra<18>.D = VBANK<3> & nAE
+	# !nAE & abank<3>;
+   ra<18>.CLK = CLKx4;	// GCK    
+
+snoop.D = gah15to9 & !nGOE
+	# GAH<8> & !nGOE;
+   !snoop.CLK = CLKx2;	// GCK
+   snoop.CE = !nOL & !nAE;    
+
+sync<0>.D = ALU<6>;
+   sync<0>.CLK = CLK;	// GCK
+   sync<0>.CE = !nOL;    
+
+sync<1>.D = ALU<7>;
+   sync<1>.CLK = CLK;	// GCK
+   sync<1>.CE = !nOL;    
+
+******************************  Device Pin Out *****************************
+
+Device : XC95144XL-10-TQ100
+
+
+   --------------------------------------------------  
+  /100 98  96  94  92  90  88  86  84  82  80  78  76  \
+ |   99  97  95  93  91  89  87  85  83  81  79  77    |
+ | 1                                               75  | 
+ | 2                                               74  | 
+ | 3                                               73  | 
+ | 4                                               72  | 
+ | 5                                               71  | 
+ | 6                                               70  | 
+ | 7                                               69  | 
+ | 8                                               68  | 
+ | 9                                               67  | 
+ | 10                                              66  | 
+ | 11                                              65  | 
+ | 12                                              64  | 
+ | 13              XC95144XL-10-TQ100              63  | 
+ | 14                                              62  | 
+ | 15                                              61  | 
+ | 16                                              60  | 
+ | 17                                              59  | 
+ | 18                                              58  | 
+ | 19                                              57  | 
+ | 20                                              56  | 
+ | 21                                              55  | 
+ | 22                                              54  | 
+ | 23                                              53  | 
+ | 24                                              52  | 
+ | 25                                              51  | 
+ |   27  29  31  33  35  37  39  41  43  45  47  49    |
+  \26  28  30  32  34  36  38  40  42  44  46  48  50  /
+   --------------------------------------------------  
+
+
+Pin Signal                         Pin Signal                        
+No. Name                           No. Name                          
+  1 ALU<7>                           51 VCC                           
+  2 nROE                             52 GAH<13>                       
+  3 nAE                              53 nGWE                          
+  4 nGOE                             54 XIN<3>                        
+  5 VCC                              55 XIN<4>                        
+  6 KPR                              56 PWM                           
+  7 OUTD<7>                          57 VCC                           
+  8 ALU<6>                           58 MISO<2>                       
+  9 OUTD<6>                          59 nADEV<1>                      
+ 10 OUTD<3>                          60 nADEV<0>                      
+ 11 KPR                              61 nACTRL                        
+ 12 OUTD<2>                          62 GND                           
+ 13 KPR                              63 GAH<12>                       
+ 14 KPR                              64 GAH<14>                       
+ 15 OUTD<5>                          65 RAH<18>                       
+ 16 OUTD<1>                          66 RAH<17>                       
+ 17 KPR                              67 RAH<16>                       
+ 18 OUTD<0>                          68 RAH<15>                       
+ 19 OUTD<4>                          69 GND                           
+ 20 KPR                              70 RD<7>                         
+ 21 GND                              71 RD<6>                         
+ 22 CLK                              72 RD<5>                         
+ 23 CLKx2                            73 RD<4>                         
+ 24 nSS<0>                           74 RAH<14>                       
+ 25 nSS<1>                           75 GND                           
+ 26 VCC                              76 RAH<13>                       
+ 27 CLKx4                            77 RAH<12>                       
+ 28 MISO<0>                          78 RAH<11>                       
+ 29 MOSI                             79 RAH<10>                       
+ 30 SCK                              80 RAL<0>                        
+ 31 GND                              81 RAL<1>                        
+ 32 MISO<1>                          82 RAL<2>                        
+ 33 GBUS<3>                          83 TDO                           
+ 34 GBUS<4>                          84 GND                           
+ 35 GBUS<2>                          85 RAL<3>                        
+ 36 GBUS<5>                          86 RAL<4>                        
+ 37 GBUS<1>                          87 RD<0>                         
+ 38 VCC                              88 VCC                           
+ 39 GBUS<6>                          89 RD<1>                         
+ 40 GBUS<0>                          90 RD<2>                         
+ 41 GBUS<7>                          91 RD<3>                         
+ 42 GAH<10>                          92 nRWE                          
+ 43 GAH<11>                          93 RAL<5>                        
+ 44 GND                              94 RAL<6>                        
+ 45 TDI                              95 RAL<7>                        
+ 46 GAH<15>                          96 RAH<8>                        
+ 47 TMS                              97 RAH<9>                        
+ 48 TCK                              98 VCC                           
+ 49 GAH<9>                           99 nOL                           
+ 50 GAH<8>                          100 GND                           
+
+
+Legend :  NC  = Not Connected, unbonded pin
+         PGND = Unused I/O configured as additional Ground pin
+         TIE  = Unused I/O floating -- must tie to VCC, GND or other signal
+         KPR  = Unused I/O with weak keeper (leave unconnected)
+         VCC  = Dedicated Power Pin
+         GND  = Dedicated Ground Pin
+         TDI  = Test Data In, JTAG pin
+         TDO  = Test Data Out, JTAG pin
+         TCK  = Test Clock, JTAG pin
+         TMS  = Test Mode Select, JTAG pin
+  PROHIBITED  = User reserved pin
+****************************  Compiler Options  ****************************
+
+Following is a list of all global compiler options used by the fitter run.
+
+Device(s) Specified                         : xc95144xl-10-TQ100
+Optimization Method                         : DENSITY
+Multi-Level Logic Optimization              : ON
+Ignore Timing Specifications                : OFF
+Default Register Power Up Value             : LOW
+Keep User Location Constraints              : ON
+What-You-See-Is-What-You-Get                : OFF
+Exhaustive Fitting                          : OFF
+Keep Unused Inputs                          : OFF
+Slew Rate                                   : FAST
+Power Mode                                  : STD
+Ground on Unused IOs                        : OFF
+Set I/O Pin Termination                     : KEEPER
+Global Clock Optimization                   : ON
+Global Set/Reset Optimization               : ON
+Global Ouput Enable Optimization            : ON
+Input Limit                                 : 54
+Pterm Limit                                 : 90
