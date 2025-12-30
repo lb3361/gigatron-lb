@@ -79,9 +79,6 @@ def scope():
                  ('IMPORT', 'squares'),
                  ('CODE',  'mul2', code_mul2) ] )
 
-    x0      = 0x30 # from mandelbrot.c
-    y0      = 0x32 # from mandelbrot.c
-    lastPix = 0x38 # from mandelbrot.c
     x       = R16
     y       = R17
     xx      = R18
@@ -99,8 +96,9 @@ def scope():
         LDI(0);STW(x);STW(y);STW(xx);STW(yy);ST(i)
         label('.cp1')
         INC(i);LD(i);XORI(64);BEQ('.cp2');
-        LDW(x);STW(R8);LDW(y);STW(R9);CALLI('mul2');ADDW(y0);STW(y)
-        LDW(xx);SUBW(yy);ADDW(x0);STW(x)
+        LDW(x);SUBW(y);STW(R8);CALLI('sqr');STW(y)
+        LDW(xx);ADDW(yy);SUBW(y);ADDW('y0');STW(y)
+        LDW(xx);SUBW(yy);ADDW('x0');STW(x)
         STW(R8);CALLI('sqr');STW(xx)
         LDW(y);STW(R8);CALLI('sqr');STW(yy)
         LDWI(0xfbff);ADDW(xx);ADDW(yy);BLE('.cp1')
@@ -112,6 +110,8 @@ def scope():
            code=[('EXPORT', 'calc_pixel'),
                  ('IMPORT', 'sqr'),
                  ('IMPORT', 'mul2'),
+                 ('IMPORT', 'x0'),
+                 ('IMPORT', 'y0'),
                  ('CODE', 'calc_pixel', code_calcpixel) ] )
 
     def code_checkcalc():
@@ -124,19 +124,19 @@ def scope():
 
         label('check_calc')
         PUSH()
-        LD(lastPix);BNE('.calc')
+        LD('lastPix');BNE('.calc')
         # bail if (x+1)^2 + y^2 < 1/16
-        LDW(y0);STW(R8);CALLI('sqr');STW(yy)
-        LDW(x0);INC(vACH);STW(R8);CALLI('sqr');ADDW(yy);SUBI(16);BLE('.no')
+        LDW('y0');STW(R8);CALLI('sqr');STW(yy)
+        LDW('x0');INC(vACH);STW(R8);CALLI('sqr');ADDW(yy);SUBI(16);BLE('.no')
         # q = (x - 1/4)^2 + y^2
         # bail if q * (q + x - 1/4) < 1/4*y^2 
-        LDW(x0);SUBI(64);STW(R8);CALLI('sqr');ADDW(yy) # q
-        STW(R8);ADDW(x0);SUBI(64);STW(R9);CALLI('mul2');LSLW() # *4
+        LDW('x0');SUBI(64);STW(R8);CALLI('sqr');ADDW(yy) # q
+        STW(R8);ADDW('x0');SUBI(64);STW(R9);CALLI('mul2');LSLW() # *4
         SUBW(yy);BLE('.no')
         label('.calc')
         # must calc
         CALLI('calc_pixel')
-        ST(lastPix)
+        ST('lastPix')
         POP();RET()
         label('.no')
         LDI(0);
@@ -147,6 +147,9 @@ def scope():
                  ('IMPORT', 'sqr'),
                  ('IMPORT', 'mul2'),
                  ('IMPORT', 'calc_pixel'),
+                 ('IMPORT', 'x0'),
+                 ('IMPORT', 'y0'),
+                 ('IMPORT', 'lastPix'),
                  ('CODE', 'check_calc', code_checkcalc) ] )
         
 scope()

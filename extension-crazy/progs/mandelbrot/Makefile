@@ -1,6 +1,6 @@
 SHELL=/bin/sh
 CC=glcc
-CFLAGS=-rom=v5a
+CFLAGS=-rom=dev7
 LDFLAGS=-map=512k,lo,hr
 TARGET=mandelbrot.gt1
 OBJS=mandelbrot.o
