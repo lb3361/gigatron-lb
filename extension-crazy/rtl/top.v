@@ -3,6 +3,8 @@
 `define PWMBITS 8
 `undef  DISABLE_VIDEO_SNOOP
 
+/* verilator lint_off UNUSEDSIGNAL */ /* XIN, ALU */
+/* verilator lint_off SYNCASYNCNET */ /* nAE */
 
 module top(input            CLK,     // 6.25MHz clock
            input            CLKx2,   // 12.5MHz clock from PLL
@@ -74,21 +76,24 @@ module top(input            CLK,     // 6.25MHz clock
 
    /* ================ Gigatron data bus */
 
-   wire misox = SCLK & ((MISO[0] & !nSS[0]) |
-                        (MISO[1] & !nSS[1]) |
-                        (MISO[2] & nSS[0] & nSS[1]) );
+   wire misox = ( (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) |
+                  (MISO[2] & nSS[0] & nSS[1]) );
 
-   reg [7:0] gbusout; // transparent latch
-   always @*
+   reg [7:0] gbusout;
+   always @*                    // combinatorial
+     case({GAH[15:8],RAL[7:0]})
+       16'h0000 : gbusout = { 4'h0, {4{SCLK & misox}} };
+       16'h0080 : gbusout = 8'h01;
+       16'h01f8 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], 2'b00 };
+       default  : gbusout = RD[7:0];
+     endcase
+
+   reg [7:0] gbuslatch;
+   always @(nAE, gbusout)       // transparent latch
      if (! nAE)
-       case({GAH[15:8],RAL[7:0]})
-         16'h0000 : gbusout = { 4'b0000, {4{misox}} };
-         16'h0080 : gbusout = 8'h01;
-         16'h01f8 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], MOSI, 1'b0 };
-         default  : gbusout = RD[7:0];
-       endcase
+       gbuslatch <= gbusout;
 
-   assign GBUS = (nGOE) ? 8'hZZ : gbusout;
+   assign GBUS = (nGOE) ? 8'hZZ : gbuslatch;
 
 
    /* ================ SRAM interface
@@ -142,22 +147,21 @@ module top(input            CLK,     // 6.25MHz clock
 
    /* ================ Scanline detection */
 
-   reg        snoop;
-   wire       snoopchg = !nGOE && (GAH[15:8] != 8'h00);
-   wire [7:0] nvaddr = VADDR[7:0] + 8'h01;
+   reg snoop;
+
    always @(negedge CLKx2)
      if (! nAE)
        begin
           if (! nOL)
             // Snooping starts when an OUT instruction reads memory
-            // outside page zero and stop on any other OUT opcode.
-            snoop <=  snoopchg;
+            // outside page zero and stops on any other OUT opcode.
+            snoop <= (! nGOE) && (| GAH);
           if (! nOL && ! nGOE)
-            // Reset snooping address when an OUT reads memory
+            // Reset snooping address whenever an OUT reads memory
             VADDR <= { GAH, RAL };
           else
             // Otherwise increment address to next pixel
-            VADDR[7:0] <= nvaddr;
+            VADDR[7:0] <= VADDR[7:0] + 8'h01;
        end
 
 
