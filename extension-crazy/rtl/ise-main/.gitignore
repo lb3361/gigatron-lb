@@ -3,6 +3,7 @@
 !.gitignore
 !*.tcl
 !*.jed
+!*.rpt
 !*.svf
 !*.xsvf
 

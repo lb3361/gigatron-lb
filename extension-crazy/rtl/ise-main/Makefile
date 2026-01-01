@@ -18,6 +18,7 @@ ${PROJECT}.jed: ../top.v ../top.ucf  ${PROJECT}.tcl
 	-rm 2>/dev/null top.jed
 	${XTCLSH} ${PROJECT}.tcl rebuild_project
 	mv top.jed ${PROJECT}.jed
+	mv top.rpt ${PROJECT}.rpt
 
 ${PROJECT}.svf: ${PROJECT}.jed
 	@echo

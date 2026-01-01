@@ -2,6 +2,7 @@
 `define WRITE_WITH_NROE_AFTER_NRWE
 `define PWMBITS 8
 `undef  DISABLE_VIDEO_SNOOP
+`undef  FORCE_0X80
 
 /* verilator lint_off UNUSEDSIGNAL */ /* XIN, ALU */
 /* verilator lint_off SYNCASYNCNET */ /* nAE */
@@ -32,7 +33,6 @@ module top(input            CLK,     // 6.25MHz clock
            output reg       PWM      // pulse densite modulation for audio
            );
 
-   reg                      SCLK;    // ctrlBits: SCLK
    reg [3:0]                BANK;    // ctrlBits: BANK
    reg [3:0]                BANK0;   // bank zero override (set with ctrl code X0F0)
    reg [3:0]                VBANK;   // video bank
@@ -69,22 +69,26 @@ module top(input            CLK,     // 6.25MHz clock
         nAE <= nBE;
      end
 
-   /* ================ Gigatron bank selection */
+ 
+   /* ================ Things we can compute early */
 
-   wire [3:0] sbank = (BANK==4'b0000) ? BANK0 : BANK;
-   wire [3:0] abank = (GAH[15]) ? sbank : 4'b0000;
+   (* KEEP = "TRUE" *) wire [3:0] abank = (! GAH[15]) ? 4'h0 : (| BANK) ? BANK : BANK0;
+   (* KEEP = "TRUE" *) wire gah15to9 = (| GAH[15:9]);
+   (* KEEP = "TRUE" *) wire misox = ( (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) |
+                                      (MISO[2] & nSS[0] & nSS[1]) ) & SCK;
+   
 
    /* ================ Gigatron data bus */
 
-   wire misox = ( (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) |
-                  (MISO[2] & nSS[0] & nSS[1]) );
 
    reg [7:0] gbusout;
    always @*                    // combinatorial
-     case({GAH[15:8],RAL[7:0]})
-       16'h0000 : gbusout = { 4'h0, {4{SCLK & misox}} };
-       16'h0080 : gbusout = 8'h01;
-       16'h01f8 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], 2'b00 };
+     case({gah15to9, GAH[8], RAL[7:0]})
+       10'h000 : gbusout = { 4'h0, {4{misox}} };
+`ifdef FORCE_0X80
+       10'h080 : gbusout = 8'h01;
+`endif
+       10'h1f8 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], 2'b00 };
        default  : gbusout = RD[7:0];
      endcase
 
@@ -155,7 +159,7 @@ module top(input            CLK,     // 6.25MHz clock
           if (! nOL)
             // Snooping starts when an OUT instruction reads memory
             // outside page zero and stops on any other OUT opcode.
-            snoop <= (! nGOE) && (| GAH);
+            snoop <= (! nGOE) && (gah15to9 | GAH[8]);
           if (! nOL && ! nGOE)
             // Reset snooping address whenever an OUT reads memory
             VADDR <= { GAH, RAL };
@@ -255,7 +259,6 @@ module top(input            CLK,     // 6.25MHz clock
                       BANK[1:0] <= RAL[7:6];
                       BANK[3:2] <= ~RAL[5:4];
                       nSS <= RAL[3:2];
-                      SCLK <= RAL[0];
                       SCK <= RAL[0];
                       if (RAL[1:0] == 2'b11)
                         begin   // reset all registers
@@ -271,9 +274,9 @@ module top(input            CLK,     // 6.25MHz clock
 
 initial
   begin
-     BANK = 4'b0;
-     BANK0 = 4'b0;
-     VBANK = 4'b0;
+     BANK = 4'b0000;
+     BANK0 = 4'b0000;
+     VBANK = 4'b0000;
      PWMD  = 8'h00;
   end
 
