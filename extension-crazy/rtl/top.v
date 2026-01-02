@@ -2,7 +2,6 @@
 `define WRITE_WITH_NROE_AFTER_NRWE
 `define PWMBITS 8
 `undef  DISABLE_VIDEO_SNOOP
-`undef  FORCE_0X80
 
 /* verilator lint_off UNUSEDSIGNAL */ /* XIN, ALU */
 /* verilator lint_off SYNCASYNCNET */ /* nAE */
@@ -69,31 +68,32 @@ module top(input            CLK,     // 6.25MHz clock
         nAE <= nBE;
      end
 
- 
+
    /* ================ Things we can compute early */
 
    (* KEEP = "TRUE" *) wire [3:0] abank = (! GAH[15]) ? 4'h0 : (| BANK) ? BANK : BANK0;
+
    (* KEEP = "TRUE" *) wire gah15to9 = (| GAH[15:9]);
+
    (* KEEP = "TRUE" *) wire misox = ( (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) |
-                                      (MISO[2] & nSS[0] & nSS[1]) ) & SCK;
-   
+                                      (MISO[2] & nSS[0] & nSS[1]) );
+
 
    /* ================ Gigatron data bus */
 
+   (* KEEP = "TRUE" *) reg [7:0] gbusout;
 
-   reg [7:0] gbusout;
-   always @*                    // combinatorial
-     case({gah15to9, GAH[8], RAL[7:0]})
-       10'h000 : gbusout = { 4'h0, {4{misox}} };
-`ifdef FORCE_0X80
-       10'h080 : gbusout = 8'h01;
-`endif
-       10'h1f8 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], 2'b00 };
-       default  : gbusout = RD[7:0];
+   always @* // comb
+     case({ nAE, SCK, gah15to9, GAH[8], RAL[7:0] })
+       12'b0000_00000000 : gbusout = { 8'h00 };
+       12'b0100_00000000 : gbusout = { BANK[1:0], XIN[4:3], 3'b000, misox };
+       12'b0001_11111000 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], 2'b00 };
+       12'b0101_11111000 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], 2'b00 };
+       default           : gbusout = { RD[7:0] };
      endcase
 
    reg [7:0] gbuslatch;
-   always @(nAE, gbusout)       // transparent latch
+   always @(nAE or gbusout) // latch
      if (! nAE)
        gbuslatch <= gbusout;
 
@@ -125,24 +125,24 @@ module top(input            CLK,     // 6.25MHz clock
     * but the following should give better write timings
     */
 
-   always @(negedge CLKx4)
-     if (!nBE && !nAE)
-       nRWE <= nGWE || !nGOE;
-     else
+   always @(negedge CLKx4 or posedge nAE)
+     if (nAE)
        nRWE <= 1'b1;
+     else if (!nBE)
+       nRWE <= nGWE || !nGOE;
 
 `ifdef WRITE_WITH_NROE_NRWE_TOGETHER
-   always @(negedge CLKx4, posedge nAE)
+   always @(negedge CLKx4 or posedge nAE)
      if (nAE)
        nROE <= 1'b0;
-     else if (!nBE && !nAE)
+     else if (!nBE)
        nROE <= !nGWE && nGOE;
 `endif
 `ifdef WRITE_WITH_NROE_AFTER_NRWE
-   always @(posedge CLKx4, posedge nAE)
+   always @(posedge CLKx4 or posedge nAE)
      if (nAE)
        nROE <= 1'b0;
-     else if (nBE && !nAE)
+     else if (nBE)
        nROE <= !nRWE;
 `endif
    assign RD = (nROE) ? GBUS : 8'hZZ;
@@ -220,57 +220,51 @@ module top(input            CLK,     // 6.25MHz clock
    assign nADEV[1] = nAE   || RAL[7:4] == 4'b0001;
 
    always @(posedge CLKx4)
-     if (!nAE && nBE)
+     if (!nAE && nBE && !nCTRL)
        begin
-          if (! nCTRL)
+          SCK <= RAL[0];
+          if (| RAL[3:0])       // normal ctrl codes
             begin
-               casez (RAL[3:0])
-                 4'b0000:       // extended ctrl codes
-                   begin
-                      case (RAL[7:4])
-                        4'hf :
-                          begin // dev15: set bank
-                             if (!GAH[11])
-                               begin
-                                  BANK0 <= GAH[15:12]; // set bank0 override
-                               end
-                             else
-                               begin
-                                  BANK <= GAH[15:12];  // set bank
-                                  BANK0 <= 4'b0000;    // reset bank0 override
-                               end
-                          end
-                        4'he :
-                          begin // dev14: set video bank
-                             VBANK[3:0] <= GAH[11:8];
-                          end
-                        4'hd :
-                          begin // dev13: set PWM threshold
-                             PWMD <= GAH[15:16-`PWMBITS];
-                          end
-                        default :
+               MOSI <= GAH[15];
+               BANK[1:0] <= RAL[7:6];
+               BANK[3:2] <= ~RAL[5:4];
+               nSS <= RAL[3:2];
+               if (& RAL[1:0])  // reset
+                 begin
+                    BANK0 <= 4'b0000;
+                    VBANK <= 4'b0000;
+                    PWMD  <= 8'h00;
+                 end
+            end
+          else                  // extended ctrl codes
+              begin
+                 case (RAL[7:4])
+                   4'hf :
+                     begin // dev15: set bank
+                        if (!GAH[11])
                           begin
+                             BANK0 <= GAH[15:12]; // set bank0 override
                           end
-                      endcase
-                   end
-                 default:       // normal ctrl codes
-                   begin
-                      MOSI <= GAH[15];
-                      BANK[1:0] <= RAL[7:6];
-                      BANK[3:2] <= ~RAL[5:4];
-                      nSS <= RAL[3:2];
-                      SCK <= RAL[0];
-                      if (RAL[1:0] == 2'b11)
-                        begin   // reset all registers
-                           BANK <= 4'b0000;
-                           BANK0 <= 4'b0000;
-                           VBANK <= 4'b0000;
-                           PWMD  <= 8'h00;
-                        end
-                   end
-               endcase // casez (RAL[3:0])
-            end // if (! nCTRL)
-       end // if (!nAE && nBE)
+                        else
+                          begin
+                             BANK <= GAH[15:12];  // set bank
+                             BANK0 <= 4'b0000;    // reset bank0 override
+                          end
+                     end
+                   4'he :
+                     begin // dev14: set video bank
+                        VBANK[3:0] <= GAH[11:8];
+                     end
+                   4'hd :
+                     begin // dev13: set PWM threshold
+                        PWMD <= GAH[15:16-`PWMBITS];
+                     end
+                   default :
+                     begin
+                     end
+                 endcase
+              end
+       end
 
 initial
   begin
