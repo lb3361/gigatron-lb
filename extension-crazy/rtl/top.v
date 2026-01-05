@@ -1,5 +1,4 @@
 
-`define WRITE_WITH_NROE_AFTER_NRWE
 `define PWMBITS 8
 `undef  DISABLE_VIDEO_SNOOP
 
@@ -15,8 +14,8 @@ module top(input            CLK,     // 6.25MHz clock
            input            nOL,     // OL signal from OutputReg socket
            inout [7:0]      RAL,     // Low address from 74LVC244 and 512k ram
            output [18:8]    RAH,     // 512k ram high address bits
-           output reg       nROE,    // 512k ram output enable
-           output reg       nRWE,    // 512k ram write enable
+           output wire      nROE,    // 512k ram output enable
+           output wire      nRWE,    // 512k ram write enable
            inout [7:0]      RD,      // 512k ram data lines
            output reg       nAE,     // Active low enable for 74LVC244
            inout [7:0]      GBUS,    // Gigatron data bus from SRAM socket
@@ -52,20 +51,20 @@ module top(input            CLK,     // 6.25MHz clock
     *  CLKx2                       __/   \___/   \___/   \___/   \___/
     *                                 _   _   _   _   _   _   _   _   _
     *  CLKx4                       \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \
-    *                              ____         _______         _______
-    *  /BE                             \_______/       \_______/       \
-    *                               _______         _______         ____
-    *  /AE                         /       \_______/       \_______/
+    *                                       _______         _______
+    *  /BE                         \_______/       \_______/       \____
+    *                              ____         _______         ________
+    *  /AE                             \_______/       \_______/
     *
-    *  Cycle                       --VVV-vvvGGGGGGGG-VVV-vvvGGGGGGGG-VVV
+    *  Cycle                       V-vvvGGGGGGGG-VVV-vvvGGGGGGGG-VVV-vvv
     */
 
    reg nBE;
    always @(negedge CLKx4)
      begin
         if (CLKx2)
-          nBE <= !CLK;
-        nAE <= nBE;
+          nAE <= !CLK;
+        nBE <= !nAE;
      end
 
 
@@ -73,7 +72,7 @@ module top(input            CLK,     // 6.25MHz clock
 
    (* KEEP = "TRUE" *) wire [3:0] abank = (! GAH[15]) ? 4'h0 : (| BANK) ? BANK : BANK0;
 
-   (* KEEP = "TRUE" *) wire gah15to9 = (| GAH[15:9]);
+   (* KEEP = "TRUE" *) wire gah15to8 = (| GAH[15:8]);
 
    (* KEEP = "TRUE" *) wire misox = ( (MISO[0] & !nSS[0]) | (MISO[1] & !nSS[1]) |
                                       (MISO[2] & nSS[0] & nSS[1]) );
@@ -83,13 +82,11 @@ module top(input            CLK,     // 6.25MHz clock
 
    (* KEEP = "TRUE" *) reg [7:0] gbusout;
 
-   always @* // comb
-     case({ nAE, SCK, gah15to9, GAH[8], RAL[7:0] })
-     //12'b0000_00000000 : gbusout = { 8'h00 };
-       12'b0100_00000000 : gbusout = { BANK[1:0], XIN[4:3], 3'b000, misox };
-     //12'b0001_11111000 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], 2'b00 };
-       12'b0101_11111000 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], 2'b00 };
-       default           : gbusout = { RD[7:0] };
+   always @(*) // comb
+     case({ nAE, SCK, gah15to8, RAL[7:0] })
+       11'b010_00000000 : gbusout = { BANK[1:0], XIN[4:3], 3'b000, misox };
+       11'b010_10000000 : gbusout = { BANK[1:0], ~BANK[3:2], nSS[1:0], 2'b00 };
+       default          : gbusout = { RD[7:0] };
      endcase
 
    reg [7:0] gbuslatch;
@@ -118,34 +115,13 @@ module top(input            CLK,     // 6.25MHz clock
      else
        ra <= { RAH, RAL };
 
-   /* One could do:
-    *   assign nROE = 1'b0;
-    *   assign nRWE = nGWE || nAE || !nGOE || !nBE;
-    *   assign RD = (nRWE) ? 8'hZZ : GBUS;
-    * but the following should give better write timings
+   /* 
+    * The gigatron drives the ram when nAE is low. 
     */
 
-   always @(negedge CLKx4 or posedge nAE)
-     if (nAE)
-       nRWE <= 1'b1;
-     else if (!nBE)
-       nRWE <= nGWE || !nGOE;
-
-`ifdef WRITE_WITH_NROE_NRWE_TOGETHER
-   always @(negedge CLKx4 or posedge nAE)
-     if (nAE)
-       nROE <= 1'b0;
-     else if (!nBE)
-       nROE <= !nGWE && nGOE;
-`endif
-`ifdef WRITE_WITH_NROE_AFTER_NRWE
-   always @(posedge CLKx4 or posedge nAE)
-     if (nAE)
-       nROE <= 1'b0;
-     else if (nBE)
-       nROE <= !nRWE;
-`endif
-   assign RD = (nROE) ? GBUS : 8'hZZ;
+   assign nROE = nGOE && !nAE; //1'b0;
+   assign nRWE = nGWE || nAE || !nGOE || !nBE;
+   assign RD = (nRWE) ? 8'hZZ : GBUS;
 
 
 
@@ -153,13 +129,13 @@ module top(input            CLK,     // 6.25MHz clock
 
    reg snoop;
 
-   always @(negedge CLKx2)
+   always @(posedge CLKx2)
      if (! nAE)
        begin
           if (! nOL)
             // Snooping starts when an OUT instruction reads memory
             // outside page zero and stops on any other OUT opcode.
-            snoop <= (! nGOE) && (gah15to9 | GAH[8]);
+            snoop <= (! nGOE) && gah15to8;
           if (! nOL && ! nGOE)
             // Reset snooping address whenever an OUT reads memory
             VADDR <= { GAH, RAL };
@@ -183,11 +159,15 @@ module top(input            CLK,     // 6.25MHz clock
        sync <= ALU[7:6];
    always @(negedge CLKx4)
      if (nBE && nAE)
-       OUTD <= { sync[1:0], (snoop) ? RD[5:0] : 6'h00 };
+       begin
+          outnxt[5:0] <= (snoop) ? RD[5:0] : 6'h00;
+          OUTD[5:0] <= outnxt[5:0];
+       end
      else if (!nBE && nAE)
-       outnxt[5:0] <= (snoop) ? RD[5:0] : 6'h00;
-     else if (nBE && !nAE)
-       OUTD[5:0] <= outnxt[5:0];
+       begin
+          outnxt[5:0] <= (snoop) ? RD[5:0] : 6'h00;
+          OUTD <= { sync[1:0], outnxt[5:0] };
+       end
 `endif
 
 
