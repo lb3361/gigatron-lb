@@ -1,18 +1,18 @@
 # Warning: $`\text{\color{red} consider Hans61's simple board instead!}`$
 
-This ram-and-io expansion board for the Gigatron is not a bad design, but its advanced features are not that useful, and it is much harder to build than Hans61's recreation of the original ram-and-io expansion board designed by Marcel. See [this forum link](https://forum.gigatron.io/viewtopic.php?p=3694&hilit=hans61+recreated#p3694) and [this github link](https://github.com/hans61/Gigatron-TTL/tree/main/Expansion128k). I recommend the dual-driver version of Hans61's board.
+This ram-and-io expansion board for the Gigatron is not a bad design, but its advanced features are not that useful, and it is much harder to build than Hans61's recreation of the original ram-and-io expansion board designed by Marcel. See [this forum link](https://forum.gigatronttl.eu/viewtopic.php?p=3694&hilit=hans61+recreated#p3694) and [this github link](https://github.com/hans61/Gigatron-TTL/tree/main/Expansion128k). I recommend the dual-driver version of Hans61's board.
 
 
 
 # Gigatron RAM and IO expansion (v7, "dual drive")
 
-This is the latest version of the GAL-based 128KB RAM and IO extension for the Gigatron. This board is compatible enough with [Marcel's design](https://forum.gigatron.io/viewtopic.php?f=4&t=64&start=50#p804) to require no change to the Gigatron software. It provides the usual features of GAL-based expansion boards.
+This is the latest version of the GAL-based 128KB RAM and IO extension for the Gigatron. This board is compatible enough with [Marcel's design](https://forum.gigatronttl.eu/viewtopic.php?f=4&t=64&start=50#p804) to require no change to the Gigatron software. It provides the usual features of GAL-based expansion boards.
 * Zero page banking provides means to select a different memory bank for the zero page range 0x80-0xff.
 * SPI clock polarity control allows for implementing [SPI modes](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface#Clock_polarity_and_phase) (CPOL, CPHA). Modes 0 and 2 are supported with the existing firmware. Modes 1 and 3 can be implemented with a new native routine.
 
 This version of the board also provides useful additional features:
 * Two SPI headers simultaneously usable with [most cheap SD Card breakouts with 5v level shift](https://www.amazon.com/HiLetgo-Adater-Interface-Conversion-Arduino/dp/B07BJ2P6X6), working around the poor SPI compliance of both SD Cards and breakouts. Signals to create more SPI ports are provided on header H4 (7 pins).
-* Support for the [extended CTRL codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331). Such codes will not affect the banking state or SPI state but will be exposed on header H3 (13 pins). The main motivation for this new version of the board was to demonstrate how to redistribute the board functions between the two GAL chips. This turned out to be more space efficient and to leave space for more features.
+* Support for the [extended CTRL codes](https://forum.gigatronttl.eu/viewtopic.php?f=4&t=331). Such codes will not affect the banking state or SPI state but will be exposed on header H3 (13 pins). The main motivation for this new version of the board was to demonstrate how to redistribute the board functions between the two GAL chips. This turned out to be more space efficient and to leave space for more features.
 
 ![PCB image](images/Render.jpg)
 
@@ -83,7 +83,7 @@ This board offers only two SPI channels. Each channel has separate MISO lines na
 
 ### 2.3 - Extended CTRL codes
 
-The sixteen bits value presented on the address bus during the execution of a CTRL instruction are called CTRL codes. Altough the normal CTRL codes discussed above leave very little room for expansion, [extended CTRL codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331) exploit the fact that normal CTRL codes do not typically select SPI devices 0 and 1 at the same time. Extented CTRL codes have the format '0b`YYYYYYDDDD00XX` where `YYYYYYYY` represents a 8 bits payload for device `DDDD`. When the board recognizes such a CTRL code, it does not change the banking state or the SPI state. Instead it sets signal `/AUXCTRL` to zero and provides two device address decoding lines named `/AUXDEV0` and `/AUXDEV1` associated with device numbers `0000` and `0001`. These signals, as well as A8-A15, are exposed on header H3 (with short names CK,F0, F1). 
+The sixteen bits value presented on the address bus during the execution of a CTRL instruction are called CTRL codes. Altough the normal CTRL codes discussed above leave very little room for expansion, [extended CTRL codes](https://forum.gigatronttl.eu/viewtopic.php?f=4&t=331) exploit the fact that normal CTRL codes do not typically select SPI devices 0 and 1 at the same time. Extented CTRL codes have the format '0b`YYYYYYDDDD00XX` where `YYYYYYYY` represents a 8 bits payload for device `DDDD`. When the board recognizes such a CTRL code, it does not change the banking state or the SPI state. Instead it sets signal `/AUXCTRL` to zero and provides two device address decoding lines named `/AUXDEV0` and `/AUXDEV1` associated with device numbers `0000` and `0001`. These signals, as well as A8-A15, are exposed on header H3 (with short names CK,F0, F1). 
 
 Here are two examples
 

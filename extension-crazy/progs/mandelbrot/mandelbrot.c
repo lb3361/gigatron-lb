@@ -99,7 +99,7 @@ void worm(register fixed_t x, register fixed_t y, fixed_t step, action_t act)
 
 /* math - half square multiplication.
    -- half square multiplication 
-      https://forum.gigatron.io/viewtopic.php?p=2632#p2632
+      https://forum.gigatronttl.eu/viewtopic.php?p=2632#p2632
    -- fixed point implementation with 8 bit fractional part
       in fixed8.s 
 */

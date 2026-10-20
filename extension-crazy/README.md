@@ -80,7 +80,7 @@ found in the [rom](./rom) directory.
 
 We want to use all 512K of memory while remaining maximally compatible
 with existing software and allowing fast bank switches. The [normal
-ctrl codes](https://forum.gigatron.io/viewtopic.php?f=4&t=331) that
+ctrl codes](https://forum.gigatronttl.eu/viewtopic.php?f=4&t=331) that
 `SYS_ExpanderControl` saves in the `ctrlBits_v5` memory location
 (0x1f8) only support four banks. Yet, banking-aware software expects
 to save and restore a banking configuration by copying and
@@ -88,7 +88,7 @@ manipulating `ctrlBits_v5`.
 
 The current CPLD program defines a new four bit banking register NBANK
 and a flag NBANKP. They can be set using an [extended
-ctrl code](https://forum.gigatron.io/viewtopic.php?f=4&t=331) with
+ctrl code](https://forum.gigatronttl.eu/viewtopic.php?f=4&t=331) with
 device address 0xF. Register NBANK is read from the top four bits of
 the code, flags NBANKP from the following bit:
 ```
@@ -219,4 +219,4 @@ which is needed because the Gigatron only updates the samples at about 8kHz.
 ## 3.5. New native opcodes
 
 This is still a very experimental development. 
-See https://forum.gigatron.io/viewtopic.php?p=2874#p2874.
+See https://forum.gigatronttl.eu/viewtopic.php?p=2874#p2874.

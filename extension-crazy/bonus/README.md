@@ -1,6 +1,6 @@
 # A whole Gigatron in a 100 pins XC95144XL
 
-Bmwtcu mentionned in a [comment](https://forum.gigatron.io/viewtopic.php?p=2826#p2826) 
+Bmwtcu mentionned in a [comment](https://forum.gigatronttl.eu/viewtopic.php?p=2826#p2826) 
 that a whole Gigatron barely fits in a XC95144XL, which is a nice way to understand
 the size of this part.
 
